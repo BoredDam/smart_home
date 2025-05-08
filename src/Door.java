@@ -1,4 +1,33 @@
-public class Door implements Device {
+public class Door extends Device {
+
+
+    enum DoorState {
+        OPEN,
+        CLOSED,
+        LOCKED
+    }
+
+    DoorState state;
+
+    DoorState getState() {
+        return state;
+    }
+
+    void setState(DoorState state) {
+        this.state = state;
+    }
+
+    boolean isOpen() {
+        return state == DoorState.OPEN;
+    }
+
+    boolean isClosed() {
+        return state == DoorState.CLOSED;
+    }
+
+    boolean isLocked() {
+        return state == DoorState.LOCKED;
+    }
 
     @Override
     public void performAction(String action) {
@@ -12,5 +41,6 @@ public class Door implements Device {
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
     
+
 }
 

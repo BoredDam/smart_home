@@ -1,4 +1,4 @@
-public class Camera implements Device {
+public class Camera extends Device {
 
     @Override
     public void performAction(String action) {
@@ -11,5 +11,5 @@ public class Camera implements Device {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
-    
+
 }

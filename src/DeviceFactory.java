@@ -1,3 +1,3 @@
-public interface DeviceFactory {
+public class DeviceFactory {
     
 }

@@ -1,4 +1,4 @@
-public class Thermostat implements Device {
+public class Thermostat extends Device {
     @Override
     public void performAction(String action) {
         // TODO Auto-generated method stub
