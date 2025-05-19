@@ -1,3 +1,6 @@
+package devices;
+import events.Event;
+
 public class Camera extends Device {
 
     @Override
