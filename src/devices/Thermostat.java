@@ -1,14 +1,6 @@
-public class Thermostat extends Device {
-    @Override
-    public void performAction(String action) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'performAction'");
-    }
+package devices;
+import events.Event;
 
-    @Override
-    public void update(Event event) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-    
+public class Thermostat extends Device {
+
 }
