@@ -1,4 +1,4 @@
-package commands.lightCommand;
+package commands.lightCommands;
 import commands.Command;
 import devices.Light;
 

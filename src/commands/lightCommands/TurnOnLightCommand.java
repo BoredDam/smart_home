@@ -1,4 +1,4 @@
-package commands.lightCommand;
+package commands.lightCommands;
 import devices.Light;
 
 public class TurnOnLightCommand extends LightCommand {
@@ -11,5 +11,4 @@ public class TurnOnLightCommand extends LightCommand {
     public void execute() {
         device.turnOn();
     }
-
 }

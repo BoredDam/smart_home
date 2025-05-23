@@ -1,13 +1,15 @@
 package main;
 
-import commands.*;
-import commands.lightCommand.*;
-import devices.*;
+import java.util.Scanner;
 
 public class Client {
+    
     public static void main(String[] args) {
-        Light luce = new Light("a");
-        Command accendi = new TurnOnLightCommand(luce);
-        accendi.execute();
+        Scanner sc = new Scanner(System.in);
+
+        while (true) { 
+            if (sc.nextLine().equals("q")) break;
+
+        }
     }
 }

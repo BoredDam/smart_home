@@ -2,9 +2,18 @@ package controller;
 
 import devices.Device;
 import events.Event;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SmartHomeController {
-    void addDevice(Device device) {};
+    
+    List<Device> device_list = new ArrayList<>();
+    
+    void addDevice(Device device) {
+        device_list.add(device);
+        
+    };
+
     void removeDevice(Device device) {};
     void triggerEvent(Event event) {};
 }
