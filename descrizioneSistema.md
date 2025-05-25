@@ -24,12 +24,9 @@ Il controller periodicamente riceve notifiche dai device monitorati. Di default 
 Ogni evento incapsula un determinato tipo di comando. Il device si aggiorna in base all'evento attivato nel sistema, ossia legge il tipo di evento ed estrae il comando da eseguire.
 
 ### Scenario
-Ogni scenario rappresenta una configurazione diversa del controller. Nello scenario ogni dispositivo viene cablato in modo tale che siano presenti sempre tre informazioni:
+Ogni scenario rappresenta una configurazione diversa del controller. Nello scenario ogni dispositivo viene cablato in modo tale che siano presenti sempre due informazioni:
 - nome del dispositivo;
-- stato di monitoraggio;
-- valore soglia.
-
-Quando il controller riceve dati, confronta questi con il valore nello scenario e verifica se la soglia è rispettata. 
+- stato di monitoraggio. 
 
 All'attivazione dello scenario si prevede l'esecuzione di determinati comandi. Lo scenario notte, per esempio, può spegnere tutte le luci della casa e impostare una sveglia. I comandi vengono inseriti in una coda e smistati ai dispositivi.
 
