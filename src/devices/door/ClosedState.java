@@ -1,4 +1,4 @@
-package devices;
+package devices.door;
 
 public class ClosedState implements LockState {
     static ClosedState instance;

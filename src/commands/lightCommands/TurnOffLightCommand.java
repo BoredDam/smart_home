@@ -1,6 +1,6 @@
 package commands.lightCommands;
 
-import devices.Light;
+import devices.light.Light;
 
 public class TurnOffLightCommand extends LightCommand {
 

@@ -4,19 +4,13 @@ import events.Event;
 
 public abstract class Device {
     
-    private String name;
+    protected String name;
 
-    Device(String name) {
+    public Device(String name) {
         this.name = name;
     }
 
-    void performAction(String action) {
-
-    };
-
-    void update(Event event) {
-        
-    };
+    void update(Event event) {};
 
     public String getName() {
         return name;

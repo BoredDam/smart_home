@@ -1,4 +1,6 @@
-package devices;
+package devices.light;
+
+import devices.Device;
 
 public class Light extends Device {
 
@@ -36,10 +38,10 @@ public class Light extends Device {
     public void getState() {
 
         if(isOn()) {
-            System.out.println(getName() + " è accesa!");
+            System.out.println(getName() + " is on!");
         }
         else {
-            System.out.println(getName() + " è spenta!");
+            System.out.println(getName() + " is off!");
         }
         
     }

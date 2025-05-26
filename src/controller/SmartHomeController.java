@@ -11,7 +11,6 @@ public class SmartHomeController {
     
     void addDevice(Device device) {
         device_list.add(device);
-        
     };
 
     void removeDevice(Device device) {};

@@ -1,6 +1,6 @@
 package commands.lightCommands;
 import commands.Command;
-import devices.Light;
+import devices.light.Light;
 
 public abstract class LightCommand implements Command {
 

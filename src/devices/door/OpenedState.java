@@ -1,4 +1,4 @@
-package devices;
+package devices.door;
 
 public class OpenedState implements LockState {
     static OpenedState instance;
@@ -8,7 +8,7 @@ public class OpenedState implements LockState {
             instance = new OpenedState();
         return instance;
     }
-    public LockSate lock() {
+    public LockState lock() {
         System.out.println("Door is opened, cannot lock!");
         return instance; 
     };
