@@ -36,13 +36,6 @@ public class Light extends Device {
     }
 
     public void getState() {
-
-        if(isOn()) {
-            System.out.println(getName() + " is on!");
-        }
-        else {
-            System.out.println(getName() + " is off!");
-        }
-        
+        System.out.println(getName() + (isOn() ? "is on!" : "is off!" ) );
     }
 }
