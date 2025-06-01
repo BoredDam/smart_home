@@ -1,10 +1,13 @@
-package devices;
+package devices.powerState;
 
 public class OffState implements PowerState {
     static OffState instance;
     private OffState() {}
+    
     public static OffState getInstance() {
-        if(instance == null) instance = new OffState();
+        if(instance == null) {
+            instance = new OffState();
+        }
         return instance;
     }
 

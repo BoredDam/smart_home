@@ -11,6 +11,6 @@ public abstract class LightCommand implements Command {
     }
 
     @Override
-    public abstract void execute();
+    public abstract void run();
 
 }

@@ -9,7 +9,7 @@ public class TurnOnCamera extends CameraCommand{
     }
 
     @Override
-    public void execute() {
+    public void run() {
         device.turnOn();
     }
     

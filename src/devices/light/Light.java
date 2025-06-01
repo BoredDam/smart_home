@@ -1,6 +1,18 @@
 package devices.light;
 
-public interface Light {
-    void lightSwitch();
-    void printState();
+import devices.Device;
+
+public class Light extends Device {
+
+    public Light(String name) {
+        super(name);
+    }
+
+    public void lightSwitch() {
+        if(isOn()) {
+            turnOff();
+        } else {
+            turnOn();
+        }
+    }
 }

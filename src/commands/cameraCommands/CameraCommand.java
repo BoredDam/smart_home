@@ -12,6 +12,6 @@ public abstract class CameraCommand implements Command {
     }
 
     @Override
-    public abstract void execute();
+    public abstract void run();
 
 }

@@ -8,13 +8,13 @@ public class ThermalVision extends CameraDecorator {
 
     @Override
     public void captureImage() {
-        System.out.println(/*getName() +*/ " is going to take a picture with enhanced Thermal Vision...");
+        System.out.println(getName() + " is going to take a picture with enhanced Thermal Vision...");
         wrapped.captureImage();
     }
 
     @Override
     public void recordVideo() {
-        System.out.println(/*getName() +*/ " is going to record with enhanced Thermal Vision...");
+        System.out.println(getName() + " is going to record with enhanced Thermal Vision...");
         wrapped.recordVideo();
     }
 

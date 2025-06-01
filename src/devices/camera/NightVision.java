@@ -8,13 +8,13 @@ public class NightVision extends CameraDecorator {
 
     @Override
     public void captureImage() {
-        System.out.println(/*getName() +*/ " is going to take a picture with enhanced Night Vision...");
+        System.out.println(getName() + " is going to take a picture with enhanced Night Vision...");
         wrapped.captureImage();
     }
 
     @Override
     public void recordVideo() {
-        System.out.println(/*getName() +*/ " is going to record with enhanced Night Vision... spooky...");
+        System.out.println(getName() + " is going to record with enhanced Night Vision... spooky...");
         wrapped.recordVideo();
     }
 

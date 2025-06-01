@@ -1,4 +1,4 @@
-package devices;
+package devices.powerState;
 
 public interface PowerState {
     PowerState turnOn();

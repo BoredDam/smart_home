@@ -9,7 +9,7 @@ public class RecordVideo extends CameraCommand{
     }
 
     @Override
-    public void execute() {
+    public void run() {
         device.recordVideo();
     }
     

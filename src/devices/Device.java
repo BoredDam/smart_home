@@ -1,5 +1,7 @@
 package devices;
 
+import devices.powerState.OffState;
+import devices.powerState.PowerState;
 import events.Event;
 
 public abstract class Device {
@@ -11,7 +13,7 @@ public abstract class Device {
         pstate = OffState.getInstance();
     }
 
-    void update(Event event) {};
+    void update(Event event) {}
 
     public String getName() {
         return name;
@@ -24,6 +26,7 @@ public abstract class Device {
     public void turnOn() {
         pstate = pstate.turnOn();
     }
+
     public void turnOff() {
         pstate = pstate.turnOff();
     }

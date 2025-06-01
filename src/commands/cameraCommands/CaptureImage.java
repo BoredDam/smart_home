@@ -9,7 +9,7 @@ public class CaptureImage extends CameraCommand{
     }
 
     @Override
-    public void execute() {
+    public void run() {
         device.captureImage();
     }
     
