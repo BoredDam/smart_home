@@ -1,20 +1,19 @@
 package devices.camera;
 
-public class ThermalVision extends CameraDecorator {
-
-    public ThermalVision(Camera wrapped) {
+public class HDAudio extends CameraDecorator {
+    
+    public HDAudio(Camera wrapped) {
         super(wrapped);
     }
 
     @Override
     public void captureImage() {
-        System.out.println(/*getName() +*/ " is going to take a picture with enhanced Thermal Vision...");
         wrapped.captureImage();
     }
 
     @Override
     public void recordVideo() {
-        System.out.println(/*getName() +*/ " is going to record with enhanced Thermal Vision...");
+        System.out.println(/*getName() +*/ " is going to record with enhanced Audio...");
         wrapped.recordVideo();
     }
 
@@ -25,7 +24,7 @@ public class ThermalVision extends CameraDecorator {
 
     @Override
     public void turnOff() {
-        wrapped.turnOff();
+        
     }
 
 }

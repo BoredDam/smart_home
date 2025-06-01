@@ -1,11 +1,10 @@
 package devices.camera;
 
-public abstract class BaseCameraDecorator extends Camera{
+public abstract class CameraDecorator implements Camera {
 
     protected Camera wrapped;
 
-    public BaseCameraDecorator(Camera wrapped) {
-        super(wrapped.getName());
+    public CameraDecorator(Camera wrapped) {
         this.wrapped = wrapped;
     }
     
