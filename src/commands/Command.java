@@ -1,5 +1,5 @@
 package commands;
 
 public interface Command {
-    void run();
+    public void run();
 }

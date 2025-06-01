@@ -5,7 +5,7 @@ import devices.camera.Camera;
 
 public abstract class CameraCommand implements Command {
     
-    Camera device;
+    protected Camera device;
 
     CameraCommand(Camera device) {
         this.device = device;

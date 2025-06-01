@@ -27,6 +27,7 @@ public class OffState implements PowerState {
     public boolean isOn() {
         return false;
     }
+    
     @Override
     public boolean isOff() {
         return true;

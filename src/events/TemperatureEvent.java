@@ -1,8 +1,6 @@
 package events;
 
-import commands.Command;
-
-public abstract class TemperatureEvent extends Event {
+public abstract class TemperatureEvent implements Event {
 
     protected float measuredTemp;
 

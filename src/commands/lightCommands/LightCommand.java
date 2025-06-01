@@ -4,11 +4,12 @@ import devices.light.Light;
 
 public abstract class LightCommand implements Command {
 
-    Light device;
+    protected Light device;
 
-    LightCommand(Light device) {
+    public void setDevice(Light device) {
         this.device = device;
     }
+
 
     @Override
     public abstract void run();
