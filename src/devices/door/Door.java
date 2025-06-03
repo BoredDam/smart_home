@@ -11,4 +11,19 @@ public class Door extends Device{
         lockState = OpenedState.getInstance();
     }
     
+    public void open() {
+        lockState = lockState.open();
+    }
+
+    public void close() {
+        lockState = lockState.close();
+    }
+
+    public void unlock() {
+        lockState = lockState.unlock();
+    }
+
+    public void lock() {
+        lockState = lockState.lock();
+    }
 }
