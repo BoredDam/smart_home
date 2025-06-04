@@ -14,7 +14,7 @@ public class StopState implements SpeakerState {
 
     @Override
     public SpeakerState play() {
-        System.out.println("Music is going to play! ♫♪♪");
+        System.out.println("Music is going to play!");
         return PlayState.getInstance();
     }
 

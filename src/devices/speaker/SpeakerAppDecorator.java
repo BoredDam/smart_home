@@ -4,7 +4,7 @@ public abstract class SpeakerAppDecorator implements Speaker {
 
     Speaker wrapped;
 
-    SpeakerAppDecorator(Speaker wrapped) {
+    public SpeakerAppDecorator(Speaker wrapped) {
         this.wrapped = wrapped;
     }
 

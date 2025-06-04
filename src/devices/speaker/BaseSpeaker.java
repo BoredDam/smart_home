@@ -31,11 +31,12 @@ public class BaseSpeaker extends Device implements Speaker {
     @Override
     public void setVolume(int volume) {
         this.volume = volume;
+        System.out.println("["+ getName() + "] Setting volume to" + volume);
     }
 
     @Override
     public void printInfos() {
-        System.out.println("This is the "+ getName() + " speaker. I'll print some infos...");
+        System.out.println("["+ getName() + "] I'll print the downloaded apps list.");
     } 
     
 }
