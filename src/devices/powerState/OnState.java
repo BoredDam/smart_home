@@ -3,7 +3,14 @@ package devices.powerState;
 public class OnState implements PowerState {
     static OnState instance;
     private OnState() {}
-    
+
+    /**
+     * This method checks if an instance of <code>OnState</code> was already instantiated. If not, it will instantiate. 
+     * Then, whether it was just instantiated or not, it will return the instance. 
+     * This is a clear implementation of the Singleton Design Pattern by the GoF.
+     * 
+     * @return the OnState instance;
+     */
     public static OnState getInstance() {
         if(instance == null) {
             instance = new OnState();
