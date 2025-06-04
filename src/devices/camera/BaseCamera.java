@@ -1,17 +1,21 @@
 package devices.camera;
 
-public abstract class BaseCamera extends Camera {
+public class BaseCamera extends Camera {
 
     public BaseCamera(String name) {
         super(name);
     }
-
+    
+    @Override
     public void captureImage() {
-        System.out.println(getName() + " just took a picture.");
+        printHeader();
+        System.out.println("Just took a picture.");
     }
 
+    @Override
     public void recordVideo() {
-        System.out.println(getName() + " is recording...");
+        printHeader();
+        System.out.println("Recording...");
     }
     
 }

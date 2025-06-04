@@ -1,8 +1,6 @@
 package devices.speaker;
 
-import devices.Device;
-
-public class BaseSpeaker extends Device implements Speaker {
+public class BaseSpeaker extends Speaker {
 
     SpeakerState spstate;
     int volume;
@@ -31,12 +29,15 @@ public class BaseSpeaker extends Device implements Speaker {
     @Override
     public void setVolume(int volume) {
         this.volume = volume;
-        System.out.println("["+ getName() + "] Setting volume to" + volume);
+        printHeader();
+        System.out.println("Setting volume to" + volume);
     }
 
     @Override
     public void printInfos() {
-        System.out.println("["+ getName() + "] I'll print the downloaded apps list.");
+        printHeader();
+        System.out.print("Current volume level: " + volume + ". ");
+        spstate.getInfo();
     } 
     
 }

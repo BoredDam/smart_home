@@ -29,5 +29,8 @@ public class PlayState implements SpeakerState {
         System.out.println("Music just got stopped...aight. *sob*");
         return StopState.getInstance();
     }
-    
+    @Override
+    public void getInfo() {
+        System.out.println("Currently playing.");
+    }
 }

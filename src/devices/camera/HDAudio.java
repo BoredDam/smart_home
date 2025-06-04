@@ -8,23 +8,14 @@ public class HDAudio extends CameraDecorator {
 
     @Override
     public void captureImage() {
-        wrapped.captureImage();
+        super.captureImage();
     }
 
     @Override
     public void recordVideo() {
-        System.out.println(getName() + " is going to record with enhanced Audio...");
-        wrapped.recordVideo();
-    }
-
-    @Override
-    public void turnOn() {
-        wrapped.turnOn();
-    }
-
-    @Override
-    public void turnOff() {
-        
+        printHeader();
+        System.out.println("Going to record with enhanced Audio...");
+        super.recordVideo();
     }
 
 }

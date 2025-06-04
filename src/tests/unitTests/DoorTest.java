@@ -32,8 +32,8 @@ public class DoorTest {
         d.close();
         d.lock();
         d.open();
-        String expected = "Door is already opened!" + System.lineSeparator() + "Door closed!" + System.lineSeparator() +
-            "Door is now locked!" + System.lineSeparator() + "Intrusion detected!" + System.lineSeparator();
+        String expected = "[TestDoor] Door is already opened!" + System.lineSeparator() + "[TestDoor] Door closed!" + System.lineSeparator() +
+            "[TestDoor] Door is now locked!" + System.lineSeparator() + "[TestDoor] Intrusion detected!" + System.lineSeparator();
         assertEquals(expected, outputStream.toString());
     }
 

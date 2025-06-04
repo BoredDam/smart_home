@@ -1,8 +1,8 @@
 package devices.camera;
 
-import devices.Device;
+import devices.ObservableDevice;
 
-public abstract class Camera extends Device {
+public abstract class Camera extends ObservableDevice {
 
     public Camera(String name) {
         super(name);

@@ -5,7 +5,7 @@ import events.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SmartHomeController {
+public class SmartHomeController implements Observer {
     
     List<Device> device_list = new ArrayList<>();
     
@@ -13,6 +13,7 @@ public class SmartHomeController {
         device_list.add(device);
     };
 
-    void removeDevice(Device device) {};
-    void triggerEvent(Event event) {};
+    void removeDevice(Device device) {}
+    void triggerEvent(Event event) {}
+    public void update(Event event) {}
 }

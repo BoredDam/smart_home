@@ -1,10 +1,11 @@
 package devices.speaker;
 
-public abstract class SpeakerAppDecorator implements Speaker {
+public abstract class SpeakerAppDecorator extends Speaker {
 
     Speaker wrapped;
 
     public SpeakerAppDecorator(Speaker wrapped) {
+        super(wrapped.getName());
         this.wrapped = wrapped;
     }
 
@@ -29,7 +30,9 @@ public abstract class SpeakerAppDecorator implements Speaker {
     }
 
     @Override
-    public abstract void printInfos();
+    public void printInfos() {
+        wrapped.printInfos();
+    }
 
     
 }

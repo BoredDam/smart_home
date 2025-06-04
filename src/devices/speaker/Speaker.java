@@ -1,9 +1,13 @@
 package devices.speaker;
+import devices.Device;
 
-public interface Speaker {
-    void pause();
-    void play();
-    void stop();
-    void setVolume(int volume);
-    void printInfos();
+public abstract class Speaker extends Device {
+    public Speaker(String name) {
+        super(name);
+    }
+    abstract void pause();
+    abstract void play();
+    abstract void stop();
+    abstract void setVolume(int volume);
+    abstract void printInfos();
 }
