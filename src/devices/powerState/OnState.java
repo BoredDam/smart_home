@@ -3,7 +3,7 @@ package devices.powerState;
 public class OnState implements PowerState {
     static OnState instance;
     private OnState() {}
-
+    
     public static OnState getInstance() {
         if(instance == null) {
             instance = new OnState();

@@ -2,7 +2,7 @@ package commands.cameraCommands;
 
 import devices.camera.Camera;
 
-public class RecordVideo extends CameraCommand{
+public class RecordVideo extends CameraCommand {
 
     RecordVideo(Camera device) {
         super(device);
