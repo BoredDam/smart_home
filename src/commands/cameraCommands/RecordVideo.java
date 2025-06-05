@@ -4,13 +4,13 @@ import devices.camera.Camera;
 
 public class RecordVideo extends CameraCommand {
 
-    RecordVideo(Camera device) {
-        super(device);
+    public RecordVideo(Camera camera) {
+        super(camera);
     }
 
     @Override
     public void run() {
-        device.recordVideo();
+        camera.recordVideo();
     }
     
 }

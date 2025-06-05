@@ -17,7 +17,7 @@ public abstract class Device {
         pstate = OffState.getInstance();
     }
 
-    void update(Event event) {}
+    public void update(Event event) {}
 
     public String getName() {
         return name;

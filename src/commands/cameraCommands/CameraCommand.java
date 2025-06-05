@@ -5,10 +5,10 @@ import devices.camera.Camera;
 
 public abstract class CameraCommand implements Command {
     
-    protected Camera device;
+    protected Camera camera;
 
-    CameraCommand(Camera device) {
-        this.device = device;
+    CameraCommand(Camera camera) {
+        this.camera = camera;
     }
 
     @Override

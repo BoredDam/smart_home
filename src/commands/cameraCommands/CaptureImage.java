@@ -4,13 +4,13 @@ import devices.camera.Camera;
 
 public class CaptureImage extends CameraCommand {
 
-    CaptureImage(Camera device) {
-        super(device);
+    CaptureImage(Camera camera) {
+        super(camera);
     }
 
     @Override
     public void run() {
-        device.captureImage();
+        camera.captureImage();
     }
     
 }

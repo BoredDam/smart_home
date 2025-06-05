@@ -4,12 +4,14 @@ import devices.Device;
 
 public class AirConditioner extends Device {
     
+    private float targetTemp;
+
     public AirConditioner(String name){
         super(name);
     }
 
     public void setTargetTemp(float temp) {
-        /**/
+        targetTemp = temp;
     }
 
 }
