@@ -7,13 +7,23 @@ import java.util.List;
 
 public class SmartHomeController implements Observer {
     
-    List<Device> device_list = new ArrayList<>();
+    private List<Device> device_list = new ArrayList<>();
     
-    void addDevice(Device device) {
+    public void addDevice(Device device) {
         device_list.add(device);
-    };
+        System.out.println(device.getName() + " just got registered to the SmartHome Controller!");
+    }
 
-    void removeDevice(Device device) {}
-    void triggerEvent(Event event) {}
+    public void removeDevice(Device device) {
+        device_list.removeIf(dev -> dev.getName() == device.getName());
+        System.out.println(device.getName() + " just got removed from the SmartHome Controller...");
+    }
+
+    public void printDeviceList() {
+        device_list.stream().forEach(dev -> System.out.println(dev.getName() + " - " + dev.getClass()));;
+    }
+
+
+    public void triggerEvent(Event event) {}
     public void update(Event event) {}
 }

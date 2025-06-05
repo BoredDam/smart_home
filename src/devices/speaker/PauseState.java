@@ -14,7 +14,7 @@ public class PauseState implements SpeakerState {
 
     @Override
     public SpeakerState play() {
-        System.out.println("Putting the music back on! ♫♪♪");
+        System.out.println("Putting the music back on!");
         return PlayState.getInstance();
     }
 

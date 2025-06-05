@@ -3,7 +3,8 @@ import commands.Command;
 
 import devices.airConditioner.AirConditioner;
 
-public class AirConditionerCommand implements Command {
+public abstract class AirConditionerCommand implements Command {
+    
     protected AirConditioner airConditioner;
 
     public AirConditionerCommand(AirConditioner airConditioner) {

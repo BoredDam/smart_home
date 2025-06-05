@@ -14,7 +14,7 @@ public class PlayState implements SpeakerState {
 
     @Override
     public SpeakerState play() {
-        System.out.println("Music is already playing! ♫♪♪");
+        System.out.println("Music is already playing!");
         return instance;
     }
 
