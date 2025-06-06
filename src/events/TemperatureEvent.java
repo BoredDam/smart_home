@@ -1,6 +1,6 @@
 package events;
 
-public abstract class TemperatureEvent implements Event {
+public abstract class TemperatureEvent extends Event {
 
     protected float measuredTemp;
 

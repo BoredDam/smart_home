@@ -13,5 +13,5 @@ public class AirConditioner extends Device {
     public void setTargetTemp(float temp) {
         targetTemp = temp;
     }
-
+    
 }
