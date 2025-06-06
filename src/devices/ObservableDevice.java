@@ -1,7 +1,7 @@
 package devices;
 
 import controller.Observer;
-
+import events.Event;
 public abstract class ObservableDevice extends Device {
     protected Observer controllerObserving;
     public ObservableDevice(String name) {
@@ -13,6 +13,11 @@ public abstract class ObservableDevice extends Device {
     }
 
     public void detach() {
-        // logic of detaching. Will be precise when implementing the controller
+        controllerObserving = null;
+    }
+
+    public void notify(Event event) {
+        if(controllerObserving != null) controllerObserving.update(event);
+        // null object? we'll see...
     }
 }
