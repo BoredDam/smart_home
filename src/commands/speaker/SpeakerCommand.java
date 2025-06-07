@@ -10,6 +10,7 @@ public abstract class SpeakerCommand implements Command {
 
     public SpeakerCommand() {
     }
+    
     @Override
     public void setDevice(Device dev) {
         speaker = (Speaker) dev;

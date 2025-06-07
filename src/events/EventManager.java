@@ -1,5 +1,15 @@
 package events;
 
+/**
+ * <code> EventManager </code> it's a class that encapsulates the logic behind creating events. 
+ * Inside the class you can code the default events, using the <code>setUpDefaultEvents</code>.
+ * Its also a Singleton.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
+
+
 import commands.*;
 import commands.cameraCommands.CaptureImage;
 import commands.cameraCommands.RecordVideo;
@@ -20,17 +30,32 @@ public class EventManager {
     
     private EventManager() {}
     
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>EventManager</code>.
+     * @return the only EventManager instance
+     */
     public static EventManager getInstance() {
         if(instance == null)
             instance = new EventManager();
         return instance;
     }
 
+    /**
+     * Gets an Event with the name specified in <code>type</code>.
+     * @param type name of the Event 
+     * @return an Event
+     */
     public Event getEvent(String type) {
         return eventManager.get(type);
     }
 
-    // adds a command to the list of commands for the device
+    /**
+     * Adds an Evemt to the <code>EventManager</code>
+     * @param dev of the command you want to add
+     * @param eventType
+     * @param cmd 
+     */ 
     public void addEventMonitoredDevice(Device dev, String eventType, Command cmd) {    
         Event e = eventManager.get(eventType);
         if(e == null) {
@@ -40,29 +65,36 @@ public class EventManager {
         e.addCommand(cmd, dev.getName());
     }
 
-    // this is a configuration for the default events
-    // thus providing also a possibility for a future (probably inexistent...)
-    // update of the system that supports custom events
+    /**
+     * This is a configuration for the default events, thus providing also a possibility for  
+     * a future (probably inexistent...) update of the system that supports custom events
+     * @param listDev the list from which import the devices to register events from.
+     */ 
     public void setUpDefaultEvents(List<Device> listDev) {
         eventManager.put("HighTemperature", new Event("HighTemperature"));
         eventManager.put("Intrusion", new Event("Intrusion"));
+
         Iterator<Device> it = listDev.iterator();
+
         while(it.hasNext()) {
             Device dev = it.next();
             switch(dev) {
                 case AirConditioner _ -> {
                     addEventMonitoredDevice(dev, "HighTemperature", new TurnOnCommand());
-                    addEventMonitoredDevice(dev, "LowTemperature", new TurnOnCommand());
+                    addEventMonitoredDevice(dev, "LowTemperature", new TurnOnCommand());   
                 }
+
                 case Camera _ -> {
                     addEventMonitoredDevice(dev, "Intrusion", new RecordVideo());
                     // let's consider something more complex... two commands instead of one
                     addEventMonitoredDevice(dev, "Intrusion", new CaptureImage());
                 }
+                
                 case OldHeaterAdapter _ -> {
                     addEventMonitoredDevice(dev, "HighTemperature", new TurnOffCommand());
                     addEventMonitoredDevice(dev, "LowTemperature", new TurnOnCommand());
                 }
+
                 default -> {
                     System.err.println("Device not recognized");
                 }

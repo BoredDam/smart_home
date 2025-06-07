@@ -29,6 +29,11 @@ public class SmartHomeController implements Observer {
         eventManager = EventManager.getInstance();
     }
 
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>SmartHomeController</code>.
+     * @return the only SmartHomeController instance
+     */
     public static SmartHomeController getInstance() {
         if(instance == null) { 
             instance = new SmartHomeController();
@@ -36,9 +41,19 @@ public class SmartHomeController implements Observer {
         return instance;
     }
 
+    /**
+     * Adds a device for the <code>SmartHomeController</code> to monitor.
+     * @param device to monitor
+     * @param state of the monitoring
+     */
     public void setDeviceMonitoring(ObservableDevice device, boolean state) {
         listenedDevices.put(device, state);
     }
+
+    /**
+     * Adds a device to the <code>SmartHomeController</code> device list.
+     * @param device to add
+     */
     public void addDevice(Device device) {
         if(device != null) {
             device_list.add(device);
@@ -51,6 +66,11 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /**
+     * Removes a specific device from the <code>SmartHomeController</code> 
+     * device list, if it exists.
+     * @param device to remove
+     */
     public void removeDevice(Device device) {
         if(device != null && device_list.contains(device)) {
             if(device instanceof ObservableDevice d) {
@@ -62,10 +82,20 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /**
+     * Prints out the device list of the <code>SmartHomeController</code>.
+     */
     public void printDeviceList() {
         device_list.stream().forEach(dev -> System.out.println(dev.getName() + " - " + dev.getClass().getSimpleName()));
     }
 
+    /**
+     * 
+     * @param deviceName
+     * @return true if an object that implements the <code>Device</code> interface with this
+     * <code>deviceName</code> is in the device list of the <code>SmartHomeController</code>. 
+     * Otherwise, it will return false.
+     */
     public boolean isIn(String deviceName) {
         return device_list.stream().anyMatch(dev -> dev.getName().equals(deviceName));
     }
