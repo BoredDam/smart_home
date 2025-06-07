@@ -48,7 +48,7 @@ public class SmartHomeController implements Observer {
         device_list.stream().forEach(dev -> System.out.println(dev.getName() + " - " + dev.getClass()));
     }
 
-    public Boolean isIn(String deviceName) {
+    public boolean isIn(String deviceName) {
         return device_list.stream().anyMatch(dev -> dev.getName().equals(deviceName));
     }
 
@@ -58,7 +58,7 @@ public class SmartHomeController implements Observer {
     public void update(Event event) {}
 
     public void scheduleCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
-        if(device_list.stream().anyMatch((dev) -> (dev.getName().equals(devName)))) {
+        if(isIn(devName)) {
             ScheduledFuture<?> handle = null; 
             if(repeatSecs > 0) {
                 handle = scheduler.scheduleAtFixedRate((Runnable) cmd, delaySecs, repeatSecs, TimeUnit.SECONDS);
