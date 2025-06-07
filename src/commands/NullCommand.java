@@ -1,5 +1,7 @@
 package commands;
 
+import devices.Device;
+
 public class NullCommand implements Command {
     private static NullCommand instance;
 
@@ -12,4 +14,6 @@ public class NullCommand implements Command {
     }
     @Override
     public void run() {}
+    @Override
+    public void setDevice(Device dev) {}
 }

@@ -1,17 +1,17 @@
 package commands.cameraCommands;
 
 import commands.Command;
+import devices.Device;
 import devices.camera.Camera;
 
 public abstract class CameraCommand implements Command {
     
     protected Camera camera;
 
-    CameraCommand(Camera camera) {
-        this.camera = camera;
-    }
+    public CameraCommand() {}
 
     @Override
-    public abstract void run();
-
+    public void setDevice(Device dev) {
+        camera = (Camera) dev;
+    }
 }

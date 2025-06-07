@@ -5,7 +5,7 @@ import devices.speaker.Speaker;
 public class PlayCommand extends SpeakerCommand {
 
     public PlayCommand(Speaker speaker) {
-        super(speaker);
+        super();
     }
     
     @Override

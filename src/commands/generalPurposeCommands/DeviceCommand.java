@@ -7,11 +7,11 @@ public abstract class DeviceCommand implements Command {
     
     protected Device device;
     
-    public DeviceCommand(Device device) {
-        this.device = device;
+    public DeviceCommand() {
     }
 
     @Override
-    public abstract void run();
-
+    public void setDevice(Device dev) {
+        device = dev;
+    }
 }

@@ -16,10 +16,9 @@ public class GeneralPurposeTest {
         Camera c = new BaseCamera("TestCamera");
         Speaker s = new SpotifyApp(new BaseSpeaker("TestSpeaker"));
 
-        Command tc = new TurnOnCommand(c);
-        tc.run();
-        tc = new TurnOnCommand(s);
-        tc.run();
+        Command tc = new TurnOnCommand();
+        c.performAction(tc);
+        s.performAction(tc);
 
         assertEquals(true, s.isOn() && c.isOn());
     }

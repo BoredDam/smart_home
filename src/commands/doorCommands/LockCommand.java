@@ -1,9 +1,8 @@
 package commands.doorCommands;
-import devices.door.Door;
 
 public class LockCommand extends DoorCommand {
-    public LockCommand(Door door) {
-        super(door);
+    public LockCommand() {
+        super();
     }
 
     @Override

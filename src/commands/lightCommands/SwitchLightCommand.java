@@ -1,11 +1,9 @@
 package commands.lightCommands;
 
-import devices.light.Light;
-
 public class SwitchLightCommand extends LightCommand {
 
-    public SwitchLightCommand(Light light) {
-        super(light);
+    public SwitchLightCommand() {
+        super();
     }
     
     @Override

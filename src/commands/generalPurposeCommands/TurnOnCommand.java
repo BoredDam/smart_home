@@ -1,11 +1,9 @@
 package commands.generalPurposeCommands;
 
-import devices.Device;
-
 public class TurnOnCommand extends DeviceCommand {
 
-    public TurnOnCommand(Device device) {
-        super(device);
+    public TurnOnCommand() {
+        super();
     }
 
     @Override

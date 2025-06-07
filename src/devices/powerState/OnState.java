@@ -1,5 +1,7 @@
 package devices.powerState;
 
+import commands.Command;
+
 public class OnState implements PowerState {
     static OnState instance;
     private OnState() {}
@@ -39,5 +41,10 @@ public class OnState implements PowerState {
     @Override
     public boolean isOff() {
         return false;
+    }
+
+    @Override
+    public void runCommand(Command cmd) {
+        cmd.run();
     }
 }

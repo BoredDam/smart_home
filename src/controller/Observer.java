@@ -1,7 +1,7 @@
 package controller;
 
-import events.Event;
+import devices.ObservableDevice;
 
 public interface Observer {
-    void update(Event event);
+    void update(ObservableDevice dev);
 }

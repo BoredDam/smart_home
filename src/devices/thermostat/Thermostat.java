@@ -21,6 +21,13 @@ public class Thermostat extends ObservableDevice {
         return measuredTemp;
     } 
 
+    public boolean tooHot() {
+        return measuredTemp > upperBound;
+    }
+
+    public boolean tooCold() {
+        return measuredTemp < lowerBound;
+    }
     public void setUpperBound(float upperBound) {
         this.upperBound = upperBound;
 

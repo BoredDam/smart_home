@@ -1,16 +1,16 @@
 package commands.generalPurposeCommands;
 
-import devices.Device;
-
 public class TurnOffCommand extends DeviceCommand {
 
-    public TurnOffCommand(Device device) {
-        super(device);
+    public TurnOffCommand() {
+        super();
     }
     
     @Override
     public void run() {
         device.turnOff();
     }
+
+    
 
 }

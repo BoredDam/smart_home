@@ -1,5 +1,6 @@
 package devices;
 
+import commands.Command;
 import devices.powerState.OffState;
 import devices.powerState.PowerState;
 import events.Event;
@@ -48,5 +49,10 @@ public abstract class Device {
     public void printState() {
         printHeader();
         System.out.println("State: " + (isOn() ? "on" : "off"));
+    }
+
+    public void performAction(Command cmd) {
+        cmd.setDevice(this);
+        pstate.runCommand(cmd);
     }
 }

@@ -1,5 +1,8 @@
 package devices.powerState;
 
+import commands.Command;
+import commands.generalPurposeCommands.TurnOnCommand;
+
 public class OffState implements PowerState {
     static OffState instance;
     private OffState() {}
@@ -40,4 +43,11 @@ public class OffState implements PowerState {
     public boolean isOff() {
         return true;
     }
+
+    @Override
+    public void runCommand(Command cmd) {
+        if(cmd instanceof TurnOnCommand toc) {
+            toc.run();
+        }
+    } 
 }

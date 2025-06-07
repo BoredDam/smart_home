@@ -1,12 +1,10 @@
 package commands.ThermostatCommands;
 
-import devices.thermostat.Thermostat;
-
 public class SetLowerBoundCommand extends ThermostatCommand {
 
     private final float bound; 
-    public SetLowerBoundCommand(Thermostat thermostat, float bound) {
-        super(thermostat);
+    public SetLowerBoundCommand(float bound) {
+        super();
         this.bound = bound;
     }
     

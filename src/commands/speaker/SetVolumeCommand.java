@@ -1,13 +1,11 @@
 package commands.speaker;
 
-import devices.speaker.Speaker;
-
 public class SetVolumeCommand extends SpeakerCommand {
 
     private final int level;
 
-    public SetVolumeCommand(Speaker speaker, int level) {
-        super(speaker);
+    public SetVolumeCommand(int level) {
+        super();
         this.level = level;
     }
 

@@ -1,7 +1,6 @@
 package devices;
 
 import controller.Observer;
-import events.Event;
 public abstract class ObservableDevice extends Device {
     protected Observer controllerObserving;
     public ObservableDevice(String name) {
@@ -16,8 +15,8 @@ public abstract class ObservableDevice extends Device {
         controllerObserving = null;
     }
 
-    public void notify(Event event) {
-        if(controllerObserving != null) controllerObserving.update(event);
+    public void notifyObserver() {
+        if(controllerObserving != null) controllerObserving.update(this);
         // null object? we'll see...
     }
 }

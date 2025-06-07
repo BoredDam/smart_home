@@ -1,11 +1,9 @@
 package commands.cameraCommands;
 
-import devices.camera.Camera;
-
 public class RecordVideo extends CameraCommand {
 
-    public RecordVideo(Camera camera) {
-        super(camera);
+    public RecordVideo() {
+        super();
     }
 
     @Override

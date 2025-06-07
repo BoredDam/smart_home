@@ -1,5 +1,7 @@
 package devices.powerState;
 
+import commands.Command;
+
 /**
  * <code> PowerState </code> it's the base interface for all the the states subclasses.
  * It's used to clarify about the powering state of the objects that it's composed into.
@@ -34,4 +36,6 @@ public interface PowerState {
      * @return <code>true</code> if the PowerState is <code>OffState</code>; <code>false</code> otherwise.
      */
     boolean isOff();
+
+    void runCommand(Command cmd);
 }
