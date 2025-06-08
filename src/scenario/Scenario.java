@@ -3,16 +3,23 @@ package scenario;
 import commands.Command;
 import controller.SmartHomeController;
 import devices.ObservableDevice;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Scenario {
+    private static record ScheduledCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {}
     private String name;
-    private final Map<Command, Integer> commandList = new HashMap<>(); 
+    private final List<ScheduledCommand> commandList = new ArrayList<>(); 
     private final Map<String, Boolean> devMonitor = new HashMap<>(); // decides which observable device should be considered
 
     public Scenario(String name) {
         this.name = name;
+    }
+
+    public String getName() { // needed, we don't want scenarios with duplicated names
+        return name;
     }
 
     public void enableDeviceMonitoring(String name) {
@@ -27,22 +34,16 @@ public class Scenario {
         devMonitor.put(name, false);
     }
 
-    public void addCommand(Command cmd, int seconds) {
-        // we assume that the command already has the device set
-        commandList.put(cmd, seconds);
+    public void addCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
+        commandList.add(new ScheduledCommand(devName, delaySecs, repeatSecs, cmd));
     }
 
     // should implement logic of command deletion in some way...
     // we just skip this and let the user scenario manage it
 
     public void apply(SmartHomeController controller) {
-        // uhh i don't think this is a great idea... it's a limitation: a scenario  
-        // applies the command but cannot schedule repetitive tasks
-        // maybe we need to store the information of the integer as a pair of integers...
-        // i think this is the worst thing that i have written so far. 
-        // i am progressively losing my mind. The complexity has reached levels that are
-        // greater than expected and i don't want to test this. Please call for help
-        commandList.forEach((cmd, secs) -> { controller.scheduleCommand(secs, 0, cmd); });
+        // method is no longer broken and the solution is functional
+        commandList.forEach((rec) -> { controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); });
 
         // this works fine i guess, ignore the warning
         devMonitor.forEach((name, mon) -> {controller.setDeviceMonitoring((ObservableDevice) controller.getDeviceFromName(name), mon); } );

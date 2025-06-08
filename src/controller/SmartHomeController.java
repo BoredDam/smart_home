@@ -131,25 +131,30 @@ public class SmartHomeController implements Observer {
 
 
     public Device getDeviceFromName(String devName) {
-        return  (Device) device_list.stream().filter(d -> "devName".equals(d.getName())).findFirst().orElse(null); 
+        return (Device) device_list.stream().filter(d -> devName.equals(d.getName())).findFirst().orElse(null); 
     }
 
-    public void scheduleCommand(long delaySecs, long repeatSecs, Command cmd) {
-        // we suppose that the command is already set for the device...
-        ScheduledFuture<?> handle = null; 
-        if(repeatSecs > 0) {
-            handle = scheduler.scheduleAtFixedRate( () -> { cmd.run(); }, delaySecs, repeatSecs, TimeUnit.SECONDS);
-        }
-        else {
-            handle = scheduler.schedule( () -> { cmd.run(); }, delaySecs, TimeUnit.SECONDS);
-        }
-        if (handle == null) { // handle creation error
-            System.err.println("Error in scheduling of command. Try again");
-            return;
-        }
+    public void scheduleCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
+        Device dev = getDeviceFromName(devName);
+        if(dev != null) {
+            ScheduledFuture<?> handle = null; 
+            if(repeatSecs > 0) {
+                handle = scheduler.scheduleAtFixedRate( () -> { dev.performAction(cmd); }, delaySecs, repeatSecs, TimeUnit.SECONDS);
+            }
+            else {
+                handle = scheduler.schedule( () -> { dev.performAction(cmd); }, delaySecs, TimeUnit.SECONDS);
+            }
+            if (handle == null) { // handle creation error
+                System.err.println("Error in scheduling of command. Try again");
+                return;
+            }
         scheduledCommands.put(handle, (repeatSecs > 0)); 
             // the boolean is used to track if the task repeats or not
             // if a taks is to be repeated, we can get the handler and we can kill it
+        }
+        else {
+            System.out.println("Device " + devName + " does not exist!");
+        }
     }
 
     public void flushTasks() {
@@ -158,5 +163,11 @@ public class SmartHomeController implements Observer {
         // AND THERE IS NO WAY TO RECOVER THE COMMANDS
         scheduledCommands.forEach( (handle, _) -> { handle.cancel(true); } );
         scheduledCommands.clear();
+    }
+
+    public void shutdown() {
+        try (scheduler) {
+            flushTasks();
+        }
     }
 }
