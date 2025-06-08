@@ -5,9 +5,11 @@ import commands.generalPurposeCommands.TurnOnCommand;
 import commands.speaker.PlayCommand;
 import controller.SmartHomeController;
 import devices.speaker.BaseSpeaker;
+import userFacade.UserFacade;
 
 public class Client {
     public static void main(String[] args) throws InterruptedException {
+        /*
         BaseSpeaker cassa = new BaseSpeaker("cassa");
         SmartHomeController controller = SmartHomeController.getInstance();
         BaseSpeaker cassa2 = new BaseSpeaker("cass2");
@@ -21,9 +23,12 @@ public class Client {
         Command turnOnCassa = new TurnOnCommand();
         System.out.println("Wait for 10 secs...");
         controller.scheduleCommand(cassa.getName(), 10, 0, turnOnCassa);
-        controller.scheduleCommand(cassa.getName(), 12, 0, riproduci);
+        controller.scheduleCommand(cassa.getName(), 12, 1, riproduci);
         controller.printDeviceList();
         Thread.sleep(14000);
         controller.shutdown();
+         */
+        UserFacade menu = new UserFacade();
+        menu.mainDialog();
     }
 }
