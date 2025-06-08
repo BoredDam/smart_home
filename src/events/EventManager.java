@@ -3,7 +3,7 @@ package events;
 /**
  * <code> EventManager </code> it's a class that encapsulates the logic behind creating events. 
  * Inside the class you can code the default events, using the <code>setUpDefaultEvents</code>.
- * Its also a Singleton.
+ * It's also a Singleton.
  * 
  * @author Paolo Volpini
  * @author Damiano Trovato
@@ -36,8 +36,11 @@ public class EventManager {
      * @return the only EventManager instance
      */
     public static EventManager getInstance() {
-        if(instance == null)
+        if(instance == null) {
+            System.out.println("[EventManager] Instance generated, events ready to be set...");
             instance = new EventManager();
+            
+        }
         return instance;
     }
 

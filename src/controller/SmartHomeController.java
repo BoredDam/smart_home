@@ -4,6 +4,7 @@ import commands.Command;
 import devices.Device;
 import devices.ObservableDevice;
 import devices.camera.Camera;
+import devices.door.Door;
 import devices.thermostat.Thermostat;
 import events.Event;
 import events.EventManager;
@@ -35,7 +36,8 @@ public class SmartHomeController implements Observer {
      * @return the only SmartHomeController instance
      */
     public static SmartHomeController getInstance() {
-        if(instance == null) { 
+        if(instance == null) {
+            System.out.println("[SmartHomeController] Instance generated, running default config..."); 
             instance = new SmartHomeController();
         }
         return instance;
@@ -119,7 +121,7 @@ public class SmartHomeController implements Observer {
                         System.out.println("Thermostat " + ts.getName() + " sent a notification, but temperature is OK.");
                     }
                 }
-                case Camera _ -> {
+                case Camera _ , Door _ -> {
                     triggerEvent(eventManager.getEvent("Intrusion"));
                 }
                 default -> {
@@ -169,5 +171,9 @@ public class SmartHomeController implements Observer {
         try (scheduler) {
             flushTasks();
         }
+    }
+    
+    public void setupDefaultEvents() {
+        eventManager.setUpDefaultEvents(device_list);
     }
 }

@@ -11,21 +11,25 @@ public class LockedState implements LockState {
         return instance;
     }
 
+    @Override
     public LockState lock() {
         System.out.println("Door is already locked!");
         return instance; 
     }
 
+    @Override
     public LockState unlock() {
         System.out.println("Door is now unlocked!");
         return ClosedState.getInstance();
     }
 
+    @Override
     public LockState open() {
         System.out.println("Intrusion detected!");
         return OpenedState.getInstance();
     }
     
+    @Override
     public LockState close() {
         System.out.println("Door is already closed and locked!");
         return instance;

@@ -1,8 +1,8 @@
 package devices.door;
 
-import devices.Device;
+import devices.ObservableDevice;
 
-public class Door extends Device{
+public class Door extends ObservableDevice{
 
     LockState lockState;
     public Door(String name) {
@@ -11,8 +11,13 @@ public class Door extends Device{
     }
     
     public void open() {
+        // this is very ugly and I'm not happy with the current implementation. As long as it works, I keep it untouched
+        LockState previousState = lockState;
         printHeader();
         lockState = lockState.open();
+        if(previousState instanceof LockedState && lockState instanceof OpenedState) 
+            notifyObserver();
+        
     }
 
     public void close() {
@@ -29,4 +34,6 @@ public class Door extends Device{
         printHeader();
         lockState = lockState.lock();
     }
+
+
 }
