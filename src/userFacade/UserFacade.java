@@ -2,11 +2,18 @@ package userFacade;
 
 import controller.Observer;
 import controller.SmartHomeController;
+import devices.Device;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class UserFacade {
     // private Environment simulation... we will get here
-    private Observer controller;
+    /* ho modificato questa interfaccia "Observer" direttamente nella classe 
+     * SmartHomeController.
+     */
+    private SmartHomeController controller;
     private Scanner scan;
 
     public UserFacade() {
@@ -37,29 +44,29 @@ public class UserFacade {
         System.out.println("|                               CONFIGURATION MENU                             |");
         System.out.println("|     Here you are able to configure devices. The system currently supports:   |");
         System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                          1)    show device list                              |");
+        System.out.println("|                          1)   show connected devices                         |");
         System.out.println("|                          2)      add a device                                |");
         System.out.println("|                          3)     remove a device                              |");
         System.out.println("|                          4)    add a functionality                           |");
         System.out.println("|                          5)    set device monitoring                         |");
         System.out.println("|                          6)    schedule a command                            |");
         System.out.println("|                          7)       scenarios menu                             |");
-        System.out.println("|                          b)    back to the simulation menu                   |");
+        System.out.println("|                          b)    back to the main menu                         |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
 
         switch (scan.nextLine()) {
             case "1":
-                configLoop();
+                showDevices();
                 break;
 
             case "2":
-                /*TO-DO*/
+                /* */
                 break;
 
             case "3":
-                /*TO-DO*/
+                removeDevice();
                 break;
 
             case "4":
@@ -121,7 +128,7 @@ public class UserFacade {
                 break;
 
             case "3":
-                /*TO-DO*/
+                
                 break;
 
             case "4":
@@ -129,7 +136,8 @@ public class UserFacade {
                 break; 
         
             case "q":
-                /*TO-DO*/
+                controller.shutdown();
+                System.exit(0);
                 break;
 
             default:
@@ -145,13 +153,67 @@ public class UserFacade {
         // you are free to add other stuff if you have idea
     }
 
-    public void printSeparator(){
+    public void printDeviceList(List<Device> device_list) {
+        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t\t\t" + dev.getClass().getSimpleName()));
+    }
+
+    private void showDevices() {
+        clearScreen();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                                 DEVICE LIST                                  |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        printDeviceList(controller.getDeviceList());
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                        any) back to the config menu                          |");
+        System.out.println("+------------------------------------------------------------------------------+");
+          System.out.print(">> ");
+        scan.nextLine();
+        configLoop();
+    }
+
+    private void removeDevice() {
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                                 DEVICE LIST                                  |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        printDeviceList(controller.getDeviceList());
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                      write the name of a device to remove                    |");
+        System.out.println("+------------------------------------------------------------------------------+");
+          System.out.print(">> ");
+        controller.removeDevice(controller.getDeviceFromName(scan.nextLine()));
+        configLoop();
+    }
+
+
+
+
+    private void printSeparator(){
         System.out.println();
         System.out.println();
         System.out.println();
     }
 
-    public void clearScreen(){
+    private void clearScreen(){
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
         System.out.println();
         System.out.println();
         System.out.println();

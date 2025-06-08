@@ -84,11 +84,21 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    
     /**
      * Prints out the device list of the <code>SmartHomeController</code>.
      */
     public void printDeviceList() {
-        device_list.stream().forEach(dev -> System.out.println(dev.getName() + " - " + dev.getClass().getSimpleName()));
+        // QUESTA FUNZIONE è ATTUALMENTE INUTILE, PUò ESSERE CANCELLATA
+        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getClass().getSimpleName()));
+    }
+
+    /**
+     * Getter method for the device_list.
+     * @return list of devices registered to the <code>SmartHomeController</code>.
+     */
+    public List<Device> getDeviceList() {
+        return device_list;
     }
 
     /**
@@ -131,10 +141,25 @@ public class SmartHomeController implements Observer {
         }
     }
 
-
+    /**
+     * Returns the instance of a device registered to the 
+     * SmartHomeController with the specified name
+     * @param devName
+     * @return the object which name is equal to <code>devName</code>
+     */
     public Device getDeviceFromName(String devName) {
         return (Device) device_list.stream().filter(d -> devName.equals(d.getName())).findFirst().orElse(null); 
     }
+
+    /**
+     * Schedules a certain command that a device must run. 
+     * @param devName is the name of the device
+     * @param delaySecs if it's equal to 0, the command runs instantly. Otherwise, it will 
+     *                  be executed after the specified amount of seconds
+     * @param repeatSecs if it's equal to 0, the command runs once. Otherwise, it will
+     *                  be executed at every specified amount of time.
+     * @param cmd is the command that has to be executed
+     */
 
     public void scheduleCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
         Device dev = getDeviceFromName(devName);
@@ -159,6 +184,7 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /* POSSIAMO FARLA PRIVATA? */
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 
