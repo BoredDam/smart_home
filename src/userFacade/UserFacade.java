@@ -207,8 +207,27 @@ public class UserFacade {
         System.out.println("|                          P.S. no duplicate names!                            |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
-        controller.removeDevice(controller.getDeviceFromName(scan.nextLine()));
-        configLoop();
+        String typeName;
+        String devName;
+        
+        switch (typeName = scan.nextLine()) {
+            case "":
+                configLoop();
+                break;
+         default:
+                if (!devFactory.getClassMap().containsKey(typeName)) {
+                    System.out.println("This device type is not supported.");
+                    break;
+                }
+
+                System.out.println("Type your new device name.");
+                System.out.print(">> ");
+                devName = scan.nextLine();
+                controller.addDevice(devFactory.createDevice(typeName, devName));
+                break;
+        }
+
+        addDeviceLoop();
     }
 
     private void printSeparator(){
@@ -227,8 +246,4 @@ public class UserFacade {
         }
     }
 
-    private void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
 }
