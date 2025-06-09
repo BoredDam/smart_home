@@ -1,10 +1,8 @@
 package userFacade;
 
-import controller.Observer;
 import controller.SmartHomeController;
 import devices.Device;
-
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -190,43 +188,19 @@ public class UserFacade {
         configLoop();
     }
 
-
-
-
     private void printSeparator(){
-        System.out.println();
-        System.out.println();
-        System.out.println();
+        System.out.println(System.lineSeparator() + System.lineSeparator());
     }
 
     private void clearScreen(){
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (IOException | InterruptedException e) { 
+            
+        }
     }
 }
