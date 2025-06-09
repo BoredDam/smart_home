@@ -38,6 +38,10 @@ public class Scenario {
         commandList.add(new ScheduledCommand(devName, delaySecs, repeatSecs, cmd));
     }
 
+    public Map<String, Boolean> getMonitoredDevices() { 
+        return devMonitor;
+    }
+
     // should implement logic of command deletion in some way...
     // we just skip this and let the user scenario manage it
 

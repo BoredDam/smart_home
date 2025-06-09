@@ -2,19 +2,21 @@ package userFacade;
 
 import controller.Observer;
 import controller.SmartHomeController;
+import debugTools.Environment;
 import devices.Device;
+import factory.DeviceFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserFacade {
-    // private Environment simulation... we will get here
-    /* ho modificato questa interfaccia "Observer" direttamente nella classe 
-     * SmartHomeController.
-     */
+    
+    private Environment simulation;
     private SmartHomeController controller;
     private Scanner scan;
+    private DeviceFactory devFactory;
 
     public UserFacade() {
     }
@@ -23,6 +25,7 @@ public class UserFacade {
 
         System.out.println("Setting default controller...");
         controller = SmartHomeController.getInstance();
+        devFactory = DeviceFactory.getInstance();
         scan = new Scanner(System.in);
     }
 
@@ -42,8 +45,8 @@ public class UserFacade {
         System.out.println("\n");
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                               CONFIGURATION MENU                             |");
-        System.out.println("|     Here you are able to configure devices. The system currently supports:   |");
-        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|     Here you are able to configure devices, functionalities and scenarios    |");
+        System.out.println("|------------------------------------------------------------------------------|");
         System.out.println("|                          1)   show connected devices                         |");
         System.out.println("|                          2)      add a device                                |");
         System.out.println("|                          3)     remove a device                              |");
@@ -58,15 +61,15 @@ public class UserFacade {
 
         switch (scan.nextLine()) {
             case "1":
-                showDevices();
+                showDevicesLoop();
                 break;
 
             case "2":
-                /* */
+                addDeviceLoop();
                 break;
 
             case "3":
-                removeDevice();
+                removeDeviceLoop();
                 break;
 
             case "4":
@@ -83,17 +86,7 @@ public class UserFacade {
         }
 
         /*
-        while(true) {
-            System.out.println("Choose an option below:"); 
-            // again, show the options. The user should be able to:
-            // - add a device;
-            // - delete a device;
-            // - add a functionality. For the functionality, check if the device supports extensions;
-            // - sets the monitoring of devices;
-            // - add a scenario;
-            // - delete a scenario.
             // keep in mind that:
-            // - there must be NO devices that share the same name;
             // - there must be NO scenarios that share the same name;
             // after a keyword (like ready, or endSetup, or something else), ask what scenarios
             // should be applied, apply it and then call controller.setupDefaultEvents() and return.
@@ -153,11 +146,7 @@ public class UserFacade {
         // you are free to add other stuff if you have idea
     }
 
-    public void printDeviceList(List<Device> device_list) {
-        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t\t\t" + dev.getClass().getSimpleName()));
-    }
-
-    private void showDevices() {
+    private void showDevicesLoop() {
         clearScreen();
         System.out.println("\n");
         System.out.println("+------------------------------------------------------------------------------+");
@@ -165,7 +154,7 @@ public class UserFacade {
         System.out.println("|                                 DEVICE LIST                                  |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
-        printDeviceList(controller.getDeviceList());
+        controller.printDeviceList();
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                        any) back to the config menu                          |");
         System.out.println("+------------------------------------------------------------------------------+");
@@ -174,59 +163,84 @@ public class UserFacade {
         configLoop();
     }
 
-    private void removeDevice() {
+    private void removeDeviceLoop() {
+        clearScreen();
         System.out.println("\n");
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                                                                              |");
         System.out.println("|                                 DEVICE LIST                                  |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
-        printDeviceList(controller.getDeviceList());
+        controller.printDeviceList();
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                      write the name of a device to remove                    |");
+        System.out.println("|                  dont write anything, if you want to go back                 |");
+        System.out.println("+------------------------------------------------------------------------------+");
+
+        boolean gotRemoved = true;
+        String devName;
+        do {
+            System.out.print(">> ");
+            switch (devName = scan.nextLine()) {
+                case "":
+                    configLoop();
+                    break;
+
+                default:
+                    gotRemoved = controller.removeDevice(controller.getDeviceFromName(devName));
+                    break;
+            }
+        } while(gotRemoved == false);
+        removeDeviceLoop();
+    }
+
+    private void addDeviceLoop() {
+        printSeparator();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                                 DEVICE LIST                                  |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        controller.printDeviceList();
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                   write the type of a device you want to add                 |");
+        System.out.println("|                   dont write anything if you want to go back                 |");
+        System.out.println("|                          P.S. no duplicate names!                            |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
-        controller.removeDevice(controller.getDeviceFromName(scan.nextLine()));
-        configLoop();
+        String typeName;
+        String devName;
+        
+        switch (typeName = scan.nextLine()) {
+            case "":
+                configLoop();
+                break;
+         default:
+                if (!devFactory.getClassMap().containsKey(typeName)) {
+                    System.out.println("This device type is not supported.");
+                    break;
+                }
+
+                devName = scan.nextLine();
+                controller.addDevice(devFactory.createDevice(typeName, devName));
+                break;
+        }
+
+        addDeviceLoop();
     }
 
-
-
-
-    private void printSeparator(){
+    private void printSeparator() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
         System.out.println();
         System.out.println();
         System.out.println();
     }
 
-    private void clearScreen(){
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
+    private void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }

@@ -57,14 +57,22 @@ public class SmartHomeController implements Observer {
      * @param device to add
      */
     public void addDevice(Device device) {
-        if(device != null) {
-            device_list.add(device);
-            System.out.println(device.getName() + " just got registered to the SmartHomeController!");
-            if(device instanceof ObservableDevice od) {
-                listenedDevices.put(od, true);
-                System.out.println(od.getName() + " is being monitored by controller!");
+        if(device == null){
+            System.out.println("can't add a null device");
+            return;
+        }
 
-            }
+        if(isIn(device.getName())) {
+            System.out.println("can't add two devices with the same name!");
+            return;
+        }
+
+        device_list.add(device);
+        System.out.println(device.getName() + " just got registered to the SmartHomeController!");
+
+        if(device instanceof ObservableDevice od) {
+            listenedDevices.put(od, true);
+            System.out.println(od.getName() + " is being monitored by controller!");
         }
     }
 
@@ -73,7 +81,7 @@ public class SmartHomeController implements Observer {
      * device list, if it exists.
      * @param device to remove
      */
-    public void removeDevice(Device device) {
+    public boolean removeDevice(Device device) {
         if(device != null && device_list.contains(device)) {
             if(device instanceof ObservableDevice d) {
                 d.detach();
@@ -81,25 +89,21 @@ public class SmartHomeController implements Observer {
             }
             device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
             System.out.println(device.getName() + " just got removed from the SmartHome Controller...");
+            return true;
         }
+        return false;
     }
 
     
     /**
      * Prints out the device list of the <code>SmartHomeController</code>.
-     */
+     **/
     public void printDeviceList() {
         // QUESTA FUNZIONE è ATTUALMENTE INUTILE, PUò ESSERE CANCELLATA
         device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getClass().getSimpleName()));
     }
+    
 
-    /**
-     * Getter method for the device_list.
-     * @return list of devices registered to the <code>SmartHomeController</code>.
-     */
-    public List<Device> getDeviceList() {
-        return device_list;
-    }
 
     /**
      * 

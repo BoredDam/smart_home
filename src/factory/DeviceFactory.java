@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class DeviceFactory {
     private final Map<String, Class<? extends Device>> classMap;      
+
     private static DeviceFactory instance;
     private DeviceFactory() {
         classMap = new HashMap<>();
@@ -40,4 +41,9 @@ public class DeviceFactory {
             return null;
         }
     } 
+
+    public Map<String, Class<? extends Device>> getClassMap() {
+        return classMap;
+    }
+    
 }
