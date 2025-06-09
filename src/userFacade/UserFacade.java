@@ -1,13 +1,11 @@
 package userFacade;
 
-import controller.Observer;
 import controller.SmartHomeController;
 import debugTools.Environment;
 import devices.Device;
 import factory.DeviceFactory;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -209,34 +207,24 @@ public class UserFacade {
         System.out.println("|                          P.S. no duplicate names!                            |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
-        String typeName;
-        String devName;
-        
-        switch (typeName = scan.nextLine()) {
-            case "":
-                configLoop();
-                break;
-         default:
-                if (!devFactory.getClassMap().containsKey(typeName)) {
-                    System.out.println("This device type is not supported.");
-                    break;
-                }
-
-                devName = scan.nextLine();
-                controller.addDevice(devFactory.createDevice(typeName, devName));
-                break;
-        }
-
-        addDeviceLoop();
+        controller.removeDevice(controller.getDeviceFromName(scan.nextLine()));
+        configLoop();
     }
 
-    private void printSeparator() {
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
+    private void printSeparator(){
+        System.out.println(System.lineSeparator() + System.lineSeparator());
+    }
+
+    private void clearScreen(){
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (IOException | InterruptedException e) { 
+            
+        }
     }
 
     private void clearScreen() {
