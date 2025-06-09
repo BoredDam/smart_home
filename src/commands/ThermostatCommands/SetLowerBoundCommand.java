@@ -1,4 +1,4 @@
-package commands.ThermostatCommands;
+package commands.thermostatCommands;
 
 public class SetLowerBoundCommand extends ThermostatCommand {
 

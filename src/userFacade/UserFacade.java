@@ -45,14 +45,13 @@ public class UserFacade {
         System.out.println("|                               CONFIGURATION MENU                             |");
         System.out.println("|     Here you are able to configure devices, functionalities and scenarios    |");
         System.out.println("|------------------------------------------------------------------------------|");
-        System.out.println("|                          1)   show connected devices                         |");
-        System.out.println("|                          2)      add a device                                |");
-        System.out.println("|                          3)     remove a device                              |");
-        System.out.println("|                          4)    add a functionality                           |");
-        System.out.println("|                          5)    set device monitoring                         |");
-        System.out.println("|                          6)    schedule a command                            |");
-        System.out.println("|                          7)       scenarios menu                             |");
-        System.out.println("|                          b)    back to the main menu                         |");
+        System.out.println("|                        1)   show connected devices                           |");
+        System.out.println("|                        2)      add a device                                  |");
+        System.out.println("|                        3)     remove a device                                |");
+        System.out.println("|                        4)    add a functionality                             |");
+        System.out.println("|                        5)    set device monitoring                           |");
+        System.out.println("|                        6)       scenarios menu                               |");
+        System.out.println("|                        b)    back to the main menu                           |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
@@ -74,6 +73,9 @@ public class UserFacade {
                 /*TO-DO*/
                 break; 
         
+            case "5":
+                /* */
+                break;
             case "b":
                 mainLoop();
                 break;
@@ -115,7 +117,7 @@ public class UserFacade {
                 break;
 
             case "2":
-                /*TO-DO*/
+                scheduleACommandLoop();
                 break;
 
             case "3":
@@ -166,7 +168,7 @@ public class UserFacade {
         System.out.println("\n");
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                                                                              |");
-        System.out.println("|                                 DEVICE LIST                                  |");
+        System.out.println("|                         REMOVE A DEVICE FROM THE LIST                        |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
         controller.printDeviceList();
@@ -193,11 +195,11 @@ public class UserFacade {
     }
 
     private void addDeviceLoop() {
-        printSeparator();
+        clearScreen();
         System.out.println("\n");
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                                                                              |");
-        System.out.println("|                                 DEVICE LIST                                  |");
+        System.out.println("|                           ADD A DEVICE TO THE LIST                           |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
         controller.printDeviceList();
@@ -246,4 +248,27 @@ public class UserFacade {
         }
     }
 
+    private void triggerAScenarioLoop() {
+        
+    }
+
+    private void scheduleACommandLoop() {
+        clearScreen();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                              SCHEDULE A COMMAND                              |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        controller.printDeviceList();
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                   write the name of the device you want to                   |");
+        System.out.println("|                           schedule a command for                             |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        
+            System.out.print(">> ");
+
+    }
 }

@@ -1,4 +1,4 @@
-package commands.ThermostatCommands;
+package commands.thermostatCommands;
 
 import commands.Command;
 import devices.Device;
