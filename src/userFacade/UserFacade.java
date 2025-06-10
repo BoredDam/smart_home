@@ -3,11 +3,15 @@ package userFacade;
 import controller.SmartHomeController;
 import debugTools.Environment;
 import devices.Device;
+import factory.CommandFactory;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+
+import commands.Command;
+import commands.CommandRegister;
 
 public class UserFacade {
     
@@ -16,6 +20,8 @@ public class UserFacade {
     private Scanner scan;
     private DeviceFactory devFactory;
     private DecoratorFactory decFactory;
+    private CommandFactory cmdFactory;
+    private CommandRegister cmdRegister;
     private GUIprinter gui;
 
     public UserFacade() {
@@ -27,6 +33,7 @@ public class UserFacade {
         System.out.println("Setting default controller...");
         controller = SmartHomeController.getInstance();
         devFactory = DeviceFactory.getInstance();
+        cmdFactory = CommandFactory.getInstance();
         decFactory = DecoratorFactory.getInstance();
         scan = new Scanner(System.in);
     }
@@ -185,14 +192,39 @@ public class UserFacade {
                 /*... */
                 break;
         }
-        removeDeviceLoop();
+        triggerAScenarioLoop();
     }
 
     private void scheduleACommandLoop() {
-        
+        String devName;
+        gui.printCommandScheduler(controller);
+        switch (devName = scan.nextLine()) {
+            
+            case "":
+
+                mainLoop();
+                break;
+            
+            default:    
+                
+                System.out.println("what command do you want to schedule?");
+                System.out.print(">>");
+                String cmdName = scan.nextLine();
+                Command cmd = cmdFactory.createCommand(cmdName);
+                int delaySecs, repeatSecs;
+                System.out.println("how long until the command is executed? (in seconds)");
+                System.out.print(">>");
+                delaySecs = scan.nextInt()+1;
+                System.out.println("how often shall the command be executed? (in seconds)");
+                System.out.print(">>");
+                repeatSecs = scan.nextInt();
+                controller.scheduleCommand(devName, delaySecs, repeatSecs, cmd);
+                break;
+            }
     }
 
     private void addAFunctionalityLoop() {
+        
         gui.printAddAFunctionality(controller);
         String devName;
         
@@ -200,11 +232,17 @@ public class UserFacade {
             case "":
                 deviceConfigLoop();
                 break;
+
             default:
-                /*WIP DECORATION LOGIC*/
+                System.out.println("which function you want to add?");
+                String decName = scan.nextLine();
+                Device decoratedDev = decFactory.addFunctionality(controller.getDeviceFromName(devName), decName);
+                decoratedDev.setName(devName +" + "+ decName);
+                controller.addDevice(decoratedDev);
+                
                 break;
         }
-        addAFunctionalityLoop();
 
+        addAFunctionalityLoop();
     }
 }

@@ -1,4 +1,4 @@
-package commands.speaker;
+package commands.speakerCommands;
 
 public class PauseCommand extends SpeakerCommand {
 

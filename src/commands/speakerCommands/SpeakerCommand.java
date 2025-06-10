@@ -1,4 +1,4 @@
-package commands.speaker;
+package commands.speakerCommands;
 
 import commands.Command;
 import devices.Device;

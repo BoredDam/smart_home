@@ -7,7 +7,7 @@ import commands.cameraCommands.*;
 import commands.doorCommands.*;
 import commands.generalPurposeCommands.*;
 import commands.lightCommands.*;
-import commands.speaker.*;
+import commands.speakerCommands.*;
 import commands.thermostatCommands.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,4 +57,7 @@ public class CommandFactory {
 
     }
 
+    public void printCommandMap() {
+        System.out.println(commandMap.values());
+    }
 }

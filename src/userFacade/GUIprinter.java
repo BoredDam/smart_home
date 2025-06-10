@@ -2,7 +2,9 @@ package userFacade;
 
 import java.io.IOException;
 
+import commands.CommandRegister;
 import controller.SmartHomeController;
+import factory.CommandFactory;
 
 public class GUIprinter {
 
@@ -37,7 +39,6 @@ public class GUIprinter {
         System.out.println("|                   write the name of the device you want to                   |");
         System.out.println("|                           schedule a command for                             |");
         System.out.println("+------------------------------------------------------------------------------+");
-        
             System.out.print(">> ");
     }
 
@@ -124,8 +125,10 @@ public class GUIprinter {
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
         controller.printDeviceList();
+        System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">>");
     }
+    
     public void printSeparator() {
         System.out.println(System.lineSeparator() + System.lineSeparator());
     }

@@ -101,7 +101,7 @@ public class SmartHomeController implements Observer {
     
     /**
      * Prints out the device list of the <code>SmartHomeController</code>.
-     **/
+     */
     public void printDeviceList() {
         // QUESTA FUNZIONE è ATTUALMENTE INUTILE, PUò ESSERE CANCELLATA
         device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getClass().getSimpleName()));
@@ -152,7 +152,7 @@ public class SmartHomeController implements Observer {
     /**
      * Returns the instance of a device registered to the 
      * SmartHomeController with the specified name
-     * @param devName
+     * @param devName is the name of the device
      * @return the object which name is equal to <code>devName</code>
      */
     public Device getDeviceFromName(String devName) {
