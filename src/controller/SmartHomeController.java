@@ -18,12 +18,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SmartHomeController implements Observer {
-    
+    private static record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
+
     private static SmartHomeController instance;
     private final EventManager eventManager;
     private final List<Device> device_list = new ArrayList<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final Map<ScheduledFuture<?>, Boolean> scheduledCommands = new HashMap<>();
+    private final List<ScheduledCommand> scheduledCommands = new ArrayList<>();
     private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>();
 
     private SmartHomeController() {
@@ -52,27 +53,30 @@ public class SmartHomeController implements Observer {
         listenedDevices.put(device, state);
     }
 
+    private void printMessage(String message) {
+        System.out.println("[SmartHomeController] " + message);
+    }
     /**
      * Adds a device to the <code>SmartHomeController</code> device list.
      * @param device to add
      */
     public void addDevice(Device device) {
         if(device == null){
-            System.out.println("can't add a null device");
+            printMessage("can't add a null device");
             return;
         }
 
         if(isIn(device.getName())) {
-            System.out.println("can't add two devices with the same name!");
+            printMessage("can't add two devices with the same name!");
             return;
         }
 
         device_list.add(device);
-        System.out.println(device.getName() + " just got registered to the SmartHomeController!");
+        printMessage(device.getName() + " just got registered to the SmartHomeController!");
 
         if(device instanceof ObservableDevice od) {
             listenedDevices.put(od, true);
-            System.out.println(od.getName() + " is being monitored by controller!");
+            printMessage(od.getName() + " is being monitored by controller!");
         }
     }
 
@@ -88,7 +92,7 @@ public class SmartHomeController implements Observer {
                 listenedDevices.remove(d);
             }
             device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
-            System.out.println(device.getName() + " just got removed from the SmartHome Controller...");
+            printMessage(device.getName() + " just got removed from the SmartHome Controller...");
             return true;
         }
         return false;
@@ -106,7 +110,7 @@ public class SmartHomeController implements Observer {
 
 
     /**
-     * Checks if a device with a certain name was registered to the controller.
+     * 
      * @param deviceName
      * @return true if an object that implements the <code>Device</code> interface with this
      * <code>deviceName</code> is in the device list of the <code>SmartHomeController</code>. 
@@ -132,14 +136,14 @@ public class SmartHomeController implements Observer {
                         triggerEvent(eventManager.getEvent("LowTemperature"));
                     }
                     else {
-                        System.out.println("Thermostat " + ts.getName() + " sent a notification, but temperature is OK.");
+                        printMessage("Thermostat " + ts.getName() + " sent a notification, but temperature is OK.");
                     }
                 }
                 case Camera _ , Door _ -> {
                     triggerEvent(eventManager.getEvent("Intrusion"));
                 }
                 default -> {
-                    System.out.println("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
+                    printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
                 }
             }
         }
@@ -176,23 +180,24 @@ public class SmartHomeController implements Observer {
                 handle = scheduler.schedule( () -> { dev.performAction(cmd); }, delaySecs, TimeUnit.SECONDS);
             }
             if (handle == null) { // handle creation error
-                System.err.println("Error in scheduling of command. Try again");
+                printMessage("Error in scheduling of command. Try again");
                 return;
             }
-        scheduledCommands.put(handle, (repeatSecs > 0)); 
+        scheduledCommands.add(new ScheduledCommand(devName, cmd.getClass().getSimpleName(), repeatSecs > 0, handle)); 
             // the boolean is used to track if the task repeats or not
             // if a taks is to be repeated, we can get the handler and we can kill it
         }
         else {
-            System.out.println("Device " + devName + " does not exist!");
+            printMessage("Device " + devName + " does not exist!");
         }
     }
 
+    /* POSSIAMO FARLA PRIVATA? */
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 
         // AND THERE IS NO WAY TO RECOVER THE COMMANDS
-        scheduledCommands.forEach( (handle, _) -> { handle.cancel(true); } );
+        scheduledCommands.forEach( record -> { record.handle.cancel(true); } );
         scheduledCommands.clear();
     }
 
