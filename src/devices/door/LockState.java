@@ -18,6 +18,6 @@ package devices.door;
 public interface LockState {
     LockState lock();
     LockState unlock();
-    LockState open();
+    LockState open(Door door);
     LockState close();
 }

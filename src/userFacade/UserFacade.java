@@ -4,14 +4,13 @@ import controller.SmartHomeController;
 import debugTools.Environment;
 import devices.Device;
 import factory.CommandFactory;
+import commands.CommandRegister;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import commands.Command;
-import commands.CommandRegister;
+import scenario.Scenario;
 
 public class UserFacade {
     
@@ -23,6 +22,8 @@ public class UserFacade {
     private CommandFactory cmdFactory;
     private CommandRegister cmdRegister;
     private GUIprinter gui;
+
+    private final List<Scenario> userScenario = new ArrayList<>();
 
     public UserFacade() {
         gui = new GUIprinter();

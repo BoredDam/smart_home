@@ -136,7 +136,7 @@ public class SmartHomeController implements Observer {
                         triggerEvent(eventManager.getEvent("LowTemperature"));
                     }
                     else {
-                        printMessage("Thermostat " + ts.getName() + " sent a notification, but temperature is OK.");
+                        printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
                     }
                 }
                 case Camera _ , Door _ -> {
