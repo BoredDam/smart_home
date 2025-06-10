@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Event {  
+public class Event {
+
     private final String type;
     private final Map<String, List<Command>> deviceActions = new HashMap<>(); 
     public Event(String type) { 
         this.type = type;
     }
+
     public List<Command> getCommands(Device dev) {
         List<Command> commandList = deviceActions.get(dev.getName());
         if (commandList == null) { 
@@ -28,13 +30,13 @@ public class Event {
         if(deviceActions.containsKey(devName)) {
             commandList = deviceActions.get(devName);
             commandList.add(cmd);
-        }
-        else {
+        } else {
             commandList = new ArrayList<>();
             commandList.add(cmd);
             deviceActions.put(devName, commandList);
         }
     }
+    
     // can be useful, we'll see if is needed
     @Override
     public String toString() {

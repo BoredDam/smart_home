@@ -14,7 +14,7 @@ public class DecoratorFactory {
         classMap = new HashMap<>();
     }
 
-    public DecoratorFactory getInstance() {
+    public static DecoratorFactory getInstance() {
         if(instance == null) 
             instance = new DecoratorFactory();
         return instance;

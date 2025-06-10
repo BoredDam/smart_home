@@ -106,7 +106,7 @@ public class SmartHomeController implements Observer {
 
 
     /**
-     * 
+     * Checks if a device with a certain name was registered to the controller.
      * @param deviceName
      * @return true if an object that implements the <code>Device</code> interface with this
      * <code>deviceName</code> is in the device list of the <code>SmartHomeController</code>. 
@@ -188,7 +188,6 @@ public class SmartHomeController implements Observer {
         }
     }
 
-    /* POSSIAMO FARLA PRIVATA? */
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 
