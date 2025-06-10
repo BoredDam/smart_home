@@ -2,12 +2,12 @@ package userFacade;
 
 import controller.SmartHomeController;
 import debugTools.Environment;
-import devices.Device;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import scenario.Scenario;
 
 public class UserFacade {
     
@@ -17,6 +17,8 @@ public class UserFacade {
     private DeviceFactory devFactory;
     private DecoratorFactory decFactory;
     private GUIprinter gui;
+
+    private final List<Scenario> userScenario = new ArrayList<>();
 
     public UserFacade() {
         gui = new GUIprinter();

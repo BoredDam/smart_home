@@ -24,8 +24,9 @@ public class LockedState implements LockState {
     }
 
     @Override
-    public LockState open() {
+    public LockState open(Door door) {
         System.out.println("Intrusion detected!");
+        door.notifyObserver();
         return OpenedState.getInstance();
     }
     

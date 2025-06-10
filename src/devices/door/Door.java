@@ -9,15 +9,10 @@ public class Door extends ObservableDevice{
         super(name);
         lockState = OpenedState.getInstance();
     }
-    
+
     public void open() {
-        // this is very ugly and I'm not happy with the current implementation. As long as it works, I keep it untouched
-        LockState previousState = lockState;
         printHeader();
-        lockState = lockState.open();
-        if(previousState instanceof LockedState && lockState instanceof OpenedState) 
-            notifyObserver();
-        
+        lockState = lockState.open(this);
     }
 
     public void close() {
