@@ -59,6 +59,22 @@ public class GUIprinter {
           System.out.print(">> ");
     }
 
+    public void printDeviceMonitoring(SmartHomeController controller) {
+        clearScreen();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                            SET DEVICE MONITORING                             |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        controller.printDeviceList();
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                    monitored devices will react to events and                |");
+        System.out.println("|                       notify the SmartHomeCOntroller                         |");
+        System.out.println("+------------------------------------------------------------------------------+");
+          System.out.print(">> ");
+    }
+
     public void printRemoveDevice(SmartHomeController controller) {
         clearScreen();
         System.out.println("\n");
@@ -105,7 +121,7 @@ public class GUIprinter {
         System.out.println("|                        4)    add a functionality                             |");
         System.out.println("|                        5)    set device monitoring                           |");
         System.out.println("|                        6)       scenarios menu                               |");
-        System.out.println("|                        b)    back to the main menu                           |");
+        System.out.println("|                         )    back to the main menu                           |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");

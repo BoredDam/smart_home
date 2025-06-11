@@ -53,6 +53,13 @@ public class SmartHomeController implements Observer {
         listenedDevices.put(device, state);
     }
 
+    public String isMonitored(Device dev) {
+        if(!(dev instanceof ObservableDevice)){
+            return "non-monitorable";
+        }
+        return (listenedDevices.get(dev) ? "monitored" : "non-monitored");
+    }
+
     private void printMessage(String message) {
         System.out.println("[SmartHomeController] " + message);
     }
@@ -97,16 +104,18 @@ public class SmartHomeController implements Observer {
      * @param device to remove
      */
     public boolean removeDevice(Device device) {
-        if(device != null && device_list.contains(device)) {
-            if(device instanceof ObservableDevice d) {
-                d.detach();
-                listenedDevices.remove(d);
-            }
-            device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
-            printMessage(device.getName() + " just got removed from the SmartHome Controller...");
-            return true;
+        if(device == null || !device_list.contains(device)) {
+            return false;
         }
-        return false;
+            
+        if(device instanceof ObservableDevice d) {
+            d.detach();
+            listenedDevices.remove(d);
+        }
+        device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
+        printMessage(device.getName() + " just got removed from the SmartHome Controller...");
+        return true;
+        
     }
 
     
@@ -114,8 +123,8 @@ public class SmartHomeController implements Observer {
      * Prints out the device list of the <code>SmartHomeController</code>.
      */
     public void printDeviceList() {
-        // QUESTA FUNZIONE è ATTUALMENTE INUTILE, PUò ESSERE CANCELLATA
-        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() + "\t" + (dev.isOn() ? "ON" : "OFF")));
+        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() 
+        + "\t" + (dev.isOn() ? "ON" : "OFF") + isMonitored(dev) ));
     }
     
 
@@ -137,27 +146,32 @@ public class SmartHomeController implements Observer {
 
     @Override
     public void update(ObservableDevice dev) {
-        if(listenedDevices.get(dev)) {
-            switch(dev) {
-                case Thermostat ts -> {
-                    if(ts.tooHot()) {
-                        triggerEvent(eventManager.getEvent("HighTemperature"));
-                    }
-                    else if (ts.tooCold()) {
-                        triggerEvent(eventManager.getEvent("LowTemperature"));
-                    }
-                    else {
-                        printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
-                    }
-                }
-                case Camera _ , Door _ -> {
-                    triggerEvent(eventManager.getEvent("Intrusion"));
-                }
-                default -> {
-                    printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
+
+        if(!listenedDevices.get(dev)){ //device not observable
+            return;
+        }
+
+        switch(dev) {
+
+            case Thermostat ts -> {
+                if(ts.tooHot()) {
+                    triggerEvent(eventManager.getEvent("HighTemperature"));
+                } else if (ts.tooCold()) {
+                    triggerEvent(eventManager.getEvent("LowTemperature"));
+                } else {
+                    printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
                 }
             }
+
+            case Camera _ , Door _ -> {
+                triggerEvent(eventManager.getEvent("Intrusion"));
+            }
+
+            default -> {
+                printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
+            }
         }
+        
     }
 
     /**
@@ -181,29 +195,29 @@ public class SmartHomeController implements Observer {
      */
 
     public void scheduleCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
+
         Device dev = getDeviceFromName(devName);
-        if(dev != null) {
-            ScheduledFuture<?> handle = null; 
-            if(repeatSecs > 0) {
-                handle = scheduler.scheduleAtFixedRate( () -> { dev.performAction(cmd); }, delaySecs, repeatSecs, TimeUnit.SECONDS);
-            }
-            else {
-                handle = scheduler.schedule( () -> { dev.performAction(cmd); }, delaySecs, TimeUnit.SECONDS);
-            }
-            if (handle == null) { // handle creation error
-                printMessage("Error in scheduling of command. Try again");
-                return;
-            }
+        if(dev == null) {
+            printMessage("Device " + devName + " does not exist!");
+        }
+
+        ScheduledFuture<?> handle = null; 
+        if(repeatSecs > 0) {
+            handle = scheduler.scheduleAtFixedRate( () -> { dev.performAction(cmd); }, delaySecs, repeatSecs, TimeUnit.SECONDS);
+        } else {
+            handle = scheduler.schedule( () -> { dev.performAction(cmd); }, delaySecs, TimeUnit.SECONDS);
+        }
+
+        if (handle == null) { // handle creation error
+            printMessage("Error in scheduling of command. Try again");
+            return;
+        }
+
         scheduledCommands.add(new ScheduledCommand(devName, cmd.getClass().getSimpleName(), repeatSecs > 0, handle)); 
             // the boolean is used to track if the task repeats or not
             // if a taks is to be repeated, we can get the handler and we can kill it
-        }
-        else {
-            printMessage("Device " + devName + " does not exist!");
-        }
     }
 
-    /* POSSIAMO FARLA PRIVATA? */
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 

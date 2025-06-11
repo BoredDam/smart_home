@@ -5,6 +5,7 @@ import commands.CommandRegister;
 import controller.SmartHomeController;
 import debugTools.Environment;
 import devices.Device;
+import devices.ObservableDevice;
 import factory.CommandFactory;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
@@ -72,9 +73,14 @@ public class UserFacade {
                 break; 
         
             case "5":
+                deviceMonitoringLoop();
+                break;
+            
+            case "6":
                 /* */
                 break;
-            case "b":
+
+            case "":
                 mainLoop();
                 break;
                 
@@ -94,7 +100,6 @@ public class UserFacade {
     private void mainLoop() {
 
         gui.printMainMenu();
-        
         switch (scan.nextLine()) {
             case "1":
                 deviceConfigLoop();
@@ -180,6 +185,23 @@ public class UserFacade {
 
         addDeviceLoop();
     }
+
+    private void deviceMonitoringLoop() {
+
+        gui.printDeviceMonitoring(controller);
+        String devName;
+        
+        switch (devName = scan.nextLine()) {
+            case "":
+                deviceConfigLoop();
+                break;
+            default:
+                controller.setDeviceMonitoring((ObservableDevice) controller.getDeviceFromName(devName), true);
+                break;
+        }
+        deviceMonitoringLoop();
+    }
+
 
     private void triggerAScenarioLoop() {
         
