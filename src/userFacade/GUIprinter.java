@@ -1,10 +1,7 @@
 package userFacade;
 
-import java.io.IOException;
-
-import commands.CommandRegister;
 import controller.SmartHomeController;
-import factory.CommandFactory;
+import java.io.IOException;
 
 public class GUIprinter {
 
@@ -38,6 +35,8 @@ public class GUIprinter {
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                   write the name of the device you want to                   |");
         System.out.println("|                           schedule a command for                             |");
+        System.out.println("|          Note: devices that are turned off will not perform any command!     |");
+        System.out.println("|                      Turn them on first with TurnOnCommand!                  |");
         System.out.println("+------------------------------------------------------------------------------+");
             System.out.print(">> ");
     }

@@ -18,6 +18,10 @@ public abstract class Device {
         pstate = OffState.getInstance();
     }
 
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
+    
     public void update(Event event) {}
 
     public String getName() {

@@ -80,6 +80,17 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    public boolean updateFunctionality(String devName, Device updatedDevice) {
+        Device oldDevice = getDeviceFromName(devName);
+        if(oldDevice != null) {
+            int idx = device_list.indexOf(oldDevice);
+            if (idx != -1) {
+                device_list.set(idx, updatedDevice);
+            return true;
+            }
+        }
+        return false;
+    }
     /**
      * Removes a specific device from the <code>SmartHomeController</code> 
      * device list, if it exists.
@@ -104,7 +115,7 @@ public class SmartHomeController implements Observer {
      */
     public void printDeviceList() {
         // QUESTA FUNZIONE è ATTUALMENTE INUTILE, PUò ESSERE CANCELLATA
-        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getClass().getSimpleName()));
+        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() + "\t" + (dev.isOn() ? "ON" : "OFF")));
     }
     
 

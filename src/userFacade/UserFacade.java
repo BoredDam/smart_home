@@ -1,10 +1,11 @@
 package userFacade;
 
+import commands.Command;
+import commands.CommandRegister;
 import controller.SmartHomeController;
 import debugTools.Environment;
 import devices.Device;
 import factory.CommandFactory;
-import commands.CommandRegister;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
 import java.util.ArrayList;
@@ -207,18 +208,18 @@ public class UserFacade {
                 break;
             
             default:    
-                
                 System.out.println("what command do you want to schedule?");
                 System.out.print(">>");
                 String cmdName = scan.nextLine();
                 Command cmd = cmdFactory.createCommand(cmdName);
                 int delaySecs, repeatSecs;
                 System.out.println("how long until the command is executed? (in seconds)");
+                // can't we parse a date? like 20:30? it can be useful
                 System.out.print(">>");
                 delaySecs = scan.nextInt()+1;
                 System.out.println("how often shall the command be executed? (in seconds)");
                 System.out.print(">>");
-                repeatSecs = scan.nextInt();
+                repeatSecs = scan.nextInt();        
                 controller.scheduleCommand(devName, delaySecs, repeatSecs, cmd);
                 break;
             }
@@ -238,8 +239,12 @@ public class UserFacade {
                 System.out.println("which function you want to add?");
                 String decName = scan.nextLine();
                 Device decoratedDev = decFactory.addFunctionality(controller.getDeviceFromName(devName), decName);
-                decoratedDev.setName(devName +" + "+ decName);
-                controller.addDevice(decoratedDev);
+                if(decoratedDev == null) {
+                    System.out.println("This functionality is not supported.");
+                    break;
+                }
+                //decoratedDev.setName(devName +" + "+ decName);
+                controller.updateFunctionality(devName, decoratedDev);
                 
                 break;
         }

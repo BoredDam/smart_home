@@ -1,30 +1,30 @@
 package factory;
 
 import devices.Device;
+import devices.camera.Camera;
 import devices.camera.HDAudio;
 import devices.camera.NightVision;
 import devices.camera.ThermalVision;
 import devices.speaker.AmazonMusicApp;
+import devices.speaker.Speaker;
 import devices.speaker.SpotifyApp;
 import devices.speaker.YoutubeMusicApp;
-
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class DecoratorFactory {
-    private final Map<String, Class<? extends Device>> classMap;
+    private static record DecoratorEntry(String name, Class<? extends Device> expectedType, Class<? extends Device> decoratorType) {}
+    private final List<DecoratorEntry> decoratorBuilders = new ArrayList<>();
     private static DecoratorFactory instance;
 
     private DecoratorFactory() {
-        classMap = new HashMap<>();
-        classMap.put("HDAudio", HDAudio.class);
-        classMap.put("NightVision", NightVision.class);
-        classMap.put("ThermalVision", ThermalVision.class);
-        classMap.put("AmazonMusic", AmazonMusicApp.class);
-        classMap.put("YoutubeMusic", YoutubeMusicApp.class);
-        classMap.put("Spotify", SpotifyApp.class);
+        decoratorBuilders.add(new DecoratorEntry("HDAudio", Camera.class, HDAudio.class));
+        decoratorBuilders.add(new DecoratorEntry("NightVision", Camera.class, NightVision.class));
+        decoratorBuilders.add(new DecoratorEntry("ThermalVision", Camera.class, ThermalVision.class));
+        decoratorBuilders.add(new DecoratorEntry("AmazonMusic", Speaker.class, AmazonMusicApp.class));
+        decoratorBuilders.add(new DecoratorEntry("YoutubeMusic", Speaker.class, YoutubeMusicApp.class));
+        decoratorBuilders.add(new DecoratorEntry("Spotify", Speaker.class, SpotifyApp.class));
     }
 
     public static DecoratorFactory getInstance() {
@@ -34,14 +34,23 @@ public class DecoratorFactory {
     }
 
     public Device addFunctionality(Device dev, String functionality) {
-        Class<? extends Device> decorator = classMap.get(functionality);
+        if(dev.getType().contains(functionality)) {
+            System.out.println("Device already has that functionality!");
+            return dev;
+        }
+        DecoratorEntry record = decoratorBuilders.stream().filter((rec) -> (rec.name.equals(functionality))).findFirst().orElse(null);
+        if(record == null) {
+            System.out.println("Functionality not found!");
+            return dev;
+        }
+        Class<? extends Device> decorator = record.decoratorType;
         Device ret = null;
         if(decorator == null) {
             System.out.println("Device given does not support that functionality!");
         }
         else {
             try {
-                ret = decorator.getConstructor(Device.class).newInstance(dev);
+                ret = decorator.getConstructor(record.expectedType).newInstance(dev);
             } 
             catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | NoSuchMethodException | InvocationTargetException e) {
