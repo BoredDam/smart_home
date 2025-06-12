@@ -18,6 +18,7 @@ public class CommandRegister {
         deviceCommands.put("Door", new ArrayList<>(List.of("LockCommand", "UnlockCommand")));
         deviceCommands.put("Camera", new ArrayList<>(List.of("RecordVideo", "CaptureImage")));
         deviceCommands.put("AirConditioner", new ArrayList<>(List.of("SetTargetTemperatureCommand")));
+        deviceCommands.put("OldHeaterAdapter", new ArrayList<>());
         deviceCommands.forEach((_, listOfCommands) -> {listOfCommands.add("TurnOnCommand"); listOfCommands.add("TurnOffCommand"); } );
     }
     
