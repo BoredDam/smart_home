@@ -30,4 +30,9 @@ public class OldHeaterAdapter extends Device {
     public boolean isOff() {
         return !(adaptee.getState());
     }
+
+    @Override
+    public String getBaseType() {
+        return "OldHeater";
+    }
 }

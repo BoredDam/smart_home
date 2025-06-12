@@ -15,4 +15,9 @@ public class Light extends Device {
             turnOn();
         }
     }
+
+    @Override
+    public String getBaseType() {
+        return "Light";
+    }
 }

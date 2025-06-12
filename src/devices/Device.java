@@ -59,4 +59,7 @@ public abstract class Device {
         cmd.setDevice(this);
         pstate.runCommand(cmd);
     }
+
+    public abstract String getBaseType();
+    
 }

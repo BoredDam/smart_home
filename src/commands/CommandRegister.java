@@ -14,7 +14,7 @@ public class CommandRegister {
     private CommandRegister() {
         deviceCommands.put("Light", new ArrayList<>(List.of("SwitchLightCommand")));
         deviceCommands.put("Thermostat", new ArrayList<>(List.of("SetUpperBoundCommand", "SetLowerBoundCommand")));
-        deviceCommands.put("Speaker", new ArrayList<>(List.of("PlayCommand", "PauseCommand", "SetVolumeCommand", "SpeakerCommand", "StopCommand")));
+        deviceCommands.put("Speaker", new ArrayList<>(List.of("PlayCommand", "PauseCommand", "SetVolumeCommand", "StopCommand")));
         deviceCommands.put("Door", new ArrayList<>(List.of("LockCommand", "UnlockCommand")));
         deviceCommands.put("Camera", new ArrayList<>(List.of("RecordVideo", "CaptureImage")));
         deviceCommands.put("AirConditioner", new ArrayList<>(List.of("SetTargetTemperatureCommand")));

@@ -22,6 +22,7 @@ public class ClosedState implements LockState {
         System.out.println("Door is already unlocked!");
         return instance;
     }
+    
     @Override
     public LockState open(Door door) {
         System.out.println("Door opened!");

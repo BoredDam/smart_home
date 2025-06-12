@@ -17,5 +17,10 @@ public class AirConditioner extends Device {
     public float getTargetTemp() {
         return targetTemp;
     }
+
+    @Override
+    public String getBaseType() {
+        return "AirConditioner";
+    }
     
 }

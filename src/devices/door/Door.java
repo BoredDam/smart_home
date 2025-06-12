@@ -30,5 +30,10 @@ public class Door extends ObservableDevice{
         lockState = lockState.lock();
     }
 
+    @Override
+    public String getBaseType() {
+        return "Door";
+    }
+
 
 }

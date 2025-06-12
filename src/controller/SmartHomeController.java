@@ -54,11 +54,27 @@ public class SmartHomeController implements Observer {
         listenedDevices.put(device, state);
     }
 
-    public String isMonitored(Device dev) {
+    public void toggleDeviceMonitoring(ObservableDevice device) {
+        if(__isMonitored__(device)) {
+            listenedDevices.put(device, false);
+        } else {
+            listenedDevices.put(device, true);
+        }
+        
+    }
+
+    public String printDevMonitoringState(Device dev) {
         if(dev instanceof ObservableDevice od){
             return (listenedDevices.get(od) ? "monitored" : "non-monitored");
         }
         return "non-monitorable";
+    }
+
+    private boolean __isMonitored__(Device dev) {
+        if(dev instanceof ObservableDevice od){
+            return (listenedDevices.get(od));
+        }
+        return false;
     }
 
     private void printMessage(String message) {
@@ -125,7 +141,7 @@ public class SmartHomeController implements Observer {
      */
     public void printDeviceList() {
         device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() 
-        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + isMonitored(dev)));
+        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev)));
     }
     
 

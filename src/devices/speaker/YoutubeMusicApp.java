@@ -4,7 +4,7 @@ public class YoutubeMusicApp extends SpeakerAppDecorator {
 
     public YoutubeMusicApp(Speaker wrapped) {
         super(wrapped);
-        System.out.println("Installing YouTube Music into your smart speaker device...");
+        System.out.println( "Installing YouTube Music into your smart speaker device...");
     }
 
     @Override

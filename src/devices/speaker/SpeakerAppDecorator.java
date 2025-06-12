@@ -45,5 +45,9 @@ public abstract class SpeakerAppDecorator extends Speaker {
         wrapped.printInfos();
     }
 
+    @Override
+    public String getBaseType() {
+        return "Speaker";
+    } 
     
 }

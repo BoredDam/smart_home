@@ -30,18 +30,19 @@ public class Environment {
     public void calculateTemperature() {
         float avgTarget = 0.0f;
         int count = 0;
+
         for(Device dev: device_list) {
-            if(dev instanceof AirConditioner ac) {
-                if(ac.isOn()) {
-                    avgTarget = ac.getTargetTemp();
-                    count++;
-                }
+            if(dev instanceof AirConditioner ac && ac.isOn()) {
+                avgTarget = ac.getTargetTemp();
+                count++;
             }
         }
+        
         if(count > 0) {
             avgTarget /= count;
             this.temp = this.temp + (avgTarget - this.temp) * influenceFactor;
         }
+        
         for(Device dev: device_list) {
             if(dev instanceof OldHeaterAdapter) {
                 temp += 0.5f;
@@ -64,13 +65,16 @@ public class Environment {
     public void openRandomDoor() {
         List<Door> tempList = device_list.stream().filter(dev -> (dev instanceof Door))
                 .map(dev -> (Door) dev).collect(Collectors.toList());
-        if(!tempList.isEmpty()) {
-            Random rand = new Random();
-            int randomIndex = rand.nextInt(tempList.size());
-            Door randomDoor = tempList.get(randomIndex);
-            randomDoor.open();
+        if(tempList.isEmpty()) {
+            return;
         }
+
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(tempList.size());
+        Door randomDoor = tempList.get(randomIndex);
+        randomDoor.open();
     }
+    
     // If we don't like the random door opening, use the method below
     public void openDoor(String devName) {
         // note: the check "dev instanceof Door" is needed to avoid ClassCastExceptions
@@ -78,8 +82,7 @@ public class Environment {
         Door door = (Door) device_list.stream().filter(dev -> dev.getName().equals(devName) && dev instanceof Door).findFirst().orElse(null);
         if(door != null) {
             door.open();
-        }
-        else {
+        } else {
             System.out.println("[Environment] Door not found. Maybe the name is wrong?");
         }
     }

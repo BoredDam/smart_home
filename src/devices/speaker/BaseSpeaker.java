@@ -38,6 +38,11 @@ public class BaseSpeaker extends Speaker {
         printHeader();
         System.out.print("Current volume level: " + volume + ". ");
         spstate.getInfo();
+    }
+
+    @Override
+    public String getBaseType() {
+        return "Speaker";
     } 
     
 }

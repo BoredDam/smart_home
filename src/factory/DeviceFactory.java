@@ -18,28 +18,30 @@ public class DeviceFactory {
     private static DeviceFactory instance;
     private DeviceFactory() {
         classMap = new HashMap<>();
-        classMap.put("Door", Door.class);
-        classMap.put("Camera", BaseCamera.class);
-        classMap.put("Air Conditioner", AirConditioner.class);
-        classMap.put("Light", Light.class);
-        classMap.put("Speaker", BaseSpeaker.class);
-        classMap.put("Thermostat",  Thermostat.class);
-        classMap.put("OldHeater", OldHeaterAdapter.class);
+        classMap.put("door", Door.class);
+        classMap.put("camera", BaseCamera.class);
+        classMap.put("air conditioner", AirConditioner.class);
+        classMap.put("light", Light.class);
+        classMap.put("speaker", BaseSpeaker.class);
+        classMap.put("thermostat",  Thermostat.class);
+        classMap.put("oldHeater", OldHeaterAdapter.class);
     }
     
     public static DeviceFactory getInstance() {
-        if(instance == null)
+        if (instance == null) {
             instance = new DeviceFactory();
+        }
         return instance;
     }
 
     // it's supposed that a certain evaluation is given for the string type in order to have insensitive case matching
     public Device createDevice(String type, String name) {
-        Class<? extends Device> cp = classMap.get(type);
+
+        Class<? extends Device> cp = classMap.get(type.toLowerCase());
         try {
             return (Device) cp.getConstructor(String.class).newInstance(name);
-        }
-        catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException 
+                | NoSuchMethodException | InvocationTargetException e) {
             return null;
         }
     } 

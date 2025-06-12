@@ -36,4 +36,11 @@ public class Thermostat extends ObservableDevice {
     public void setLowerBound(float lowerBound) {
         this.lowerBound = lowerBound;
     }
+
+    @Override
+    public String getBaseType() {
+        return "Thermostat";
+    }
+
+    
 }

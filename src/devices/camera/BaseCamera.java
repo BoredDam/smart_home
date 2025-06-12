@@ -17,5 +17,11 @@ public class BaseCamera extends Camera {
         printHeader();
         System.out.println("Recording...");
     }
-    
+
+    @Override
+    public String getBaseType() {
+        return "Camera";
+    }
+
+
 }

@@ -160,5 +160,23 @@ public class GUIprinter {
         }
     }
 
+    public void printScenariosMenu() {
+        clearScreen();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                                  SCENARIOS MENU                              |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                          1)     create a scenario                            |");
+        System.out.println("|                          2)    schedule a scenario                           |");
+        System.out.println("|                          3)    trigger a scenario                            |");
+        System.out.println("|                          4)     remove a scenario                            |");
+        System.out.println("|                           )  back to the config menu                         |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+          System.out.print(">> ");
+    }
+
     
 }

@@ -21,14 +21,19 @@ public abstract class CameraDecorator extends Camera {
         }
         return ret + ", BaseCamera";
     }
+
     @Override
     public void captureImage() {
         wrapped.captureImage();
     }
+
     @Override
     public void recordVideo() {
         wrapped.recordVideo();
     }
 
-
+    @Override
+    public String getBaseType() {
+        return "Camera";
+    }
 }

@@ -1,5 +1,6 @@
 package userFacade;
 
+
 import commands.Command;
 import commands.CommandRegister;
 import controller.SmartHomeController;
@@ -36,8 +37,10 @@ public class UserFacade {
         System.out.println("Setting default controller...");
         controller = SmartHomeController.getInstance();
         devFactory = DeviceFactory.getInstance();
+        cmdRegister = CommandRegister.getInstance();
         cmdFactory = CommandFactory.getInstance();
         decFactory = DecoratorFactory.getInstance();
+
         scan = new Scanner(System.in);
     }
 
@@ -77,7 +80,7 @@ public class UserFacade {
                 break;
             
             case "6":
-                /* */
+                scenariosMenuLoop();
                 break;
 
             case "":
@@ -196,28 +199,14 @@ public class UserFacade {
                 deviceConfigLoop();
                 break;
             default:
-                controller.setDeviceMonitoring((ObservableDevice) controller.getDeviceFromName(devName), true);
+                if (controller.getDeviceFromName(devName) instanceof ObservableDevice od) {
+                    controller.toggleDeviceMonitoring(od);
+                }
                 break;
         }
         deviceMonitoringLoop();
     }
 
-
-    private void triggerAScenarioLoop() {
-        
-        gui.printTriggerScenario();
-        String scenarioName;
-
-        switch (scenarioName = scan.nextLine()) {
-            case "":
-                mainLoop();
-                break;
-            default:
-                /*... */
-                break;
-        }
-        triggerAScenarioLoop();
-    }
 
     private void scheduleACommandLoop() {
         String devName;
@@ -230,6 +219,8 @@ public class UserFacade {
                 break;
             
             default:    
+                System.out.println("available commands for " + devName + ":");
+                cmdRegister.getAvailableCommands(controller.getDeviceFromName(devName).getBaseType()).stream().forEach(cmd -> System.out.println("\t" + cmd));
                 System.out.println("what command do you want to schedule?");
                 System.out.print(">>");
                 String cmdName = scan.nextLine();
@@ -258,14 +249,18 @@ public class UserFacade {
                 break;
 
             default:
+                if (controller.getDeviceFromName(devName) == null) {
+                    break;
+                }
+                
                 System.out.println("which function you want to add?");
                 String decName = scan.nextLine();
                 Device decoratedDev = decFactory.addFunctionality(controller.getDeviceFromName(devName), decName);
-                if(decoratedDev == null) {
+
+                if (decoratedDev == null) {
                     System.out.println("This functionality is not supported.");
                     break;
                 }
-                //decoratedDev.setName(devName +" + "+ decName);
                 controller.updateFunctionality(devName, decoratedDev);
                 
                 break;
@@ -273,4 +268,65 @@ public class UserFacade {
 
         addAFunctionalityLoop();
     }
+
+    private void scenariosMenuLoop() {
+        gui.printScenariosMenu();
+        switch (scan.nextLine()) {
+            case "1":
+                createScenarioLoop();
+                break;
+
+            case "2":
+                scheduleScenarioLoop();
+                break;
+
+            case "3":
+                triggerAScenarioLoop();
+                break;
+
+            case "4":
+                removeScenarioLoop();
+                break;  
+
+            case "":
+                mainLoop();
+                break;
+                
+            default:
+                break;
+        }
+        deviceConfigLoop();
+    }
+
+    private void removeScenarioLoop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeScenarioLoop'");
+    }
+
+    private void scheduleScenarioLoop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'scheduleScenarioLoop'");
+    }
+
+    private void createScenarioLoop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createScenarioLoop'");
+    }
+
+    private void triggerAScenarioLoop() {
+        
+        gui.printTriggerScenario();
+        String scenarioName;
+
+        switch (scenarioName = scan.nextLine()) {
+            case "":
+                mainLoop();
+                break;
+            default:
+                /*... */
+                break;
+        }
+        triggerAScenarioLoop();
+    }
+
 }
