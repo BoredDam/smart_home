@@ -44,4 +44,7 @@ public class DeviceFactory {
         }
     } 
 
+    public boolean lookFor(String devName) {
+        return classMap.containsKey(devName);
+    }
 }

@@ -171,7 +171,7 @@ public class UserFacade {
                 break;
 
             default:
-                if (!devFactory.getClassMap().containsKey(typeName)) {
+                if (!devFactory.lookFor(typeName)) {
                     System.out.println("This device type is not supported.");
                     break;
                 }
