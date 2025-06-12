@@ -4,10 +4,11 @@ import devices.Device;
 
 public class OldHeaterAdapter extends Device {
     
-    private OldHeater adaptee;
+    private final OldHeater adaptee;
 
     public OldHeaterAdapter(String name) {
         super(name);
+        adaptee = new OldHeater();
     }
 
     @Override

@@ -3,7 +3,6 @@ package devices.adapter;
 public class OldHeater {
     private boolean state;
 
-    
     public OldHeater() {
         this.state = false;
     }

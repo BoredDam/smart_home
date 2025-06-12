@@ -1,6 +1,7 @@
 package factory;
 
 import devices.Device;
+import devices.adapter.OldHeaterAdapter;
 import devices.airConditioner.AirConditioner;
 import devices.camera.BaseCamera;
 import devices.door.Door;
@@ -23,6 +24,7 @@ public class DeviceFactory {
         classMap.put("Light", Light.class);
         classMap.put("Speaker", BaseSpeaker.class);
         classMap.put("Thermostat",  Thermostat.class);
+        classMap.put("OldHeater", OldHeaterAdapter.class);
     }
     
     public static DeviceFactory getInstance() {
@@ -42,8 +44,4 @@ public class DeviceFactory {
         }
     } 
 
-    public Map<String, Class<? extends Device>> getClassMap() {
-        return classMap;
-    }
-    
 }
