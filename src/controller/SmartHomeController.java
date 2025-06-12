@@ -9,6 +9,7 @@ import devices.thermostat.Thermostat;
 import events.Event;
 import events.EventManager;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +55,10 @@ public class SmartHomeController implements Observer {
     }
 
     public String isMonitored(Device dev) {
-        if(!(dev instanceof ObservableDevice)){
-            return "non-monitorable";
+        if(dev instanceof ObservableDevice od){
+            return (listenedDevices.get(od) ? "monitored" : "non-monitored");
         }
-        return (listenedDevices.get(dev) ? "monitored" : "non-monitored");
+        return "non-monitorable";
     }
 
     private void printMessage(String message) {
@@ -124,7 +125,7 @@ public class SmartHomeController implements Observer {
      */
     public void printDeviceList() {
         device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() 
-        + "\t" + (dev.isOn() ? "ON" : "OFF") + isMonitored(dev) ));
+        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + isMonitored(dev)));
     }
     
 
@@ -146,32 +147,26 @@ public class SmartHomeController implements Observer {
 
     @Override
     public void update(ObservableDevice dev) {
-
-        if(!listenedDevices.get(dev)){ //device not observable
-            return;
-        }
-
-        switch(dev) {
-
-            case Thermostat ts -> {
-                if(ts.tooHot()) {
-                    triggerEvent(eventManager.getEvent("HighTemperature"));
-                } else if (ts.tooCold()) {
-                    triggerEvent(eventManager.getEvent("LowTemperature"));
-                } else {
-                    printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
+        if(listenedDevices.get(dev)){ 
+            switch(dev) {
+                case Thermostat ts -> {
+                    if(ts.tooHot()) {
+                        triggerEvent(eventManager.getEvent("HighTemperature"));
+                    } 
+                    else if (ts.tooCold()) {
+                        triggerEvent(eventManager.getEvent("LowTemperature"));
+                    } else {
+                        printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
+                    }
                 }
-            }
-
-            case Camera _ , Door _ -> {
-                triggerEvent(eventManager.getEvent("Intrusion"));
-            }
-
-            default -> {
-                printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
-            }
-        }
-        
+                case Camera _, Door _ -> {
+                    triggerEvent(eventManager.getEvent("Intrusion"));
+                }
+                default -> {
+                    printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
+                }
+            }       
+        }   
     }
 
     /**
@@ -199,6 +194,7 @@ public class SmartHomeController implements Observer {
         Device dev = getDeviceFromName(devName);
         if(dev == null) {
             printMessage("Device " + devName + " does not exist!");
+            return;
         }
 
         ScheduledFuture<?> handle = null; 
@@ -215,9 +211,13 @@ public class SmartHomeController implements Observer {
 
         scheduledCommands.add(new ScheduledCommand(devName, cmd.getClass().getSimpleName(), repeatSecs > 0, handle)); 
             // the boolean is used to track if the task repeats or not
-            // if a taks is to be repeated, we can get the handler and we can kill it
+            // if a task is to be repeated, we can get the handler and we can kill it
     }
 
+    public List<Device> returnViewOnlyDevices() {
+        return Collections.unmodifiableList(device_list);
+    }
+    
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 

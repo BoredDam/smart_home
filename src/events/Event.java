@@ -28,7 +28,9 @@ public class Event {
         List<Command> commandList;
         if(deviceActions.containsKey(devName)) {
             commandList = deviceActions.get(devName);
-            commandList.add(cmd);
+            if(commandList.stream().noneMatch(command -> cmd.getClass().equals(command.getClass()))) {
+                commandList.add(cmd);
+            }
         }
         else {
             commandList = new ArrayList<>();

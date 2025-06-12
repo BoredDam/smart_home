@@ -98,8 +98,8 @@ public class EventManager {
                     addEventMonitoredDevice(dev, "LowTemperature", new TurnOnCommand());
                 }
 
-                default -> {
-                    System.err.println("Device not recognized");
+                default -> { 
+                    // do nothing
                 }
             }
         }
