@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 import scenario.Scenario;
 
 public class SmartHomeController implements Observer {
-    private static record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
-    private static record ScheduledScenario(String scenarioName, Scenario scenario, ScheduledFuture<?> handle) {}
+    private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
+    private record ScheduledScenario(String scenarioName, Scenario scenario, ScheduledFuture<?> handle) {}
 
     private static SmartHomeController instance;
     private final EventManager eventManager;
@@ -209,7 +209,7 @@ public class SmartHomeController implements Observer {
      */
 
     public void scheduleCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
-
+        
         Device dev = getDeviceFromName(devName);
         if(dev == null) {
             printMessage("Device " + devName + " does not exist!");
@@ -246,7 +246,23 @@ public class SmartHomeController implements Observer {
     public List<Device> returnViewOnlyDevices() {
         return Collections.unmodifiableList(device_list);
     }
-    
+
+
+    public boolean killCommand(int index) {
+        try {
+            ScheduledFuture<?> handle = scheduledCommands.get(index).handle;
+            handle.cancel(true);
+            if(handle.isCancelled()) { 
+                scheduledCommands.remove(index);
+                return true;
+            } 
+            return false;
+        } catch (IndexOutOfBoundsException e) { 
+            System.err.println("Error in killing of command: index out of bounds");
+        }
+        return false;
+    }
+
     public void flushTasks() {
         // the function clears the map and deletes every scheduled command. Be advised because 
         // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 
