@@ -13,24 +13,27 @@ public class BaseSpeaker extends Speaker {
 
     @Override
     public void pause() {
-        spstate.pause();
+        printHeader();
+        spstate = spstate.pause();
     }
 
     @Override
     public void play() {
-        spstate.play();
+        printHeader();
+        spstate = spstate.play();
     }
 
     @Override
     public void stop() {
-        spstate.stop();
+        printHeader();
+        spstate = spstate.stop();
     }
 
     @Override
     public void setVolume(int volume) {
         this.volume = volume;
         printHeader();
-        System.out.println("Setting volume to" + volume);
+        System.out.println("Setting volume to " + volume);
     }
 
     @Override

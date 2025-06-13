@@ -11,6 +11,7 @@ import factory.CommandFactory;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import scenario.Scenario;
@@ -207,7 +208,8 @@ public class UserFacade {
         deviceMonitoringLoop();
     }
 
-
+    // method is too big, maybe split in smaller methods? 
+    // and with maybe, i mean that i don't care, but Single Responsibility Principle exists...
     private void scheduleACommandLoop() {
         String devName;
         gui.printCommandScheduler(controller);
@@ -220,19 +222,41 @@ public class UserFacade {
             
             default:    
                 System.out.println("available commands for " + devName + ":");
+                if(controller.getDeviceFromName(devName) == null) {
+                    System.out.println("This device does not exist.");
+                    scheduleACommandLoop();
+                    break;
+                }
                 cmdRegister.getAvailableCommands(controller.getDeviceFromName(devName).getBaseType()).stream().forEach(cmd -> System.out.println("\t" + cmd));
                 System.out.println("what command do you want to schedule?");
                 System.out.print(">>");
                 String cmdName = scan.nextLine();
                 Command cmd = cmdFactory.createCommand(cmdName);
-                int delaySecs, repeatSecs;
+                if(cmd == null) {
+                    System.out.println("The command is not recognized.");
+                    scheduleACommandLoop();
+                    break;
+                }
+                long delaySecs, repeatSecs;
                 System.out.println("how long until the command is executed? (in seconds)");
                 // can't we parse a date? like 20:30? it can be useful
                 System.out.print(">>");
-                delaySecs = scan.nextInt()+1;
+                try {
+                    delaySecs = scan.nextLong()+1;
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input, using default value of 1 second...");
+                    scan.nextLine(); // clear the buffer
+                    delaySecs = 1;
+                }
                 System.out.println("how often shall the command be executed? (in seconds)");
                 System.out.print(">>");
-                repeatSecs = scan.nextInt();        
+                try {
+                    repeatSecs = scan.nextLong();
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input, using default value of 0 seconds...");
+                    scan.nextLine(); // clear the buffer
+                    repeatSecs = 0;
+                }     
                 controller.scheduleCommand(devName, delaySecs, repeatSecs, cmd);
                 break;
             }

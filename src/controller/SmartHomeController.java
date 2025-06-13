@@ -17,9 +17,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import scenario.Scenario;
 
 public class SmartHomeController implements Observer {
     private static record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
+    private static record ScheduledScenario(String scenarioName, Scenario scenario, ScheduledFuture<?> handle) {}
 
     private static SmartHomeController instance;
     private final EventManager eventManager;
@@ -27,6 +29,7 @@ public class SmartHomeController implements Observer {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<ScheduledCommand> scheduledCommands = new ArrayList<>();
     private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>();
+    private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();    
 
     private SmartHomeController() {
         eventManager = EventManager.getInstance();
@@ -228,6 +231,16 @@ public class SmartHomeController implements Observer {
         scheduledCommands.add(new ScheduledCommand(devName, cmd.getClass().getSimpleName(), repeatSecs > 0, handle)); 
             // the boolean is used to track if the task repeats or not
             // if a task is to be repeated, we can get the handler and we can kill it
+    }
+
+    public void scheduleScenario(String scenarioName, Scenario scenario, long delaySecs) {
+        ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( () -> { scenario.apply(this); }, delaySecs, 86400, TimeUnit.SECONDS);
+        if (handle == null) { // handle creation error
+            printMessage("Error in scheduling of scenario. Try again");
+            return;
+        }
+        scheduledScenarios.add(new ScheduledScenario(scenarioName, scenario, handle));
+        // don't think we should repeat scenarios...
     }
 
     public List<Device> returnViewOnlyDevices() {
