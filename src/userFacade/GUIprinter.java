@@ -1,9 +1,21 @@
 package userFacade;
 
-import controller.SmartHomeController;
-import java.io.IOException;
+/**
+ * GUIPrinter is the class responsible of printing the user interface for the entire software.
+ * The GUIPrinter methods get called by the UserFacade class, which implements the logic 
+ * behind the selection of the menu to print.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 
-public class GUIprinter {
+import controller.SmartHomeController;
+import scenario.Scenario;
+
+import java.io.IOException;
+import java.util.List;
+
+public class GUIPrinter {
 
     public void printMainMenu() {
         clearScreen();
@@ -15,7 +27,7 @@ public class GUIprinter {
         System.out.println("+------------------------------------------------------------------------------+");
         System.out.println("|                          1)    configuration menu                            |");
         System.out.println("|                          2)    schedule a command                            |");
-        System.out.println("|                          3)    trigger a scenario                            |");
+        System.out.println("|                          3)      scenarios menu                              |");
         System.out.println("|                          4)    environment setting                           |");
         System.out.println("|                          q)        shutdown                                  |");
         System.out.println("|                                                                              |");
@@ -120,7 +132,6 @@ public class GUIprinter {
         System.out.println("|                        3)     remove a device                                |");
         System.out.println("|                        4)    add a functionality                             |");
         System.out.println("|                        5)    set device monitoring                           |");
-        System.out.println("|                        6)       scenarios menu                               |");
         System.out.println("|                         )    back to the main menu                           |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
@@ -168,14 +179,40 @@ public class GUIprinter {
         System.out.println("|                                  SCENARIOS MENU                              |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                          1)     create a scenario                            |");
-        System.out.println("|                          2)    schedule a scenario                           |");
-        System.out.println("|                          3)    trigger a scenario                            |");
-        System.out.println("|                          4)     remove a scenario                            |");
+        System.out.println("|                          1)    show scenarios loop                           |");
+        System.out.println("|                          2)     create a scenario                            |");
+        System.out.println("|                          3)    schedule a scenario                           |");
+        System.out.println("|                          4)    trigger a scenario                            |");
+        System.out.println("|                          5)     remove a scenario                            |");
         System.out.println("|                           )  back to the config menu                         |");
         System.out.println("|                                                                              |");
         System.out.println("+------------------------------------------------------------------------------+");
           System.out.print(">> ");
+    }
+
+    public void printShowScenarios(List<Scenario> userScenario) {
+        clearScreen();
+        System.out.println("\n");
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                                                                              |");
+        System.out.println("|                                  SCENARIOS LIST                              |");
+        System.out.println("|                                                                              |");
+        System.out.println("+------------------------------------------------------------------------------+");
+        userScenario.stream().forEach(scenario -> System.out.println("| "+ scenario));
+        System.out.println("+------------------------------------------------------------------------------+");
+        System.out.println("|                        any) back to the scenarios menu                       |");
+        System.out.println("+------------------------------------------------------------------------------+");
+          System.out.print(">> ");
+    }
+
+    public void printCreateScenario() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'printCreateScenario'");
+    }
+
+    public void printEditScenario() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'printEditScenario'");
     }
 
     

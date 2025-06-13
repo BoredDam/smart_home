@@ -51,7 +51,6 @@ public class Scenario {
 
         // this works fine i guess, ignore the warning
         devMonitor.forEach((name, mon) -> {controller.setDeviceMonitoring((ObservableDevice) controller.getDeviceFromName(name), mon); } );
-        
     }
 }
 

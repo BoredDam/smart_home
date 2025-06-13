@@ -3,7 +3,7 @@ package devices.powerState;
 import commands.Command;
 
 /**
- * <code> PowerState </code> it's the base interface for all the the states subclasses.
+ * PowerState is the base interface for all the states subclasses.
  * It's used to clarify about the powering state of the objects that it's composed into.
  * 
  * It follows the logic behind the "State" design pattern by the GoF.

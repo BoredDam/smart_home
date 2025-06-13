@@ -1,8 +1,5 @@
 package main;
 
-import commands.Command;
-import commands.generalPurposeCommands.TurnOnCommand;
-import commands.speakerCommands.PlayCommand;
 import controller.SmartHomeController;
 import devices.speaker.BaseSpeaker;
 import userFacade.UserFacade;

@@ -25,12 +25,11 @@ public class UserFacade {
     private DecoratorFactory decFactory;
     private CommandFactory cmdFactory;
     private CommandRegister cmdRegister;
-    private GUIprinter gui;
-
+    private GUIPrinter gui;
     private final List<Scenario> userScenario = new ArrayList<>();
 
     public UserFacade() {
-        gui = new GUIprinter();
+        gui = new GUIPrinter();
     }
 
     private void initializeDefaultController() {
@@ -79,10 +78,6 @@ public class UserFacade {
             case "5":
                 deviceMonitoringLoop();
                 break;
-            
-            case "6":
-                scenariosMenuLoop();
-                break;
 
             case "":
                 mainLoop();
@@ -114,7 +109,7 @@ public class UserFacade {
                 break;
 
             case "3":
-                triggerAScenarioLoop();
+                scenariosMenuLoop();
                 break;
 
             case "4":
@@ -130,13 +125,6 @@ public class UserFacade {
                 break;
         }
         mainLoop();
-        // the main loop must show a menu where the user:
-        // - stimulates the fake environment (or just manage the logic of this, you choose);
-        // - schedules commands (even repeated Tasks);
-        // - applies scenarios;
-        // - shut down simulation
-
-        // you are free to add other stuff if you have idea
     }
 
     private void showDevicesLoop() {
@@ -296,19 +284,24 @@ public class UserFacade {
     private void scenariosMenuLoop() {
         gui.printScenariosMenu();
         switch (scan.nextLine()) {
+
             case "1":
-                createScenarioLoop();
+                showScenariosLoop();
                 break;
 
             case "2":
-                scheduleScenarioLoop();
+                createScenarioLoop();
                 break;
 
             case "3":
-                triggerAScenarioLoop();
+                scheduleScenarioLoop();
                 break;
 
             case "4":
+                triggerAScenarioLoop();
+                break;
+
+            case "5":
                 removeScenarioLoop();
                 break;  
 
@@ -319,9 +312,13 @@ public class UserFacade {
             default:
                 break;
         }
-        deviceConfigLoop();
+        scenariosMenuLoop();
     }
 
+    private void showScenariosLoop() {
+        gui.printShowScenarios(userScenario);
+    }
+    
     private void removeScenarioLoop() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'removeScenarioLoop'");
@@ -333,8 +330,27 @@ public class UserFacade {
     }
 
     private void createScenarioLoop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createScenarioLoop'");
+        String scenarioName = scan.nextLine();
+        switch (scenarioName) {
+            case "":
+                break;
+            
+            default:
+                gui.printCreateScenario();
+                System.out.println("what's your new scenario's name?");
+                System.out.print(">> ");
+
+                if(userScenario.stream().anyMatch(scenario -> scenario.getName() == scenarioName)) {
+                    break;
+                }
+
+        }
+        createScenarioLoop();
+    }
+
+    private void editScenarioLoop() {
+        gui.printEditScenario();
+        //TODO
     }
 
     private void triggerAScenarioLoop() {
