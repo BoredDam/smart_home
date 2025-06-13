@@ -36,7 +36,7 @@ public class DeviceFactory {
 
     // it's supposed that a certain evaluation is given for the string type in order to have insensitive case matching
     public Device createDevice(String type, String name) {
-
+        
         Class<? extends Device> cp = classMap.get(type.toLowerCase());
         try {
             return (Device) cp.getConstructor(String.class).newInstance(name);

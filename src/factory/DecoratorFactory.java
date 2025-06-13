@@ -39,14 +39,14 @@ public class DecoratorFactory {
         String functionality = func.toLowerCase();
         
         if (dev.getType().contains(functionality)) {
-            System.out.println("Device already has that functionality!");
+            System.out.println("[DecoratorFactory] Device already has that functionality!");
             return dev;
         }
 
         DecoratorEntry record = decoratorBuilders.stream().filter((rec) -> (rec.name.equals(functionality))).findFirst().orElse(null);
         if (record == null) {
-            System.out.println("Functionality not found!");
-            return dev;
+            System.out.println("[DecoratorFactory] Functionality not found!");
+            return null;
         }
         Class<? extends Device> decorator = record.decoratorType;
         Device ret = null;

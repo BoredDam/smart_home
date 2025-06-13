@@ -17,10 +17,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import scenario.Scenario;
 
 public class SmartHomeController implements Observer {
     private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
+    public record ScheduledCommandInfos(String devName, String commandName, boolean repeats) {} // used to hide the handle from the user
     private record ScheduledScenario(String scenarioName, Scenario scenario, ScheduledFuture<?> handle) {}
 
     private static SmartHomeController instance;
@@ -33,6 +36,8 @@ public class SmartHomeController implements Observer {
 
     private SmartHomeController() {
         eventManager = EventManager.getInstance();
+        scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
+        // this "daemon" cleans up the completed tasks. The frequency of 30 seconds should be perfect
     }
 
     /**
@@ -58,12 +63,8 @@ public class SmartHomeController implements Observer {
     }
 
     public void toggleDeviceMonitoring(ObservableDevice device) {
-        if(__isMonitored__(device)) {
-            listenedDevices.put(device, false);
-        } else {
-            listenedDevices.put(device, true);
-        }
-        
+        listenedDevices.put(device, !listenedDevices.get(device));
+        // toggles the state
     }
 
     public String printDevMonitoringState(Device dev) {
@@ -71,13 +72,6 @@ public class SmartHomeController implements Observer {
             return (listenedDevices.get(od) ? "monitored" : "non-monitored");
         }
         return "non-monitorable";
-    }
-
-    private boolean __isMonitored__(Device dev) {
-        if(dev instanceof ObservableDevice od){
-            return (listenedDevices.get(od));
-        }
-        return false;
     }
 
     private void printMessage(String message) {
@@ -140,15 +134,13 @@ public class SmartHomeController implements Observer {
 
     
     /**
-     * Prints out the device list of the <code>SmartHomeController</code>.
+     * Returns the string representing the device list of the <code>SmartHomeController</code>.
      */
-    public void printDeviceList() {
-        device_list.stream().forEach(dev -> System.out.println("| " + dev.getName() + "\t\t" + dev.getType() 
-        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev)));
+    public String DeviceListToString() {
+        return device_list.stream().map(dev -> ("| " + dev.getName() + "\t\t" + dev.getType() 
+        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev))).collect(Collectors.joining("\n"));
     }
     
-
-
     /**
      * 
      * @param deviceName
@@ -243,11 +235,19 @@ public class SmartHomeController implements Observer {
         // don't think we should repeat scenarios...
     }
 
-    public List<Device> returnViewOnlyDevices() {
+    public List<Device> getViewOnlyDevices() {
         return Collections.unmodifiableList(device_list);
     }
 
+    // returns infos of the commands, hiding the handle
+    // this also respects the order of the insertion, since it's an arrayList
+    public List<ScheduledCommandInfos> getScheduledCommands() {
+        return scheduledCommands.stream().filter(record -> (!record.handle.isDone())) // filters out completed tasks
+            .map(handle -> new ScheduledCommandInfos(handle.devName, handle.commandName, handle.repeats)).toList();
+    }
 
+    // when printing the list, assure that the element are indexed starting from, and call 
+    // the method with a decreased index. Index checking can be done, but exception is always caught
     public boolean killCommand(int index) {
         try {
             ScheduledFuture<?> handle = scheduledCommands.get(index).handle;

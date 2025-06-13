@@ -10,199 +10,189 @@ package userFacade;
  */
 
 import controller.SmartHomeController;
-import scenario.Scenario;
-
-import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
+
+import scenario.Scenario;
 
 public class GUIPrinter {
 
+    private final GUIWindow guiWindow;
+    public GUIPrinter(GUIWindow guiWindow) {
+        this.guiWindow = guiWindow;
+    }
+
+    public void printToWindow(String msg) {
+        guiWindow.print(msg);
+    }
+    
+    public void setMenu(Consumer<String> handler) {
+        guiWindow.setInputHandler(handler);
+    }
     public void printMainMenu() {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                                   MAIN MENU                                  |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                          1)    configuration menu                            |");
-        System.out.println("|                          2)    schedule a command                            |");
-        System.out.println("|                          3)      scenarios menu                              |");
-        System.out.println("|                          4)    environment setting                           |");
-        System.out.println("|                          q)        shutdown                                  |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                                   MAIN MENU                                  |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                          1)    configuration menu                            |");
+        guiWindow.print("|                          2)    schedule a command                            |");
+        guiWindow.print("|                          3)      scenarios menu                              |");
+        guiWindow.print("|                          4)    environment setting                           |");
+        guiWindow.print("|                          q)        shutdown                                  |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printCommandScheduler(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                              SCHEDULE A COMMAND                              |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                   write the name of the device you want to                   |");
-        System.out.println("|                           schedule a command for                             |");
-        System.out.println("|          Note: devices that are turned off will not perform any command!     |");
-        System.out.println("|                      Turn them on first with TurnOnCommand!                  |");
-        System.out.println("+------------------------------------------------------------------------------+");
-            System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                              SCHEDULE A COMMAND                              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                   write the name of the device you want to                   |");
+        guiWindow.print("|                           schedule a command for                             |");
+        guiWindow.print("|          Note: devices that are turned off will not perform any command!     |");
+        guiWindow.print("|                      Turn them on first with TurnOnCommand!                  |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printAddDevice(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                           ADD A DEVICE TO THE LIST                           |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                  1.write the type of a device you want to add                |");
-        System.out.println("|                      2.write the name of your new device                     |");
-        System.out.println("|                          also, no duplicate names!                           |");
-        System.out.println("|                       to go back, don't write anything                       |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                           ADD A DEVICE TO THE LIST                           |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                  1.write the type of a device you want to add                |");
+        guiWindow.print("|                      2.write the name of your new device                     |");
+        guiWindow.print("|                          also, no duplicate names!                           |");
+        guiWindow.print("|                       to go back, don't write anything                       |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printDeviceMonitoring(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                            SET DEVICE MONITORING                             |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                    monitored devices will react to events and                |");
-        System.out.println("|                       notify the SmartHomeCOntroller                         |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                            SET DEVICE MONITORING                             |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                    monitored devices will react to events and                |");
+        guiWindow.print("|                       notify the SmartHomeCOntroller                         |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printRemoveDevice(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                         REMOVE A DEVICE FROM THE LIST                        |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                      write the name of a device to remove                    |");
-        System.out.println("|                                                                              |");
-        System.out.println("|                        to go back, don't write anything                      |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                         REMOVE A DEVICE FROM THE LIST                        |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                      write the name of a device to remove                    |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
 
     }
 
     public void printShowDevice(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                                 DEVICE LIST                                  |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                        any) back to the config menu                          |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                                 DEVICE LIST                                  |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                        any) back to the config menu                          |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printDeviceConfig() {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                               CONFIGURATION MENU                             |");
-        System.out.println("|     Here you are able to configure devices, functionalities and scenarios    |");
-        System.out.println("|------------------------------------------------------------------------------|");
-        System.out.println("|                        1)   show connected devices                           |");
-        System.out.println("|                        2)      add a device                                  |");
-        System.out.println("|                        3)     remove a device                                |");
-        System.out.println("|                        4)    add a functionality                             |");
-        System.out.println("|                        5)    set device monitoring                           |");
-        System.out.println("|                         )    back to the main menu                           |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                               CONFIGURATION MENU                             |");
+        guiWindow.print("|     Here you are able to configure devices, functionalities and scenarios    |");
+        guiWindow.print("|------------------------------------------------------------------------------|");
+        guiWindow.print("|                        1)   show connected devices                           |");
+        guiWindow.print("|                        2)      add a device                                  |");
+        guiWindow.print("|                        3)     remove a device                                |");
+        guiWindow.print("|                        4)    add a functionality                             |");
+        guiWindow.print("|                        5)    set device monitoring                           |");
+        guiWindow.print("|                         )    back to the main menu                           |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printTriggerScenario() {
-        clearScreen();
-        System.out.println("WIP");
+        guiWindow.clear();
+        guiWindow.print("WIP");
     }
 
     public void printAddAFunctionality(SmartHomeController controller) {
-        clearScreen();
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                             ADD A FUNCTIONALITY                              |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        controller.printDeviceList();
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">>");
+        guiWindow.clear();
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                             ADD A FUNCTIONALITY                              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
     
     public void printSeparator() {
-        System.out.println(System.lineSeparator() + System.lineSeparator());
-    }
-
-    public void clearScreen() {
-        try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
-            }
-        } catch (IOException | InterruptedException e) { 
-            
-        }
+        guiWindow.print(System.lineSeparator() + System.lineSeparator());
     }
 
     public void printScenariosMenu() {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                                  SCENARIOS MENU                              |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                          1)    show scenarios loop                           |");
-        System.out.println("|                          2)     create a scenario                            |");
-        System.out.println("|                          3)    schedule a scenario                           |");
-        System.out.println("|                          4)    trigger a scenario                            |");
-        System.out.println("|                          5)     remove a scenario                            |");
-        System.out.println("|                           )  back to the config menu                         |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                                  SCENARIOS MENU                              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                          1)    show scenarios loop                           |");
+        guiWindow.print("|                          2)     create a scenario                            |");
+        guiWindow.print("|                          3)    schedule a scenario                           |");
+        guiWindow.print("|                          4)    trigger a scenario                            |");
+        guiWindow.print("|                          5)     remove a scenario                            |");
+        guiWindow.print("|                           )  back to the config menu                         |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printShowScenarios(List<Scenario> userScenario) {
-        clearScreen();
-        System.out.println("\n");
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                                                                              |");
-        System.out.println("|                                  SCENARIOS LIST                              |");
-        System.out.println("|                                                                              |");
-        System.out.println("+------------------------------------------------------------------------------+");
-        userScenario.stream().forEach(scenario -> System.out.println("| "+ scenario));
-        System.out.println("+------------------------------------------------------------------------------+");
-        System.out.println("|                        any) back to the scenarios menu                       |");
-        System.out.println("+------------------------------------------------------------------------------+");
-          System.out.print(">> ");
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                                  SCENARIOS LIST                              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        userScenario.stream().forEach(scenario -> guiWindow.print("| "+ scenario));
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                        any) back to the scenarios menu                       |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
     public void printCreateScenario() {
