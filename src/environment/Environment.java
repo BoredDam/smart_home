@@ -1,4 +1,4 @@
-package debugTools;
+package environment;
 
 import devices.Device;
 import devices.adapter.OldHeaterAdapter;
@@ -19,7 +19,7 @@ public class Environment {
     public Environment(List<Device> device_list) {
         // Note: the device_list that is passed in the class is supposed
         // to be an UNMODIFIABLE list of the controller's list of devices.
-        // If the device_list is different, the class makes ABSOLUTELY NO SENSE.
+        // If the device_list is different than the one on the controller, the class makes ABSOLUTELY NO SENSE.
         this.device_list = device_list;
         temp = 20.0f;
         influenceFactor = 0.2f;
@@ -45,7 +45,7 @@ public class Environment {
         
         for(Device dev: device_list) {
             if(dev instanceof OldHeaterAdapter) {
-                temp += 0.5f;
+                this.temp += 0.5f;
             }
         }
         updateAllThermostats();
@@ -58,13 +58,27 @@ public class Environment {
             }
         }
     }
+    
+    public void actionOnDoor(String devName, boolean open) {
+        Door door = (Door) device_list.stream()
+            .filter(dev -> dev.getName().equals(devName) && dev instanceof Door)
+            .findFirst()
+            .orElse(null);
+        if(door != null) {
+            if(open)
+                door.open();
+            else
+                door.close();
+        } else {
+            System.out.println("[Environment] Door not found. Maybe the name is wrong?");
+        }
+    }
 
-    // Note: openRandomDoor() may be substituted if we 
-    // rather want the user to select a specific door
-    // Like, I don't know, I got mixed feeling about this
-    public void openRandomDoor() {
-        List<Door> tempList = device_list.stream().filter(dev -> (dev instanceof Door))
-                .map(dev -> (Door) dev).collect(Collectors.toList());
+    public void actionOnRandomDoor(boolean open) {
+        List<Door> tempList = device_list.stream()
+            .filter(dev -> (dev instanceof Door))
+            .map(dev -> (Door) dev)
+            .collect(Collectors.toList());
         if(tempList.isEmpty()) {
             return;
         }
@@ -72,19 +86,10 @@ public class Environment {
         Random rand = new Random();
         int randomIndex = rand.nextInt(tempList.size());
         Door randomDoor = tempList.get(randomIndex);
-        randomDoor.open();
-    }
-    
-    // If we don't like the random door opening, use the method below
-    public void openDoor(String devName) {
-        // note: the check "dev instanceof Door" is needed to avoid ClassCastExceptions
-        // the stream does not work without it, and i don't want any try catch statement in here
-        Door door = (Door) device_list.stream().filter(dev -> dev.getName().equals(devName) && dev instanceof Door).findFirst().orElse(null);
-        if(door != null) {
-            door.open();
-        } else {
-            System.out.println("[Environment] Door not found. Maybe the name is wrong?");
-        }
+        if(open)
+            randomDoor.open();
+        else
+            randomDoor.close();
     }
 
     // we do the same thing as above, but for calling notifyObserver() on cameras
@@ -96,18 +101,21 @@ public class Environment {
         if(!cameras.isEmpty()) {
             Random rand = new Random();
             int randomIndex = rand.nextInt(cameras.size());
-            Camera randomCamera =  cameras.get(randomIndex);
+            Camera randomCamera = cameras.get(randomIndex);
             randomCamera.notifyObserver();
         }
     }
 
     // again, if we don't like random selection, use the method below
     public void cameraPresenceDetection(String devName) {
-        Camera camera = (Camera) device_list.stream().filter(dev -> (dev.getName().equals(devName) && dev instanceof Camera)).findFirst().orElse(null);
+        Camera camera = (Camera) device_list.stream()
+            .filter(dev -> (dev.getName().equals(devName) && dev instanceof Camera))
+            .findFirst()
+            .orElse(null);
         if(camera != null) {
             camera.notifyObserver();
         } else {
-            System.out.println("[Environment] Camera not found. Maybe the name is wrong?");
+            System.out.println("[Environment] Camera " + devName + "not found. Maybe the name is wrong?");
         }
     }
 }

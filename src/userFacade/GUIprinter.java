@@ -38,8 +38,9 @@ public class GUIPrinter {
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                          1)    configuration menu                            |");
         guiWindow.print("|                          2)    schedule a command                            |");
-        guiWindow.print("|                          3)      scenarios menu                              |");
-        guiWindow.print("|                          4)    environment setting                           |");
+        guiWindow.print("|                          3)       kill command                               |");
+        guiWindow.print("|                          4)      scenarios menu                              |");
+        guiWindow.print("|                          5)    environment setting                           |");
         guiWindow.print("|                          q)        shutdown                                  |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -53,7 +54,7 @@ public class GUIPrinter {
         guiWindow.print("|                              SCHEDULE A COMMAND                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                   write the name of the device you want to                   |");
         guiWindow.print("|                           schedule a command for                             |");
@@ -62,6 +63,19 @@ public class GUIPrinter {
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
+    public void printKillCommand(SmartHomeController controller) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                               KILL A COMMAND                                 |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.scheduledCommandsToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the index of the command you want to kill               |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
     public void printAddDevice(SmartHomeController controller) {
         guiWindow.clear();
         guiWindow.print("\n");
@@ -70,7 +84,7 @@ public class GUIPrinter {
         guiWindow.print("|                           ADD A DEVICE TO THE LIST                           |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                  1.write the type of a device you want to add                |");
         guiWindow.print("|                      2.write the name of your new device                     |");
@@ -87,7 +101,7 @@ public class GUIPrinter {
         guiWindow.print("|                            SET DEVICE MONITORING                             |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                    monitored devices will react to events and                |");
         guiWindow.print("|                       notify the SmartHomeCOntroller                         |");
@@ -102,7 +116,7 @@ public class GUIPrinter {
         guiWindow.print("|                         REMOVE A DEVICE FROM THE LIST                        |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                      write the name of a device to remove                    |");
         guiWindow.print("|                                                                              |");
@@ -119,7 +133,7 @@ public class GUIPrinter {
         guiWindow.print("|                                 DEVICE LIST                                  |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                        any) back to the config menu                          |");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -149,7 +163,7 @@ public class GUIPrinter {
         guiWindow.print("|                             ADD A FUNCTIONALITY                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.deviceListToString());
+        guiWindow.print(controller.deviceListToString(""));
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
     
@@ -171,6 +185,7 @@ public class GUIPrinter {
         guiWindow.print("|                          4)    schedule a scenario                           |");
         guiWindow.print("|                          5)    trigger a scenario                            |");
         guiWindow.print("|                          6)     remove a scenario                            |");
+        guiWindow.print("|                          7) show scheduled scenarios                         |");
         guiWindow.print("|                           )  back to the config menu                         |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -292,4 +307,86 @@ public class GUIPrinter {
         guiWindow.print("                                 Chosen scenario: " + scenarioName);
     }
     
+    public void printScheduledScenarios(SmartHomeController controller) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                          SCHEDULED SCENARIOS LIST                            |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.scheduledScenariosToString());
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|            Scheduled scenarios will repeat every day at the same time        |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+
+    public void printEnvironmentSettings() {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                            ENVIRONMENT SETTINGS                              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|           1) calculate temperature and make thermostat measure it            |");
+        guiWindow.print("|           2)                     open a door                                 |");
+        guiWindow.print("|           3)                     close a door                                |");
+        guiWindow.print("|           4)             make camera detect a presence                       |");
+        guiWindow.print("|            )                 back to the main menu                           |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+
+    public void printOpenDoor(SmartHomeController controller) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                             OPEN A DOOR                                      |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.deviceListToString("Door"));
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the name of a door you want to open                     |");
+        guiWindow.print("|             write 'random' if you want to open a random door                 |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                    to go back, don't write anything                          |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+
+    public void printCloseDoor(SmartHomeController controller) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                             CLOSE A DOOR                                     |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.deviceListToString("Door"));
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the name of a door you want to close                    |");
+        guiWindow.print("|             write 'random' if you want to close a random door                |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                    to go back, don't write anything                          |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+
+    public void printCameraPresenceDetection(SmartHomeController controller) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        CAMERA PRESENCE DETECTION                             |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(controller.deviceListToString("Camera"));
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|            write the name of a camera you want to enable presence            |");
+        guiWindow.print("|         detection for, or write 'random' to enable it for a random one       |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                    to go back, don't write anything                          |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
 }

@@ -6,8 +6,12 @@ import devices.ObservableDevice;
 import devices.camera.Camera;
 import devices.door.Door;
 import devices.thermostat.Thermostat;
+import environment.Environment;
 import events.Event;
 import events.EventManager;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,13 +23,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import scenario.Scenario;
-
 public class SmartHomeController implements Observer {
     private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
     public record ScheduledCommandInfos(String devName, String commandName, boolean repeats) {} // used to hide the handle from the user
-    private record ScheduledScenario(String scenarioName, Scenario scenario, ScheduledFuture<?> handle) {}
+    private record ScheduledScenario(String scenarioName, Scenario scenario, String time, ScheduledFuture<?> handle) {}
 
     private static SmartHomeController instance;
+    private final Environment environment;
     private final EventManager eventManager;
     private final List<Device> device_list = new ArrayList<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -37,8 +41,8 @@ public class SmartHomeController implements Observer {
         eventManager = EventManager.getInstance();
         scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
         // this "daemon" cleans up the completed tasks. The frequency of 30 seconds should be perfect
+        environment = new Environment(this.device_list); // interacts with the environment
     }
-
     /**
      * Singleton pattern to ensure that there's only a single instance
      * of <code>SmartHomeController</code>.
@@ -71,6 +75,10 @@ public class SmartHomeController implements Observer {
             return (listenedDevices.get(od) ? "monitored" : "non-monitored");
         }
         return "non-monitorable";
+    }
+
+    public String scheduledScenariosToString() {
+        return scheduledScenarios.stream().map(rec -> rec.scenarioName + " scheduled at " + rec.time).collect(Collectors.joining("\n"));
     }
 
     private void printMessage(String message) {
@@ -150,9 +158,17 @@ public class SmartHomeController implements Observer {
     /**
      * Returns the string representing the device list of the <code>SmartHomeController</code>.
      */
-    public String deviceListToString() {
-        return device_list.stream().map(dev -> ("| " + dev.getName() + "\t\t" + dev.getType() 
-        + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev))).collect(Collectors.joining("\n"));
+    public String deviceListToString(String type) {
+        if(type.isEmpty())
+            return device_list.stream().map(dev -> ("| " + dev.getName() + "\t\t" + dev.getType() 
+            + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev)))
+                .collect(Collectors.joining("\n"));
+
+        return device_list.stream()
+            .filter(dev -> dev.getType().contains(type))
+            .map(dev -> ("| " + dev.getName() + "\t\t" + dev.getType() 
+                    + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev)))
+            .collect(Collectors.joining("\n"));
     }
     
     /**
@@ -167,6 +183,7 @@ public class SmartHomeController implements Observer {
     }
 
     public void triggerEvent(Event event) {
+        System.out.println("[SmartHomeController] Event " + event.getType() + " triggered!");
         device_list.forEach(dev -> event.getCommands(dev).forEach(cmd -> dev.performAction(cmd)));
     }
 
@@ -180,11 +197,11 @@ public class SmartHomeController implements Observer {
                     } 
                     else if (ts.tooCold()) {
                         triggerEvent(eventManager.getEvent("LowTemperature"));
-                    } else {
-                        printMessage("[" + ts.getName() + "] Temperature measured: " + ts.getTemperature() + "°C");
-                    }
+                    } 
                 }
-                case Camera _, Door _ -> {
+                case Camera _, Door _ -> { 
+                    // the notification is sent by the door when the state changes from locked to opened 
+                    // essentially, it means that the door was forced.
                     triggerEvent(eventManager.getEvent("Intrusion"));
                 }
                 default -> {
@@ -245,7 +262,10 @@ public class SmartHomeController implements Observer {
             printMessage("Error in scheduling of scenario. Try again");
             return;
         }
-        scheduledScenarios.add(new ScheduledScenario(scenarioName, scenario, handle));
+        LocalTime estimated = LocalTime.now();
+        estimated = estimated.plus(delaySecs, ChronoUnit.SECONDS);
+        String time = estimated.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        scheduledScenarios.add(new ScheduledScenario(scenarioName, scenario, time, handle));
         // don't think we should repeat scenarios...
     }
 
@@ -255,9 +275,11 @@ public class SmartHomeController implements Observer {
 
     // returns infos of the commands, hiding the handle
     // this also respects the order of the insertion, since it's an arrayList
-    public List<ScheduledCommandInfos> getScheduledCommands() {
+
+    public String scheduledCommandsToString() {
+        int[] index = new int[1]; 
         return scheduledCommands.stream().filter(record -> (!record.handle.isDone())) // filters out completed tasks
-            .map(handle -> new ScheduledCommandInfos(handle.devName, handle.commandName, handle.repeats)).toList();
+            .map(record -> (index[0]++ + ") " + record.commandName + "\t" + record.devName + "\tNext execution: " + record.handle.getDelay(TimeUnit.SECONDS) + "s" +(record.repeats ? ("\trepeats") : ""))).collect(Collectors.joining("\n"));
     }
 
     // when printing the list, assure that the element are indexed starting from, and call 
@@ -293,5 +315,34 @@ public class SmartHomeController implements Observer {
     
     public void setupDefaultEvents() {
         eventManager.setUpDefaultEvents(device_list);
+    }
+
+    public void measureTemperatures() {
+        environment.calculateTemperature();
+    }
+
+    public void detectOpeningDoor(String doorName) {
+        if(doorName.equalsIgnoreCase("random")) {
+            environment.actionOnRandomDoor(true);
+        }
+        else {
+            environment.actionOnDoor(doorName, true);
+        }
+    }
+    public void detectClosingDoor(String doorName) {
+        if(doorName.equalsIgnoreCase("random")) {
+            environment.actionOnRandomDoor(false);
+        }
+        else {
+            environment.actionOnDoor(doorName, false);
+        }
+    }
+
+    public void detectCameraPresence(String cameraName) {
+        if(cameraName.equalsIgnoreCase("random")) {
+            environment.randomCameraPresenceDetection();
+        } else {
+            environment.cameraPresenceDetection(cameraName);
+        }
     }
 }
