@@ -6,11 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// CommandRegister is used to list available commands for each device  
+/**
+ * CommandRegister class is used to list available commands for each device.
+ * It's a Singleton. We love our Singleton classes.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ * 
+ */
 
 public class CommandRegister {
     private final Map<String, List<String>> deviceCommands = new HashMap<>();
     private static CommandRegister instance;
+
     private CommandRegister() {
         deviceCommands.put("Light", new ArrayList<>(List.of("SwitchLightCommand")));
         deviceCommands.put("Thermostat", new ArrayList<>(List.of("SetUpperBoundCommand", "SetLowerBoundCommand")));
@@ -22,9 +29,15 @@ public class CommandRegister {
         deviceCommands.forEach((_, listOfCommands) -> {listOfCommands.add("TurnOnCommand"); listOfCommands.add("TurnOffCommand"); } );
     }
     
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>CommandRegister</code>.
+     * @return the only CommandRegister instance
+     */
     public static CommandRegister getInstance() {
-        if(instance == null)
+        if (instance == null) {
             instance = new CommandRegister();
+        }
         return instance;
     }
 

@@ -27,6 +27,11 @@ public class DeviceFactory {
         classMap.put("oldHeater", OldHeaterAdapter.class);
     }
     
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>DeviceFactory</code>.
+     * @return the only DeviceFactory instance
+     */
     public static DeviceFactory getInstance() {
         if (instance == null) {
             instance = new DeviceFactory();

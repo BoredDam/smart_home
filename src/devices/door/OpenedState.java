@@ -3,6 +3,12 @@ package devices.door;
 public class OpenedState implements LockState {
     static OpenedState instance;
     private OpenedState() {}
+
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>OpenedState</code>.
+     * @return the only OpenedState instance
+     */
     public static OpenedState getInstance() {
         if(instance == null)
             instance = new OpenedState();

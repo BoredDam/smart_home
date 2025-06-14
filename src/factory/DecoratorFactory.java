@@ -27,6 +27,11 @@ public class DecoratorFactory {
         decoratorBuilders.add(new DecoratorEntry("spotify", Speaker.class, SpotifyApp.class));
     }
 
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>DecoratorFactory</code>.
+     * @return the only DecoratorFactory instance
+     */
     public static DecoratorFactory getInstance() {
         if (instance == null) {
             instance = new DecoratorFactory();
