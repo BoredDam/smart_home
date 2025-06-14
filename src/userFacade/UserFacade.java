@@ -10,18 +10,35 @@ import devices.ObservableDevice;
 import factory.CommandFactory;
 import factory.DecoratorFactory;
 import factory.DeviceFactory;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.function.Consumer;
 import scenario.Scenario;
 
 public class UserFacade {
+    private class commandScheduleInfo {
+        String devName;
+        long delaySecs;
+        long repeatSecs;
+        Command cmd;
+        Consumer<commandScheduleInfo> afterSetup;
+        commandScheduleInfo(Consumer<commandScheduleInfo> afterSetup) {
+            this.devName = null;
+            this.delaySecs = 0;
+            this.repeatSecs = 0;
+            this.cmd = null;
+            this.afterSetup = afterSetup;
+        }   
+    }
     
     private Environment simulation; // should we encapsulate the environment in the menu????
     // maybe it's better to have it composed inside the controller?
     // figure it out
     private SmartHomeController controller;
-    private Scanner scan;
     private DeviceFactory devFactory;
     private DecoratorFactory decFactory;
     private CommandFactory cmdFactory;
@@ -40,8 +57,6 @@ public class UserFacade {
         cmdRegister = CommandRegister.getInstance();
         cmdFactory = CommandFactory.getInstance();
         decFactory = DecoratorFactory.getInstance();
-
-        scan = new Scanner(System.in);
     }
 
     public void mainDialog() {
@@ -92,6 +107,7 @@ public class UserFacade {
         switch (input) {
             case "1":
                 showDevicesLoop();
+                gui.setMenu((_) -> { gui.setMenu(this::deviceConfigLoop); gui.printDeviceConfig();});
                 break;
 
             case "2":
@@ -181,20 +197,25 @@ public class UserFacade {
                 break;
         }
     }
-    private void scheduleACommandAskCommand(String devName) {
+    // boolean toSchedule is used to determine if the command should be INSTANLTY scheduled or not
+    // this is used only because the scenario needs also the records to schedule the command
+    // and i don't want to re-write all the code just for the scenario
+    private void scheduleACommandAskCommand(commandScheduleInfo info) {
+        cmdRegister.getAvailableCommands(controller.getDeviceFromName(info.devName).getBaseType()).stream().forEach(cmd -> gui.printToWindow("\t" + cmd));
         gui.printToWindow("what command do you want to schedule?");
         gui.setMenu((cmdName) -> {
             Command cmd = cmdFactory.createCommand(cmdName);
             if (cmd == null) {
                 gui.printToWindow("The command is not recognized.");
-                scheduleACommandAskCommand(devName);
+                scheduleACommandAskCommand(info);
                 return;
             }
-        scheduleACommandAskDelay(devName, cmd); 
+            info.cmd = cmd;
+            scheduleACommandAskDelay(info); 
         });
     }
     
-    private void scheduleACommandAskDelay(String devName, Command cmd) {
+    private void scheduleACommandAskDelay(commandScheduleInfo info) {
         gui.printToWindow("how long until the command is executed? (in seconds)");
         gui.setMenu((delayInput) -> {
             long delaySecs;
@@ -203,24 +224,27 @@ public class UserFacade {
             } catch (NumberFormatException e) {
                 gui.printToWindow("Invalid input, using default value of 1 second...");
                 delaySecs = 1;
-        }
-        scheduleACommandAskRepeat(devName, cmd, delaySecs);
+            }
+            info.delaySecs = delaySecs;
+            scheduleACommandAskRepeat(info);
         });
     }
 
-    private void scheduleACommandAskRepeat(String devName, Command cmd, long delaySecs) {
-        gui.printToWindow("How often shall the command be executed? (in seconds)");
-        gui.setMenu((repeatInput) -> {
-            long repeatSecs;
+    private void handleAskRepeat(commandScheduleInfo info, String repeatInput) {
+        long repeatSecs;
             try {
                 repeatSecs = Long.parseLong(repeatInput.trim());
             } catch (NumberFormatException e) {
                 gui.printToWindow("Invalid input, using default value of 0 seconds...");
                 repeatSecs = 0;
             }
-            controller.scheduleCommand(devName, delaySecs, repeatSecs, cmd);
-            gui.setMenu(this::scheduleACommandLoop);
-            gui.printCommandScheduler(controller);
+            info.repeatSecs = repeatSecs;
+    }
+    private void scheduleACommandAskRepeat(commandScheduleInfo info) {
+        gui.printToWindow("How often shall the command be executed? (in seconds)");
+        gui.setMenu((repeatInput) -> {
+            handleAskRepeat(info, repeatInput);
+            info.afterSetup.accept(info);
         });
     }
 
@@ -236,8 +260,14 @@ public class UserFacade {
                     gui.printToWindow("This device does not exist.");
                     break;
                 }
-                cmdRegister.getAvailableCommands(controller.getDeviceFromName(devName).getBaseType()).stream().forEach(cmd -> gui.printToWindow("\t" + cmd));
-                scheduleACommandAskCommand(devName); 
+                commandScheduleInfo info = new commandScheduleInfo( 
+                    (rec) -> { controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); 
+                        gui.setMenu(this::scheduleACommandLoop);
+                        gui.printCommandScheduler(controller);
+                    }
+                );
+                info.devName = devName;
+                scheduleACommandAskCommand(info); 
                 break;
             }
     }
@@ -273,19 +303,27 @@ public class UserFacade {
         switch (input) {
             case "1":
                 showScenariosLoop();
+                gui.setMenu((_) -> { gui.setMenu(this::scenariosMenuLoop); gui.printScenariosMenu();});
                 break;
             case "2":
                 gui.setMenu(this::createScenarioLoop);
-                gui.printShowScenarios(userScenarios);
+                gui.printCreateScenario(userScenarios);
                 break;
             case "3":
-                scheduleScenarioLoop();
+                gui.setMenu(this::editScenarioLoop);
+                gui.printEditScenario(userScenarios);
                 break;
             case "4":
-                triggerAScenarioLoop();
+                gui.setMenu(this::scheduleScenarioLoop);
+                gui.printScenarioScheduler(userScenarios);
                 break;
             case "5":
-                removeScenarioLoop();
+                gui.setMenu(this::triggerAScenarioLoop);
+                gui.printTriggerScenario(userScenarios);
+                break;
+            case "6":
+                gui.setMenu(this::removeScenarioLoop);
+                gui.printRemoveScenario(userScenarios);
                 break;  
             case "":
                 gui.setMenu(this::mainLoop);
@@ -299,52 +337,246 @@ public class UserFacade {
     private void showScenariosLoop() {
         gui.printShowScenarios(userScenarios);
     }
-    
-    private void removeScenarioLoop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeScenarioLoop'");
+
+    private Scenario getScenarioFromName(String scenarioName) {
+        return userScenarios.stream().filter(s -> s.getName().equals(scenarioName)).findFirst().orElse(null);
     }
 
-    private void scheduleScenarioLoop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'scheduleScenarioLoop'");
+    private void removeScenarioLoop(String scenarioName) {
+        switch(scenarioName) {
+            case "":
+                gui.setMenu(this::scenariosMenuLoop);
+                gui.printScenariosMenu();
+                break;
+            default:
+                Scenario selected = getScenarioFromName(scenarioName);
+                if(selected == null) {
+                    gui.printToWindow("A scenario with that name does not exist.");
+                    break;
+                }
+                userScenarios.remove(selected);
+                gui.printRemoveScenario(userScenarios);        
+                break;
+        }    
+    }
+
+    private long parseDelay(String time) throws DateTimeParseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
+        LocalTime date = LocalTime.parse(time, formatter);
+        long elapsedTime = ChronoUnit.SECONDS.between(LocalTime.now(), date);
+        return elapsedTime <= 0 ? 86400 + elapsedTime : elapsedTime;
+    }
+    private void scheduleAScenarioAskDelay(Scenario scenario) {
+        gui.printToWindow("When do you want to schedule it? Specify time with format HH:mm (like 8:30, or 21:00)");
+        gui.setMenu((time) -> {
+            if(time.isEmpty()) {
+                scheduleAScenarioAskDelay(scenario);
+                return;
+            }
+            long seconds;
+            try {
+                seconds = parseDelay(time);   
+            } catch (DateTimeParseException e) {
+                System.out.println("Format provided is broken or not supported, using this current hour...");
+                seconds = 86400;
+            }
+            controller.scheduleScenario(scenario.getName(), scenario, seconds);
+            gui.setMenu(this::scenariosMenuLoop);
+            gui.printScenariosMenu();
+        });
+
+    }
+    private void scheduleScenarioLoop(String scenarioName) {
+        switch(scenarioName) {
+            case "":
+                gui.setMenu(this::scenariosMenuLoop);
+                gui.printScenariosMenu();
+                break;
+            default:
+                Scenario selected = getScenarioFromName(scenarioName);
+                if(selected == null) {
+                    gui.printToWindow("A scenario with that name does not exist.");
+                    break;
+                }
+                scheduleAScenarioAskDelay(selected);
+        }
+    }
+
+    private boolean scenarioNameCollision(String scenarioName) {
+        return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
     }
 
     private void createScenarioLoop(String scenarioName) {
         switch (scenarioName) {
             case "":
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
+                gui.setMenu(this::scenariosMenuLoop);
+                gui.printScenariosMenu();
                 break;
             default:
-                if(userScenarios.stream().anyMatch(scenario -> scenario.getName().equals(scenarioName))) {
+                if(scenarioNameCollision(scenarioName)) {
                     gui.printToWindow("A scenario with the same name already exists.");
                     break;
                 }
-                // include logic of adding scenario.
+                userScenarios.add(new Scenario(scenarioName));
+                gui.printCreateScenario(userScenarios);
+                break;
         }
     }
 
-    private void editScenarioLoop() {
-        gui.printEditScenario();
-        //TODO
+    private void setupScenarioNameHelper(Scenario scenario) {
+        gui.printToWindow("Type the new name for the scenario (or nothing to cancel).");
+        gui.setMenu((newName) -> {
+            if(newName.isEmpty()) {
+                gui.setMenu(this::editScenarioLoop);
+                gui.printEditScenario(userScenarios);
+                return;
+            }
+            if(scenarioNameCollision(newName)){
+                gui.printToWindow("A scenario with that name already exists.");
+                setupScenarioNameHelper(scenario);
+                return;
+            }
+            scenario.changeName(newName);
+            gui.setMenu(this::editScenarioLoop);
+            gui.printEditScenario(userScenarios);
+        });
+    }
+    private void addCommandToScenarioHelper(Scenario scenario) {
+        gui.printToWindow(controller.deviceListToString());
+        gui.printToWindow("Type the device name to which you want to add a command (or nothing to cancel).");
+        gui.setMenu((devName) -> {
+            if(devName.isEmpty()) {
+                gui.setMenu(this::editScenarioLoop);
+                gui.printEditScenario(userScenarios);
+                return;
+            }
+            Device dev = controller.getDeviceFromName(devName);
+            if(dev == null) {
+                gui.printToWindow("This device does not exist.");
+                return;
+            }
+            commandScheduleInfo info = new commandScheduleInfo(
+                (rec) -> { scenario.addCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd);
+                    gui.setMenu(this::editScenarioLoop);
+                    gui.printEditScenario(userScenarios);
+                }
+            );
+            info.devName = devName;
+            scheduleACommandAskCommand(info);
+        });
+    }
+    
+    private void removeCommandFromScenarioHelper(Scenario scenario) {
+        gui.printToWindow(scenario.commandListToString());
+        gui.printToWindow("Type the index of the command you want to remove (or nothing to cancel).");
+        gui.setMenu((input) -> {
+            if(input.isEmpty()) {
+                gui.setMenu(this::editScenarioLoop);
+                gui.printEditScenario(userScenarios);
+                return;
+            }
+            int index;
+            try {
+                index = Integer.parseInt(input.trim());
+            } catch (NumberFormatException e) {
+                gui.printToWindow("Invalid input, try again.");
+                removeCommandFromScenarioHelper(scenario);
+                return;
+            }
+            scenario.removeCommand(index);
+            gui.setMenu(this::editScenarioLoop);
+            gui.printEditScenario(userScenarios);
+        });
+    }
+    
+    private void deviceMonitoringHelper(Scenario scenario, boolean enable) {
+        gui.printToWindow(controller.deviceListToString());
+        gui.printToWindow("Type the monitorable device name on which you want set monitoring (or nothing to cancel).");
+        gui.setMenu((devName) -> {
+            if(devName.isEmpty()) {
+                gui.setMenu(this::editScenarioLoop);
+                gui.printEditScenario(userScenarios);
+                return;
+            }
+            Device dev = controller.getDeviceFromName(devName);
+            if(dev == null) {
+                gui.printToWindow("This device does not exist.");
+                return;
+            }
+            if(!(dev instanceof ObservableDevice)) {
+                gui.printToWindow("This device is not monitorable.");
+                return;
+            }
+            if(enable) {
+                scenario.enableDeviceMonitoring((ObservableDevice) dev);
+            } else {
+                scenario.disableDeviceMonitoring((ObservableDevice) dev);
+            }
+            gui.setMenu(this::editScenarioLoop);
+            gui.printEditScenario(userScenarios);
+        });
     }
 
-    private void triggerAScenarioLoop() {
-        
-        gui.printTriggerScenario();
-        String scenarioName;
+    private void internalScenarioEditLoop(Scenario scenario) {
+        gui.printInternalScenarioEdit(scenario.getName());
+        // menu must be defined like this, because we need the scenario object
+        gui.setMenu((input) -> {
+            switch(input) {
+                case "1":
+                    setupScenarioNameHelper(scenario);
+                    break;
+                case "2":
+                    addCommandToScenarioHelper(scenario);
+                    break;
+                case "3":
+                    removeCommandFromScenarioHelper(scenario);
+                    break;
+                case "4":
+                    deviceMonitoringHelper(scenario, true);
+                    break;
+                case "5":
+                    deviceMonitoringHelper(scenario, false);
+                    break;
+                case "":
+                    gui.setMenu(this::scenariosMenuLoop);
+                    gui.printScenariosMenu();
+                    break;
+            }
+        });
+    }
 
-        switch (scenarioName = scan.nextLine()) {
+    private void editScenarioLoop(String scenarioName) {
+        switch(scenarioName) {
             case "":
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
+                gui.setMenu(this::scenariosMenuLoop);
+                gui.printScenariosMenu();
                 break;
             default:
-                /*... */
+                Scenario selected = getScenarioFromName(scenarioName);
+                if(selected == null) {
+                    gui.printToWindow("A scenario with that name does not exist.");
+                    break;
+                }
+                internalScenarioEditLoop(selected);
                 break;
         }
-        triggerAScenarioLoop();
     }
 
+    private void triggerAScenarioLoop(String scenarioName) {
+        switch (scenarioName) {
+            case "":
+                gui.setMenu(this::scenariosMenuLoop);
+                gui.printScenariosMenu();
+                break;
+            default:
+                Scenario selected = getScenarioFromName(scenarioName);
+                if(selected == null) {
+                    gui.printToWindow("A scenario with that name does not exist.");
+                    break;
+                }
+                selected.apply(controller);
+                gui.printTriggerScenario(userScenarios);
+                break;
+        }
+    }
 }

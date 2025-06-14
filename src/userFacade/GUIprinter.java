@@ -12,7 +12,6 @@ package userFacade;
 import controller.SmartHomeController;
 import java.util.List;
 import java.util.function.Consumer;
-
 import scenario.Scenario;
 
 public class GUIPrinter {
@@ -54,7 +53,7 @@ public class GUIPrinter {
         guiWindow.print("|                              SCHEDULE A COMMAND                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                   write the name of the device you want to                   |");
         guiWindow.print("|                           schedule a command for                             |");
@@ -71,7 +70,7 @@ public class GUIPrinter {
         guiWindow.print("|                           ADD A DEVICE TO THE LIST                           |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                  1.write the type of a device you want to add                |");
         guiWindow.print("|                      2.write the name of your new device                     |");
@@ -88,7 +87,7 @@ public class GUIPrinter {
         guiWindow.print("|                            SET DEVICE MONITORING                             |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                    monitored devices will react to events and                |");
         guiWindow.print("|                       notify the SmartHomeCOntroller                         |");
@@ -103,7 +102,7 @@ public class GUIPrinter {
         guiWindow.print("|                         REMOVE A DEVICE FROM THE LIST                        |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                      write the name of a device to remove                    |");
         guiWindow.print("|                                                                              |");
@@ -120,7 +119,7 @@ public class GUIPrinter {
         guiWindow.print("|                                 DEVICE LIST                                  |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                        any) back to the config menu                          |");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -143,11 +142,6 @@ public class GUIPrinter {
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
-    public void printTriggerScenario() {
-        guiWindow.clear();
-        guiWindow.print("WIP");
-    }
-
     public void printAddAFunctionality(SmartHomeController controller) {
         guiWindow.clear();
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -155,7 +149,7 @@ public class GUIPrinter {
         guiWindow.print("|                             ADD A FUNCTIONALITY                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print(controller.DeviceListToString());
+        guiWindow.print(controller.deviceListToString());
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
     
@@ -171,17 +165,21 @@ public class GUIPrinter {
         guiWindow.print("|                                  SCENARIOS MENU                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        guiWindow.print("|                          1)    show scenarios loop                           |");
-        guiWindow.print("|                          2)     create a scenario                            |");
-        guiWindow.print("|                          3)    schedule a scenario                           |");
-        guiWindow.print("|                          4)    trigger a scenario                            |");
-        guiWindow.print("|                          5)     remove a scenario                            |");
+        guiWindow.print("|                          1)     show scenarios                               |");
+        guiWindow.print("|                          2)    create a scenario                             |");
+        guiWindow.print("|                          3)     edit a scenario                              |");
+        guiWindow.print("|                          4)    schedule a scenario                           |");
+        guiWindow.print("|                          5)    trigger a scenario                            |");
+        guiWindow.print("|                          6)     remove a scenario                            |");
         guiWindow.print("|                           )  back to the config menu                         |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
-    public void printShowScenarios(List<Scenario> userScenario) {
+    private void printScenariosList(List<Scenario> userScenarios) {
+        userScenarios.stream().forEach(scenario -> guiWindow.print("! " + scenario.getName()));
+    }
+    public void printShowScenarios(List<Scenario> userScenarios) {
         guiWindow.clear();
         guiWindow.print("\n");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -189,21 +187,109 @@ public class GUIPrinter {
         guiWindow.print("|                                  SCENARIOS LIST                              |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
-        userScenario.stream().forEach(scenario -> guiWindow.print("| "+ scenario));
+        printScenariosList(userScenarios);
         guiWindow.print("+------------------------------------------------------------------------------+");
         guiWindow.print("|                        any) back to the scenarios menu                       |");
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
-    public void printCreateScenario() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printCreateScenario'");
+    public void printRemoveScenario(List<Scenario> userScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                     REMOVE SCENARIO FROM SCENARIOS LIST                      |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        printScenariosList(userScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                     write the name of a scenario to remove                   |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+    public void printCreateScenario(List<Scenario> userScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                       ADD SCENARIO FROM SCENARIOS LIST                       |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        printScenariosList(userScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                      write the name of a scenario to add                     |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("|              Note: scenarios with the same names are not allowed!            |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
-    public void printEditScenario() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printEditScenario'");
+    public void printScenarioScheduler(List<Scenario> userScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                      SCHEDULE SCENARIO FROM SCENARIOS LIST                   |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        printScenariosList(userScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the name of a scenario you want to schedule             |");
+        guiWindow.print("|                     the scenario will then repeat every day                  |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
+    public void printTriggerScenario(List<Scenario> userScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                       TRIGGER SCENARIO FROM SCENARIOS LIST                   |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        printScenariosList(userScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the name of a scenario you want to trigger              |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+    public void printEditScenario(List<Scenario> userScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                       EDIT A SCENARIO FROM SCENARIOS LIST                    |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        printScenariosList(userScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                 write the name of a scenario you want to edit                |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
+
+    public void printInternalScenarioEdit(String scenarioName) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                       EDITING SCENARIO INTERNAL SETTINGS                     |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                 1)           Change scenario name                            |");
+        guiWindow.print("|                 2)       Add a command to the scenario                       |");
+        guiWindow.print("|                 3)    Remove a command from the scenario                     |");
+        guiWindow.print("|                 4) Enable device monitoring for the scenario                 |");
+        guiWindow.print("|                 5) Disable device monitoring for the scenario                |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("                                 Chosen scenario: " + scenarioName);
+    }
     
 }

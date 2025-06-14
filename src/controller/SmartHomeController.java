@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import scenario.Scenario;
 
 public class SmartHomeController implements Observer {
@@ -77,6 +76,20 @@ public class SmartHomeController implements Observer {
     private void printMessage(String message) {
         System.out.println("[SmartHomeController] " + message);
     }
+
+    private void deletedDeviceCommandCleanup(Device device) {
+        int[] idx = new int[1];
+        idx[0] = 0;
+        scheduledCommands.removeIf((record) -> {
+            if(record.devName.equals(device.getName())) {
+                record.handle.cancel(true);
+                idx[0]++;
+                return true;
+            }
+            return false;
+        });
+        System.out.println("[SmartHomeController] " + idx[0] + " command" + (idx[0] == 1  ? "" : "s") + " related to " + device.getName() + (idx[0] == 1 ? " has" : " have ") + " been cancelled.");
+    }
     /**
      * Adds a device to the <code>SmartHomeController</code> device list.
      * @param device to add
@@ -126,6 +139,7 @@ public class SmartHomeController implements Observer {
             d.detach();
             listenedDevices.remove(d);
         }
+        deletedDeviceCommandCleanup(device);
         device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
         printMessage(device.getName() + " just got removed from the SmartHome Controller...");
         return true;
@@ -136,7 +150,7 @@ public class SmartHomeController implements Observer {
     /**
      * Returns the string representing the device list of the <code>SmartHomeController</code>.
      */
-    public String DeviceListToString() {
+    public String deviceListToString() {
         return device_list.stream().map(dev -> ("| " + dev.getName() + "\t\t" + dev.getType() 
         + "\t" + (dev.isOn() ? "ON" : "OFF") + "\t" + printDevMonitoringState(dev))).collect(Collectors.joining("\n"));
     }

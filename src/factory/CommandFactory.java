@@ -1,7 +1,6 @@
 package factory;
 
 import commands.Command;
-import commands.NullCommand;
 import commands.airConditionerCommands.*;
 import commands.cameraCommands.*;
 import commands.doorCommands.*;
@@ -52,7 +51,7 @@ public class CommandFactory {
     public Command createCommand(String type, String... args) {
         Function<String[], Command> function = commandMap.get(type);
         if(function == null)
-            return (Command) NullCommand.getInstance(); // it is nice to have the null command, but it can be scheduled and just occupies a thread for nothing
+            return null; // it is nice to have the null command, but it can be scheduled and just occupies a thread for nothing
         return function.apply(args);
 
     }
