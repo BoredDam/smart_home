@@ -5,6 +5,11 @@ public class StopState implements SpeakerState {
     static StopState instance;
     private StopState() {}
 
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>StopState</code>.
+     * @return the only StopState instance
+     */
     public static StopState getInstance() {
         if(instance == null) {
             instance = new StopState();

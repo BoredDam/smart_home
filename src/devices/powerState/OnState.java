@@ -7,12 +7,9 @@ public class OnState implements PowerState {
     private OnState() {}
 
     /**
-     * This method checks if an instance of <code>OnState</code> was already instantiated, and if not, it will instantiate it.
-     * 
-     * Then, whether it was just instantiated or not, it will return the instance. 
-     * This is a clear implementation of the Singleton Design Pattern by the GoF.
-     * 
-     * @return the OnState instance;
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>OnState</code>.
+     * @return the only OnState instance
      */
     public static OnState getInstance() {
         if(instance == null) {

@@ -5,6 +5,11 @@ public class LockedState implements LockState {
 
     private LockedState() {}
 
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>LockedState</code>.
+     * @return the only LockedState instance
+     */
     public static LockedState getInstance() {
         if(instance == null) 
             instance = new LockedState();

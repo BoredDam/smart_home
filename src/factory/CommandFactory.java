@@ -43,6 +43,12 @@ public class CommandFactory {
         commandMap.put("RecordVideo", (_) -> new RecordVideo());
         commandMap.put("CaptureImage", (_) -> new CaptureImage());
     }
+
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>CommandFactory</code>.
+     * @return the only CommandFactory instance
+     */
     public static CommandFactory getInstance() {
         if(instance == null) 
             instance = new CommandFactory();

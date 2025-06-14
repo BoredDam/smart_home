@@ -5,6 +5,11 @@ public class PlayState implements SpeakerState {
     static PlayState instance;
     private PlayState() {}
 
+    /**
+     * Singleton pattern to ensure that there's only a single instance
+     * of <code>PlayState</code>.
+     * @return the only PlayState instance
+     */
     public static PlayState getInstance() {
         if(instance == null) {
             instance = new PlayState();
