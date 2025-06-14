@@ -42,7 +42,6 @@ public class Environment {
             avgTarget /= count;
             this.temp = this.temp + (avgTarget - this.temp) * influenceFactor;
         }
-        
         for(Device dev: device_list) {
             if(dev instanceof OldHeaterAdapter) {
                 this.temp += 0.5f;
@@ -53,7 +52,7 @@ public class Environment {
 
     private void updateAllThermostats() {
         for(Device dev: device_list) {
-            if(dev instanceof Thermostat t) {
+            if(dev instanceof Thermostat t && t.isOn()) {
                 t.measureTemperature(temp);
             }
         }

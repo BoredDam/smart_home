@@ -11,6 +11,7 @@ import devices.thermostat.Thermostat;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DeviceFactory {
     private final Map<String, Class<? extends Device>> classMap;      
@@ -37,6 +38,10 @@ public class DeviceFactory {
             instance = new DeviceFactory();
         }
         return instance;
+    }
+
+    public String availableTypesToString() {
+        return classMap.keySet().stream().map(str -> str.toUpperCase()).collect(Collectors.joining(", "));
     }
 
     // it's supposed that a certain evaluation is given for the string type in order to have insensitive case matching

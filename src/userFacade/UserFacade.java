@@ -116,7 +116,7 @@ public class UserFacade {
 
             case "2":
                 gui.setMenu(this::addDeviceLoop);
-                gui.printAddDevice(controller);
+                gui.printAddDevice(controller, devFactory.availableTypesToString());
                 break;
 
             case "3":
@@ -179,7 +179,7 @@ public class UserFacade {
                     String devName = input.trim(); 
                     controller.addDevice(devFactory.createDevice(typeName, devName)); 
                     gui.setMenu(this::addDeviceLoop);
-                    gui.printAddDevice(controller);
+                    gui.printAddDevice(controller, devFactory.availableTypesToString());
                 } );
                 break;
         }

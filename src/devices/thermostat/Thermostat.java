@@ -13,6 +13,8 @@ public class Thermostat extends ObservableDevice {
     public Thermostat(String name) {
         super(name);
         triggered = false;
+        lowerBound = 10;
+        upperBound = 50;
     }
 
     public float getTemperature() {
@@ -21,10 +23,11 @@ public class Thermostat extends ObservableDevice {
 
     public void measureTemperature(float temperature) {
         this.measuredTemp = temperature;
-        if(tooHot() || tooCold() && !triggered) {
+        if((tooHot() || tooCold()) && !triggered) {
             triggered = true;
             notifyObserver();
-        } else {
+        } 
+        else if(!tooHot() && !tooCold()) {
             triggered = false;
         }
         printHeader();

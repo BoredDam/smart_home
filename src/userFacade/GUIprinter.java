@@ -76,7 +76,7 @@ public class GUIPrinter {
         guiWindow.print("|                write the index of the command you want to kill               |");
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
-    public void printAddDevice(SmartHomeController controller) {
+    public void printAddDevice(SmartHomeController controller, String availableTypes) {
         guiWindow.clear();
         guiWindow.print("\n");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -91,6 +91,7 @@ public class GUIPrinter {
         guiWindow.print("|                          also, no duplicate names!                           |");
         guiWindow.print("|                       to go back, don't write anything                       |");
         guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(availableTypes);
     }
 
     public void printDeviceMonitoring(SmartHomeController controller) {

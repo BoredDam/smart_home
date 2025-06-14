@@ -118,6 +118,7 @@ public class SmartHomeController implements Observer {
 
         if(device instanceof ObservableDevice od) {
             listenedDevices.put(od, true);
+            od.attach(this);
             printMessage(od.getName() + " is being monitored by controller!");
         }
     }

@@ -5,6 +5,7 @@ public abstract class ObservableDevice extends Device {
     protected Observer controllerObserving;
     public ObservableDevice(String name) {
         super(name);
+        
     }
     
     public void attach(Observer master) {
@@ -16,7 +17,9 @@ public abstract class ObservableDevice extends Device {
     }
 
     public void notifyObserver() {
-        if(controllerObserving != null) controllerObserving.update(this);
+        if(isOn()) {
+            if(controllerObserving != null) controllerObserving.update(this);
+        }
     }
 
 }
