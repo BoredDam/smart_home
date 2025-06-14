@@ -19,14 +19,14 @@ public class CommandRegister {
     private static CommandRegister instance;
 
     private CommandRegister() {
-        deviceCommands.put("Light", new ArrayList<>(List.of("SwitchLightCommand")));
-        deviceCommands.put("Thermostat", new ArrayList<>(List.of("SetUpperBoundCommand", "SetLowerBoundCommand")));
-        deviceCommands.put("Speaker", new ArrayList<>(List.of("PlayCommand", "PauseCommand", "SetVolumeCommand", "StopCommand")));
-        deviceCommands.put("Door", new ArrayList<>(List.of("LockCommand", "UnlockCommand")));
+        deviceCommands.put("Light", new ArrayList<>(List.of("SwitchLight")));
+        deviceCommands.put("Thermostat", new ArrayList<>(List.of("SetUpperBound", "SetLowerBound")));
+        deviceCommands.put("Speaker", new ArrayList<>(List.of("Play", "Pause", "SetVolume", "Stop")));
+        deviceCommands.put("Door", new ArrayList<>(List.of("Lock", "Unlock")));
         deviceCommands.put("Camera", new ArrayList<>(List.of("RecordVideo", "CaptureImage")));
-        deviceCommands.put("AirConditioner", new ArrayList<>(List.of("SetTargetTemperatureCommand")));
+        deviceCommands.put("AirConditioner", new ArrayList<>(List.of("SetTargetTemperature")));
         deviceCommands.put("OldHeaterAdapter", new ArrayList<>());
-        deviceCommands.forEach((_, listOfCommands) -> {listOfCommands.add("TurnOnCommand"); listOfCommands.add("TurnOffCommand"); } );
+        deviceCommands.forEach((_, listOfCommands) -> {listOfCommands.add("TurnOn"); listOfCommands.add("TurnOff"); } );
     }
     
     /**

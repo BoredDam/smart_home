@@ -4,7 +4,7 @@ import devices.Device;
 
 public class AirConditioner extends Device {
     
-    private float targetTemp;
+    private float targetTemp = 23;
 
     public AirConditioner(String name){
         super(name);

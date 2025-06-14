@@ -56,14 +56,14 @@ public class CommandFactory {
     }
 
     public int getArgumentCount(String type) {
-        return commandMap.get(type) == null ? -1 : commandMap.get(type).argc;
+        return commandMap.get(type.toLowerCase()) == null ? -1 : commandMap.get(type.toLowerCase()).argc;
     }
     public String getArgumentDescription(String type) {
-        return commandMap.get(type) == null ? null : commandMap.get(type).argDesc;
+        return commandMap.get(type.toLowerCase()) == null ? null : commandMap.get(type.toLowerCase()).argDesc;
     }
 
     public Command createCommand(String type, String... args) {
-        Function<String[], Command> function = commandMap.get(type).cmdGen;
+        Function<String[], Command> function = commandMap.get(type.toLowerCase()).cmdGen;
         if(function == null)
             return null; 
         Command ret;

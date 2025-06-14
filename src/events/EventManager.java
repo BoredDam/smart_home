@@ -40,6 +40,7 @@ public class EventManager {
             System.out.println("[EventManager] Instance generated, events ready to be set...");
             instance = new EventManager();
             instance.eventManager.put("HighTemperature", new Event("HighTemperature"));
+            instance.eventManager.put("LowTemperature", new Event("LowTemperature"));
             instance.eventManager.put("Intrusion", new Event("Intrusion"));
         }
         return instance;

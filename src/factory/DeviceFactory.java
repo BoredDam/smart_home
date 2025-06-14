@@ -24,7 +24,7 @@ public class DeviceFactory {
         classMap.put("light", Light.class);
         classMap.put("speaker", BaseSpeaker.class);
         classMap.put("thermostat",  Thermostat.class);
-        classMap.put("oldHeater", OldHeaterAdapter.class);
+        classMap.put("old heater", OldHeaterAdapter.class);
     }
     
     /**
@@ -51,7 +51,7 @@ public class DeviceFactory {
         }
     } 
 
-    public boolean lookFor(String devName) {
-        return classMap.containsKey(devName);
+    public boolean lookFor(String typeName) {
+        return classMap.containsKey(typeName.toLowerCase());
     }
 }

@@ -1,5 +1,7 @@
 package devices.light;
 
+import commands.Command;
+import commands.lightCommands.SwitchLightCommand;
 import devices.Device;
 
 public class Light extends Device {
@@ -20,4 +22,17 @@ public class Light extends Device {
     public String getBaseType() {
         return "Light";
     }
+
+    @Override
+    public void performAction(Command cmd) {
+        cmd.setDevice(this);
+        if(cmd instanceof SwitchLightCommand switchLight) {
+            switchLight.run();
+        } else {
+            pstate.runCommand(cmd);
+        }
+            
+        
+    }
+
 }
