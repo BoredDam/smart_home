@@ -70,6 +70,7 @@ public class UserFacade {
         gui.setMenu(this::mainLoop);
         gui.printMainMenu();
     }
+
     private void mainLoop(String input) {
         //gui.printMainMenu();
         switch (input) {
@@ -93,6 +94,7 @@ public class UserFacade {
                 break; 
         
             case "q":
+                System.out.println("bye bye...");
                 controller.shutdown();
                 System.exit(0);
                 break;
@@ -101,6 +103,7 @@ public class UserFacade {
                 break;
         }
     }
+
     private void deviceConfigLoop(String input) {
 
         gui.printDeviceConfig();
@@ -157,6 +160,7 @@ public class UserFacade {
                 break;
         }
     }
+
     private void addDeviceLoop(String typeName) {
         switch(typeName) {
             case "":
@@ -197,6 +201,7 @@ public class UserFacade {
                 break;
         }
     }
+
     // boolean toSchedule is used to determine if the command should be INSTANLTY scheduled or not
     // this is used only because the scenario needs also the records to schedule the command
     // and i don't want to re-write all the code just for the scenario
@@ -240,6 +245,7 @@ public class UserFacade {
             }
             info.repeatSecs = repeatSecs;
     }
+    
     private void scheduleACommandAskRepeat(commandScheduleInfo info) {
         gui.printToWindow("How often shall the command be executed? (in seconds)");
         gui.setMenu((repeatInput) -> {
@@ -271,6 +277,7 @@ public class UserFacade {
                 break;
             }
     }
+    
     private void addAFunctionalityLoop(String devName) {
         switch(devName) {
             case "":
@@ -299,6 +306,7 @@ public class UserFacade {
         }
 
     }
+    
     private void scenariosMenuLoop(String input) {
         switch (input) {
             case "1":
@@ -366,6 +374,7 @@ public class UserFacade {
         long elapsedTime = ChronoUnit.SECONDS.between(LocalTime.now(), date);
         return elapsedTime <= 0 ? 86400 + elapsedTime : elapsedTime;
     }
+    
     private void scheduleAScenarioAskDelay(Scenario scenario) {
         gui.printToWindow("When do you want to schedule it? Specify time with format HH:mm (like 8:30, or 21:00)");
         gui.setMenu((time) -> {
@@ -386,6 +395,7 @@ public class UserFacade {
         });
 
     }
+    
     private void scheduleScenarioLoop(String scenarioName) {
         switch(scenarioName) {
             case "":
@@ -441,6 +451,7 @@ public class UserFacade {
             gui.printEditScenario(userScenarios);
         });
     }
+    
     private void addCommandToScenarioHelper(Scenario scenario) {
         gui.printToWindow(controller.deviceListToString());
         gui.printToWindow("Type the device name to which you want to add a command (or nothing to cancel).");
@@ -579,4 +590,5 @@ public class UserFacade {
                 break;
         }
     }
+
 }
