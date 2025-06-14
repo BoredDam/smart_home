@@ -41,6 +41,10 @@ public class CommandRegister {
         return instance;
     }
 
+    /**
+     * @param deviceType a String that is evaluated to a device type.
+     * @return a List with every available command with that device.
+     */
     public List<String> getAvailableCommands(String deviceType) {
         return Collections.unmodifiableList(deviceCommands.get(deviceType) == null ? new ArrayList<>() : deviceCommands.get(deviceType));
     }
