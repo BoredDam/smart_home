@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class EventManager {
     private static EventManager instance;
-    private static final Map<String, Event> eventManager = new HashMap<>();
+    private final Map<String, Event> eventManager = new HashMap<>();
     
     private EventManager() {}
     
@@ -39,7 +39,8 @@ public class EventManager {
         if(instance == null) {
             System.out.println("[EventManager] Instance generated, events ready to be set...");
             instance = new EventManager();
-            
+            instance.eventManager.put("HighTemperature", new Event("HighTemperature"));
+            instance.eventManager.put("Intrusion", new Event("Intrusion"));
         }
         return instance;
     }
@@ -74,9 +75,6 @@ public class EventManager {
      * @param listDev the list from which import the devices to register events from.
      */ 
     public void setUpDefaultEvents(List<Device> listDev) {
-        eventManager.put("HighTemperature", new Event("HighTemperature"));
-        eventManager.put("Intrusion", new Event("Intrusion"));
-
         Iterator<Device> it = listDev.iterator();
 
         while(it.hasNext()) {

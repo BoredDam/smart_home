@@ -38,12 +38,7 @@ public class Event {
             deviceActions.put(devName, commandList);
         }
     }
-    // can be useful, we'll see if is needed
-    @Override
-    public String toString() {
-        return "Event type: " + type + System.lineSeparator();
-    }
-
+    
     public String getType() {
         return type;
     }

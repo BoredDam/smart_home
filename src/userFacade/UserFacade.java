@@ -4,7 +4,6 @@ package userFacade;
 import commands.Command;
 import commands.CommandRegister;
 import controller.SmartHomeController;
-import debugTools.Environment;
 import devices.Device;
 import devices.ObservableDevice;
 import factory.CommandFactory;
@@ -34,10 +33,8 @@ public class UserFacade {
             this.afterSetup = afterSetup;
         }   
     }
-    
-    private Environment simulation; // should we encapsulate the environment in the menu????
-    // maybe it's better to have it composed inside the controller?
-    // figure it out
+
+
     private SmartHomeController controller;
     private DeviceFactory devFactory;
     private DecoratorFactory decFactory;
@@ -84,12 +81,16 @@ public class UserFacade {
                 break;
 
             case "3":
+                gui.setMenu(this::killCommandLoop);
+                gui.printKillCommand(controller);
+                break;
+            case "4":
                 gui.setMenu(this::scenariosMenuLoop);
                 gui.printScenariosMenu();
                 break;
-
-            case "4":
-                //environmentSettings...
+            case "5":
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
                 break; 
         
             case "q":
@@ -131,6 +132,7 @@ public class UserFacade {
                 break;
 
             case "":
+                controller.setupDefaultEvents();
                 gui.setMenu(this::mainLoop);
                 gui.printMainMenu();
                 break;
@@ -204,17 +206,37 @@ public class UserFacade {
         cmdRegister.getAvailableCommands(controller.getDeviceFromName(info.devName).getBaseType()).stream().forEach(cmd -> gui.printToWindow("\t" + cmd));
         gui.printToWindow("what command do you want to schedule?");
         gui.setMenu((cmdName) -> {
-            Command cmd = cmdFactory.createCommand(cmdName);
-            if (cmd == null) {
-                gui.printToWindow("The command is not recognized.");
+            int argc = cmdFactory.getArgumentCount(cmdName);
+            // since now we have requested the argc, we know if the command exists in the factory
+            if(argc < 0) {
+                gui.printToWindow("Invalid command.");
                 scheduleACommandAskCommand(info);
                 return;
             }
-            info.cmd = cmd;
-            scheduleACommandAskDelay(info); 
+            if(argc > 0)
+                scheduleACommandCreateCommand(info, cmdName, argc);
+            else {
+                // instantly create the command
+                info.cmd = cmdFactory.createCommand(cmdName);
+                scheduleACommandAskDelay(info);
+            }
         });
     }
     
+    private void scheduleACommandCreateCommand(commandScheduleInfo info, String cmdName, int argc) {
+        gui.printToWindow("Command " + cmdName + " requires " + argc + " following arguments: " + cmdFactory.getArgumentDescription(cmdName));
+        gui.setMenu((args) -> {
+            Command cmd = cmdFactory.createCommand(cmdName, args);
+            if(cmd == null) {
+                gui.printToWindow("Command creation failed, try again.");
+                scheduleACommandCreateCommand(info, cmdName, argc);
+                return;
+            }
+            info.cmd = cmd;
+            scheduleACommandAskDelay(info);
+        });
+
+    }
     private void scheduleACommandAskDelay(commandScheduleInfo info) {
         gui.printToWindow("how long until the command is executed? (in seconds)");
         gui.setMenu((delayInput) -> {
@@ -271,6 +293,26 @@ public class UserFacade {
                 break;
             }
     }
+
+    private void killCommandLoop(String inputIndex) {
+        switch(inputIndex) {
+            case "":
+                gui.setMenu(this::mainLoop);
+                gui.printMainMenu();
+                break;
+            default:
+                int index;
+                try {
+                    index = Integer.parseInt(inputIndex.trim());
+                    controller.killCommand(index);
+                } catch (NumberFormatException e) {
+                    gui.printToWindow("Invalid input, please try again.");
+                }
+                gui.setMenu(this::mainLoop);
+                gui.printMainMenu();
+                break;
+        }
+    }
     private void addAFunctionalityLoop(String devName) {
         switch(devName) {
             case "":
@@ -325,6 +367,10 @@ public class UserFacade {
                 gui.setMenu(this::removeScenarioLoop);
                 gui.printRemoveScenario(userScenarios);
                 break;  
+            case "7":
+                showScheduledScenariosLoop();
+                gui.setMenu((_) -> { gui.setMenu(this::scenariosMenuLoop); gui.printScenariosMenu();});
+                break;
             case "":
                 gui.setMenu(this::mainLoop);
                 gui.printMainMenu();
@@ -334,6 +380,9 @@ public class UserFacade {
         }
     }
 
+    private void showScheduledScenariosLoop() {
+        gui.printScheduledScenarios(controller);
+    }
     private void showScenariosLoop() {
         gui.printShowScenarios(userScenarios);
     }
@@ -442,7 +491,7 @@ public class UserFacade {
         });
     }
     private void addCommandToScenarioHelper(Scenario scenario) {
-        gui.printToWindow(controller.deviceListToString());
+        gui.printToWindow(controller.deviceListToString(""));
         gui.printToWindow("Type the device name to which you want to add a command (or nothing to cancel).");
         gui.setMenu((devName) -> {
             if(devName.isEmpty()) {
@@ -490,7 +539,7 @@ public class UserFacade {
     }
     
     private void deviceMonitoringHelper(Scenario scenario, boolean enable) {
-        gui.printToWindow(controller.deviceListToString());
+        gui.printToWindow(controller.deviceListToString(""));
         gui.printToWindow("Type the monitorable device name on which you want set monitoring (or nothing to cancel).");
         gui.setMenu((devName) -> {
             if(devName.isEmpty()) {
@@ -576,6 +625,72 @@ public class UserFacade {
                 }
                 selected.apply(controller);
                 gui.printTriggerScenario(userScenarios);
+                break;
+        }
+    }
+
+    private void environmentLoop(String input) {
+        switch(input) {
+            case "1":
+                controller.measureTemperatures();
+                break;
+            case "2":
+                gui.setMenu(this::openDoorLoop);
+                gui.printOpenDoor(controller);
+                break;
+            case "3":
+                gui.setMenu(this::closeDoorLoop);
+                gui.printCloseDoor(controller);
+                break;
+            case "4":
+                gui.setMenu(this::cameraPresenceLoop);
+                gui.printCameraPresenceDetection(controller);
+                break;
+            default:
+                gui.setMenu(this::mainLoop);
+                gui.printMainMenu();
+                break;
+        }
+    }
+
+    private void openDoorLoop(String doorName) {
+        switch(doorName) {
+            case "":
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
+                break;
+            default:
+                controller.detectOpeningDoor(doorName);
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
+                break;
+        }
+    }
+
+    private void closeDoorLoop(String doorName) {
+        switch(doorName) {
+            case "":
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
+                break;
+            default:
+                controller.detectClosingDoor(doorName);
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
+                break;
+        }
+    }
+
+    private void cameraPresenceLoop(String cameraName) {
+        switch(cameraName) {
+            case "":
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
+                break;
+            default:
+                controller.detectCameraPresence(cameraName);
+                gui.setMenu(this::environmentLoop);
+                gui.printEnvironmentSettings();
                 break;
         }
     }
