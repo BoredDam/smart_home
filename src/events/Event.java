@@ -10,20 +10,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Event is a class that encapsulates the logic behind creating events. 
+ * Instances of the Event class describe commands that are executed under certain conditions 
+ * of the system.
  * 
  * @author Paolo Volpini
  * @author Damiano Trovato
  */
 
 public class Event {  
-    private final String type;
-    private final Map<String, List<Command>> deviceActions = new HashMap<>();
 
-    public Event(String type) { 
-        this.type = type;
+    private final String type; // type of event
+    private final Map<String, List<Command>> deviceActions = new HashMap<>(); // <event type> <list of commands to execute>
+
+    public Event(String eventType) { 
+        this.type = eventType;
     }
 
+    /**
+     * @param dev a device.
+     * @return a list of 
+     */
     public List<Command> getCommands(Device dev) {
         List<Command> commandList = deviceActions.get(dev.getName());
         if (commandList == null) { 

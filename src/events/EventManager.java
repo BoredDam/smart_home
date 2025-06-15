@@ -1,13 +1,6 @@
 package events;
 
-/**
- * EventManager is a class that encapsulates the logic behind creating events. 
- * Inside the class you can also setup the default events for the system, using the <code>setUpDefaultEvents</code>.
- * It's also a Singleton.
- * 
- * @author Paolo Volpini
- * @author Damiano Trovato
- */
+
 
 
 import commands.*;
@@ -23,6 +16,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * EventManager is a class that encapsulates the logic behind creating events. 
+ * Inside the class you can also setup the default events for the system, using the <code>setUpDefaultEvents</code>.
+ * It's also a Singleton.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 
 public class EventManager {
     private static EventManager instance;
