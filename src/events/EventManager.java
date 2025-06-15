@@ -1,8 +1,8 @@
 package events;
 
 /**
- * <code> EventManager </code> it's a class that encapsulates the logic behind creating events. 
- * Inside the class you can code the default events, using the <code>setUpDefaultEvents</code>.
+ * EventManager is a class that encapsulates the logic behind creating events. 
+ * Inside the class you can also setup the default events for the system, using the <code>setUpDefaultEvents</code>.
  * It's also a Singleton.
  * 
  * @author Paolo Volpini

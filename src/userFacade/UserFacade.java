@@ -1,6 +1,5 @@
 package userFacade;
 
-
 import commands.Command;
 import commands.CommandRegister;
 import controller.SmartHomeController;
@@ -19,6 +18,14 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import scenario.Scenario;
 
+/**
+ * UserFacade is a class based on the Facade Design Patterns.
+ * It gathers many different objects related to the SmartHouse-simulation 
+ * to offer a simple facade for the client code.
+ *  
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class UserFacade {
     private class CommandScheduleInfo {
         String devName;

@@ -12,6 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * the CommandFactory class is based on the "Factory Method" design pattern by the GoF.
+ * It offers a simple way to create instances of command objects.
+ * It is also a Singleton.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class CommandFactory {
     private static CommandFactory instance;
     private record commandType(int argc, Function<String[], Command> cmdGen, String argDesc) {}
@@ -19,6 +27,11 @@ public class CommandFactory {
     private CommandFactory() {
         initializeMap();
     }
+
+    /**
+     * @hidden Method called by the constructor of the CommandFactory. For every device type of the system, 
+     * it has to put a new record in the commandMap. 
+     */
 
     private void initializeMap() {
         // general purpose commands
@@ -55,17 +68,36 @@ public class CommandFactory {
         return instance;
     }
 
-    public int getArgumentCount(String type) {
-        return commandMap.get(type.toLowerCase()) == null ? -1 : commandMap.get(type.toLowerCase()).argc;
-    }
-    public String getArgumentDescription(String type) {
-        return commandMap.get(type.toLowerCase()) == null ? null : commandMap.get(type.toLowerCase()).argDesc;
+    /**
+     * @param cmdType the name of a command.
+     * @return the number of arguments required by the specified command.
+     * @hidden this makes the code a lot more scalable :)
+     */
+    public int getArgumentCount(String cmdType) {
+        return commandMap.get(cmdType.toLowerCase()) == null ? -1 : commandMap.get(cmdType.toLowerCase()).argc;
     }
 
-    public Command createCommand(String type, String... args) {
-        Function<String[], Command> function = commandMap.get(type.toLowerCase()).cmdGen;
-        if(function == null)
+    /**
+     * @param cmdType the name of a command.
+     * @return a string which describes the requirements of arguments of the specified command.
+     */
+    public String getArgumentDescription(String cmdType) {
+        return commandMap.get(cmdType.toLowerCase()) == null ? null : commandMap.get(cmdType.toLowerCase()).argDesc;
+    }
+
+    /**
+     * Creates an instance of a command.
+     * @param cmdType the command type you want to create and return an instance of.
+     * @param args the eventual arguments needed by the command.
+     * @return an instance of the requested command.
+     */
+    public Command createCommand(String cmdType, String... args) {
+        Function<String[], Command> function = commandMap.get(cmdType.toLowerCase()).cmdGen;
+
+        if (function == null) {
             return null; 
+        }
+        
         Command ret;
         try {
             ret = function.apply(args);

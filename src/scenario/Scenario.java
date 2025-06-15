@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Scenario is a class that offers a way to encapsulate a list of commands
+ * that the system can execute (all together or in different scheduled times) in any given moment.  
+ */
 public class Scenario {
     public record ScheduledCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {}
     private String name;
@@ -19,22 +23,48 @@ public class Scenario {
         this.name = name;
     }
 
-    public String getName() { // needed, we don't want scenarios with duplicated names
+    // needed, we don't want scenarios with duplicated names
+    /**
+     * @return the name of the Scenario.
+     */
+    public String getName() { 
         return name;
     }
 
+    /**
+     * Specify a certain monitoring-state for a given device in the current instance
+     * of Scenario
+     * @param device the device whose the user wants to choose the monitoring state
+     * @param enable the specified monitoring state 
+     */
     public void setDeviceMonitoring(ObservableDevice device, boolean enable) {
         devMonitor.put(device, enable);
     }
 
+    /**
+     * @param newName the name the user wants to set for the current instance of Scenario
+     */
     public void changeName(String newName) {
         name = newName;
     }
 
+    /**
+     * Add a command to the list of scheduled commands for this scenario.
+     * @param devName is the name of the device
+     * @param delaySecs if it's equal to 0, the command runs instantly. Otherwise, it will 
+     *                  be executed after the specified amount of seconds
+     * @param repeatSecs if it's equal to 0, the command runs once. Otherwise, it will
+     *                   be executed at every specified amount of time.
+     * @param cmd is the command that has to be executed
+     */
     public void addCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {
         commandList.add(new ScheduledCommand(devName, delaySecs, repeatSecs, cmd));
     }
 
+    /**
+     * Removes a command from the list of scheduled commands of this scenario.
+     * @param index the index of the command to delete.
+     */
     public void removeCommand(int index) {
         try {
             commandList.remove(index);
@@ -43,6 +73,9 @@ public class Scenario {
         }
     }
 
+    /**
+     * @return a String containing a list of every command scheduled for the scenario.
+     */
     public String commandListToString() {
         int[] index = new int[1];
         return commandList.stream().map(
@@ -51,9 +84,13 @@ public class Scenario {
         ).collect(Collectors.joining("\n"));
     }
 
+    /**
+     * Applies the scenario to a given controller.
+     * @param controller controller who has to execute the scenario.
+     */
     public void apply(SmartHomeController controller) {
         commandList.forEach((rec) -> { controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); });
-        devMonitor.forEach((dev, mon) -> {controller.setDeviceMonitoring(dev, mon); } );
+        devMonitor.forEach((dev, mon) -> { controller.setDeviceMonitoring(dev, mon); } );
         System.out.println("Scenario " + name + " has been applied to the controller!");
     }
 }
