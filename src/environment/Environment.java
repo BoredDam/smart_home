@@ -10,12 +10,22 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/**
+ * the Environment class simulates a virtual environment for the SmartHomeController devices
+ * to react to. It offers a way to trigger observable devices, such cameras, thermostats or doors.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class Environment {
     
-    private float temp;
-    private final float influenceFactor;
+    private float temp; // temperature
+    private final float influenceFactor; // It is a constant that establishes how much the devices influence the temperature
     private final List<Device> device_list; 
 
+    /**
+     * @param device_list HAS to be an unmodifiable list of the controller's list of devices.
+     */
     public Environment(List<Device> device_list) {
         // Note: the device_list that is passed in the class is supposed
         // to be an UNMODIFIABLE list of the controller's list of devices.
@@ -25,8 +35,10 @@ public class Environment {
         influenceFactor = 0.2f;
     }
 
-    // calculates temperature based on current temperature and air conditioner turned on
-    // if an OldHeater is present, it will just raise the temperature by 0.5 degrees
+    /**
+     * Calculates temperature based on current temperature and air conditioner turned on, 
+     * then updates every thermostat in the device list.
+     */
     public void calculateTemperature() {
         float avgTarget = 0.0f;
         int count = 0;
@@ -42,14 +54,18 @@ public class Environment {
             avgTarget /= count;
             this.temp = this.temp + (avgTarget - this.temp) * influenceFactor;
         }
+
         for(Device dev: device_list) {
-            if(dev instanceof OldHeaterAdapter) {
+            if(dev instanceof OldHeaterAdapter) { // if an OldHeater is present, it will just raise the temperature by 0.5 degrees
                 this.temp += 0.5f;
             }
         }
         updateAllThermostats();
     }
 
+    /**
+     * Updates every thermostat in the list of device.
+     */
     private void updateAllThermostats() {
         for(Device dev: device_list) {
             if(dev instanceof Thermostat t && t.isOn()) {
@@ -58,21 +74,33 @@ public class Environment {
         }
     }
     
+    /**
+     * Performs an action to a given door.
+     * @param devName is the door name.
+     * @param open if it's <code>true</code>, the door is opened. if it's <code>false</code>, the door is closed.
+     */
     public void actionOnDoor(String devName, boolean open) {
         Door door = (Door) device_list.stream()
             .filter(dev -> dev.getName().equals(devName) && dev instanceof Door)
             .findFirst()
             .orElse(null);
-        if(door != null) {
-            if(open)
-                door.open();
-            else
-                door.close();
-        } else {
-            System.out.println("[Environment] Door not found. Maybe the name is wrong?");
-        }
-    }
 
+        if (door == null) {
+            System.out.println("[Environment] Door not found. Maybe the name is wrong?");
+            return;
+        }
+
+        if (open) {
+            door.open();
+        } else {
+            door.close();
+        }
+    } 
+    
+    /**
+     * Performs an action to a random door of the system.
+     * @param open if it's <code>true</code>, the door is opened. if it's <code>false</code>, the door is closed.
+     */
     public void actionOnRandomDoor(boolean open) {
         List<Door> tempList = device_list.stream()
             .filter(dev -> (dev instanceof Door))
@@ -91,7 +119,9 @@ public class Environment {
             randomDoor.close();
     }
 
-    // we do the same thing as above, but for calling notifyObserver() on cameras
+    /**
+     * Makes a random camera in the system detect a presence.
+     */
     public void randomCameraPresenceDetection() {
         List<Camera> cameras = device_list.stream()
                 .filter(dev -> (dev instanceof Camera))
@@ -105,12 +135,16 @@ public class Environment {
         }
     }
 
-    // again, if we don't like random selection, use the method below
+    /**
+     * Makes a given camera in the system detect a presence.
+     * @param devName the name of the camera that will detect a presence.
+     */
     public void cameraPresenceDetection(String devName) {
         Camera camera = (Camera) device_list.stream()
             .filter(dev -> (dev.getName().equals(devName) && dev instanceof Camera))
             .findFirst()
             .orElse(null);
+
         if(camera != null) {
             camera.notifyObserver();
         } else {

@@ -2,7 +2,7 @@ package devices.door;
 
 import devices.ObservableDevice;
 
-public class Door extends ObservableDevice{
+public class Door extends ObservableDevice {
 
     LockState lockState;
     public Door(String name) {

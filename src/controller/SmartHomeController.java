@@ -61,11 +61,21 @@ public class SmartHomeController implements Observer {
         listenedDevices.put(device, state);
     }
 
+    /**
+     * Toggles the monitoring state for a given device.
+     * @param device to change the monitoring state of
+     */
     public void toggleDeviceMonitoring(ObservableDevice device) {
         listenedDevices.put(device, !listenedDevices.get(device));
         // toggles the state
     }
 
+    /**
+     * Gives back a string with the monitoring state of a device.
+     * @param dev any type of device, observable or not.
+     * @return <code>non-monitorable</code> if the device is not an <code>ObservableDevice</code>, 
+     *         <code>monitored</code> if the device is monitored, <code>non-monitored</code> otherwise. 
+     */
     public String printDevMonitoringState(Device dev) {
         if(dev instanceof ObservableDevice od){
             return (listenedDevices.get(od) ? "monitored" : "non-monitored");
@@ -73,10 +83,17 @@ public class SmartHomeController implements Observer {
         return "non-monitorable";
     }
 
+    /**
+     * @return a string with every scheduled scenario of the <code>SmartHomeController</code>.
+     */
     public String scheduledScenariosToString() {
         return scheduledScenarios.stream().map(rec -> rec.scenarioName + " scheduled at " + rec.time).collect(Collectors.joining("\n"));
     }
 
+    /**
+     * Prints out a message by the <code>SmartHomeController</code>.
+     * @param message to print out.
+     */
     private void printMessage(String message) {
         System.out.println("[SmartHomeController] " + message);
     }
@@ -94,6 +111,7 @@ public class SmartHomeController implements Observer {
         });
         System.out.println("[SmartHomeController] " + idx[0] + " command" + (idx[0] == 1  ? "" : "s") + " related to " + device.getName() + (idx[0] == 1 ? " has" : " have ") + " been cancelled.");
     }
+
     /**
      * Adds a device to the <code>SmartHomeController</code> device list.
      * @param device to add
@@ -118,6 +136,7 @@ public class SmartHomeController implements Observer {
         }
     }
 
+
     public boolean updateFunctionality(String devName, Device updatedDevice) {
         Device oldDevice = getDeviceFromName(devName);
         if(oldDevice != null) {
@@ -133,6 +152,7 @@ public class SmartHomeController implements Observer {
         }
         return false;
     }
+
     /**
      * Removes a specific device from the <code>SmartHomeController</code> 
      * device list, if it exists.
@@ -170,7 +190,6 @@ public class SmartHomeController implements Observer {
     }
     
     /**
-     * 
      * @param deviceName
      * @return true if an object that implements the <code>Device</code> interface with this
      * <code>deviceName</code> is in the device list of the <code>SmartHomeController</code>. 
@@ -188,7 +207,7 @@ public class SmartHomeController implements Observer {
     @Override
     public void update(ObservableDevice dev, String eventType) {
         if(listenedDevices.get(dev)){ 
-           Event event =  eventManager.getEvent(eventType); 
+           Event event = eventManager.getEvent(eventType); 
            if(event == null) {
                 printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
                 return;

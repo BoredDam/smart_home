@@ -1,4 +1,5 @@
 package userFacade;
+import java.util.function.Consumer;
 
 /**
  * GUIPrinter is the class responsible of printing the user interface for the entire software.
@@ -9,11 +10,9 @@ package userFacade;
  * @author Damiano Trovato
  */
 
-import java.util.function.Consumer;
-
 public class GUIPrinter {
-
     private final GUIWindow guiWindow;
+
     public GUIPrinter(GUIWindow guiWindow) {
         this.guiWindow = guiWindow;
     }

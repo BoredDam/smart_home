@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import devices.camera.*;
-import devices.Device;
 
 public class CameraTest {
 
