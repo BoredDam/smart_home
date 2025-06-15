@@ -12,6 +12,7 @@ import devices.speaker.YoutubeMusicApp;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DecoratorFactory {
     private static record DecoratorEntry(String name, Class<? extends Device> expectedType, Class<? extends Device> decoratorType) {}
@@ -32,6 +33,13 @@ public class DecoratorFactory {
      * of <code>DecoratorFactory</code>.
      * @return the only DecoratorFactory instance
      */
+
+    // maybe this should be for every method that returns the toString... will add later
+    public String availableDecsToString(String prepend) {
+        return decoratorBuilders.stream()
+                .map(rec -> prepend + rec.name + " for device of type " + rec.expectedType.getSimpleName().toLowerCase())
+                .collect(Collectors.joining("\n"));
+    }
     public static DecoratorFactory getInstance() {
         if (instance == null) {
             instance = new DecoratorFactory();
@@ -47,7 +55,6 @@ public class DecoratorFactory {
             System.out.println("[DecoratorFactory] Device already has that functionality!");
             return dev;
         }
-
         DecoratorEntry record = decoratorBuilders.stream().filter((rec) -> (rec.name.equals(functionality))).findFirst().orElse(null);
         if (record == null) {
             System.out.println("[DecoratorFactory] Functionality not found!");

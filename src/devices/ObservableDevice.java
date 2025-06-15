@@ -16,10 +16,6 @@ public abstract class ObservableDevice extends Device {
         controllerObserving = null;
     }
 
-    public void notifyObserver() {
-        if(isOn()) {
-            if(controllerObserving != null) controllerObserving.update(this);
-        }
-    }
+    public abstract void notifyObserver();
 
 }

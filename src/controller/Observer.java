@@ -3,5 +3,5 @@ package controller;
 import devices.ObservableDevice;
 
 public interface Observer {
-    void update(ObservableDevice dev);
+    void update(ObservableDevice dev, String event);
 }

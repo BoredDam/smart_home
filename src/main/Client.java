@@ -14,7 +14,7 @@ public class Client {
         BaseSpeaker cassa2 = new BaseSpeaker("cass2");
         controller.addDevice(cassa);
         controller.addDevice(cassa2);
-        Thermostat thermostat = new Thermostat("test");
+        Thermostat thermostat = new Thermostat("thermostst");
         thermostat.turnOn();
         thermostat.setLowerBound(30);
         controller.addDevice(thermostat);

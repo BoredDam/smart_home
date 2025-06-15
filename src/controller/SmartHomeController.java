@@ -3,9 +3,6 @@ package controller;
 import commands.Command;
 import devices.Device;
 import devices.ObservableDevice;
-import devices.camera.Camera;
-import devices.door.Door;
-import devices.thermostat.Thermostat;
 import environment.Environment;
 import events.Event;
 import events.EventManager;
@@ -13,7 +10,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +21,6 @@ import java.util.stream.Collectors;
 import scenario.Scenario;
 public class SmartHomeController implements Observer {
     private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
-    public record ScheduledCommandInfos(String devName, String commandName, boolean repeats) {} // used to hide the handle from the user
     private record ScheduledScenario(String scenarioName, Scenario scenario, String time, ScheduledFuture<?> handle) {}
 
     private static SmartHomeController instance;
@@ -37,9 +32,10 @@ public class SmartHomeController implements Observer {
     private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>();
     private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();    
 
+    private final ScheduledFuture<?> cleaningTask;
     private SmartHomeController() {
         eventManager = EventManager.getInstance();
-        scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
+        cleaningTask = scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
         // this "daemon" cleans up the completed tasks. The frequency of 30 seconds should be perfect
         environment = new Environment(this.device_list); // interacts with the environment
     }
@@ -129,7 +125,7 @@ public class SmartHomeController implements Observer {
             int idx = device_list.indexOf(oldDevice);
             if (idx != -1) {
                 device_list.set(idx, updatedDevice);
-            return true;
+                return true;
             }
         }
         return false;
@@ -151,10 +147,8 @@ public class SmartHomeController implements Observer {
         deletedDeviceCommandCleanup(device);
         device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
         printMessage(device.getName() + " just got removed from the SmartHome Controller...");
-        return true;
-        
+        return true;   
     }
-
     
     /**
      * Returns the string representing the device list of the <code>SmartHomeController</code>.
@@ -189,26 +183,14 @@ public class SmartHomeController implements Observer {
     }
 
     @Override
-    public void update(ObservableDevice dev) {
+    public void update(ObservableDevice dev, String eventType) {
         if(listenedDevices.get(dev)){ 
-            switch(dev) {
-                case Thermostat ts -> {
-                    if(ts.tooHot()) {
-                        triggerEvent(eventManager.getEvent("HighTemperature"));
-                    } 
-                    else if (ts.tooCold()) {
-                        triggerEvent(eventManager.getEvent("LowTemperature"));
-                    } 
-                }
-                case Camera _, Door _ -> { 
-                    // the notification is sent by the door when the state changes from locked to opened 
-                    // essentially, it means that the door was forced.
-                    triggerEvent(eventManager.getEvent("Intrusion"));
-                }
-                default -> {
-                    printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
-                }
-            }       
+           Event event =  eventManager.getEvent(eventType); 
+           if(event == null) {
+                printMessage("The device " + dev.getName() + " has sent a notification that is not currently supported by any event");
+                return;
+            }
+           triggerEvent(event);
         }   
     }
 
@@ -240,7 +222,7 @@ public class SmartHomeController implements Observer {
             return;
         }
 
-        ScheduledFuture<?> handle = null; 
+        ScheduledFuture<?> handle; 
         if(repeatSecs > 0) {
             handle = scheduler.scheduleAtFixedRate( () -> { dev.performAction(cmd); }, delaySecs, repeatSecs, TimeUnit.SECONDS);
         } else {
@@ -268,10 +250,6 @@ public class SmartHomeController implements Observer {
         String time = estimated.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
         scheduledScenarios.add(new ScheduledScenario(scenarioName, scenario, time, handle));
         // don't think we should repeat scenarios...
-    }
-
-    public List<Device> getViewOnlyDevices() {
-        return Collections.unmodifiableList(device_list);
     }
 
     // returns infos of the commands, hiding the handle
@@ -311,6 +289,7 @@ public class SmartHomeController implements Observer {
     public void shutdown() {
         try (scheduler) {
             flushTasks();
+            cleaningTask.cancel(true);
         }
     }
     

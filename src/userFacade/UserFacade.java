@@ -16,16 +16,17 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import scenario.Scenario;
 
 public class UserFacade {
-    private class commandScheduleInfo {
+    private class CommandScheduleInfo {
         String devName;
         long delaySecs;
         long repeatSecs;
         Command cmd;
-        Consumer<commandScheduleInfo> afterSetup;
-        commandScheduleInfo(Consumer<commandScheduleInfo> afterSetup) {
+        Consumer<CommandScheduleInfo> afterSetup;
+        CommandScheduleInfo(Consumer<CommandScheduleInfo> afterSetup) {
             this.devName = null;
             this.delaySecs = 0;
             this.repeatSecs = 0;
@@ -33,7 +34,6 @@ public class UserFacade {
             this.afterSetup = afterSetup;
         }   
     }
-
 
     private SmartHomeController controller;
     private DeviceFactory devFactory;
@@ -46,21 +46,66 @@ public class UserFacade {
         gui = new GUIPrinter(guiWindow);
     }
 
-    private void initializeDefaultController() {
+    private void initializeUserSpace() {
 
-        gui.printToWindow("Setting default controller...");
+        gui.printToWindow("Setting up user space...");
         controller = SmartHomeController.getInstance();
         devFactory = DeviceFactory.getInstance();
         cmdRegister = CommandRegister.getInstance();
         cmdFactory = CommandFactory.getInstance();
         decFactory = DecoratorFactory.getInstance();
     }
+ // < - Utility methods - >
+    private void switchToMainLoop() {
+        gui.setMenu(this::mainLoop);
+        gui.printMainMenu();
+    }
+
+    private void switchToDeviceConfigLoop() {
+        gui.setMenu(this::deviceConfigLoop);
+        gui.printDeviceConfig();
+    }
+
+    private void switchToScheduleCommandLoop() {
+        gui.setMenu(this::scheduleACommandLoop);
+        gui.printCommandScheduler(controller.deviceListToString(""));
+    }
+
+    private void switchToScenariosMenuLoop() {
+        gui.setMenu(this::scenariosMenuLoop);
+        gui.printScenariosMenu();
+    }
+
+    private void switchToEnvironmentLoop() {
+        gui.setMenu(this::environmentLoop);
+        gui.printEnvironmentSettings();
+    }
+
+    private void switchToAddDeviceLoop() {
+        gui.setMenu(this::addDeviceLoop);
+        gui.printAddDevice(controller.deviceListToString(""), devFactory.availableTypesToString());
+    }
+
+    private void switchToEditScenarioLoop() {
+        gui.setMenu(this::editScenarioLoop);
+        gui.printEditScenario(scenariosListToString());
+    }
+
+    private String scenariosListToString() {
+        return userScenarios.stream().map(scenario -> ("| " + scenario.getName())).collect(Collectors.joining("\n"));
+    }
+
+    private boolean scenarioNameCollision(String scenarioName) {
+        return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
+    }
+    // !< - End of utility methods - >
+
 
     public void mainDialog() {
         // if we have more than one type of controller, we can further modify this. But this is not the case 
         // and we just leave the possibility to extend the software
         gui.printToWindow("Welcome! This is a Smart Home simulator. We will now setup the basic environment for your simulation...");
-        initializeDefaultController();
+        initializeUserSpace();
         gui.printSeparator();
         gui.printToWindow("Everything should be in place!");
         gui.printSeparator();
@@ -69,39 +114,26 @@ public class UserFacade {
     }
 
     private void mainLoop(String input) {
-        //gui.printMainMenu();
         switch (input) {
-            case "1":
-                gui.setMenu(this::deviceConfigLoop);
-                gui.printDeviceConfig();
-                break;
+            case "1" -> switchToDeviceConfigLoop();
 
-            case "2":
-                gui.setMenu(this::scheduleACommandLoop);
-                gui.printCommandScheduler(controller);
-                break;
+            case "2" -> switchToScheduleCommandLoop();
 
-            case "3":
+            case "3" -> {
                 gui.setMenu(this::killCommandLoop);
-                gui.printKillCommand(controller);
-                break;
-            case "4":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            case "5":
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break; 
-        
-            case "q":
+                gui.printKillCommand(controller.scheduledCommandsToString());
+            }
+            case "4" -> switchToScenariosMenuLoop();
+            
+            case "5" -> switchToEnvironmentLoop();
+            
+            case "q" -> {
                 System.out.println("bye bye...");
                 controller.shutdown();
                 System.exit(0);
-                break;
-
-            default:
-                break;
+            }
+            
+            default -> {}
         }
     }
 
@@ -109,105 +141,82 @@ public class UserFacade {
 
         gui.printDeviceConfig();
         switch (input) {
-            case "1":
-                showDevicesLoop();
+            case "1" -> {
+                gui.printShowDevice(controller.deviceListToString(""));
                 gui.setMenu((_) -> { gui.setMenu(this::deviceConfigLoop); gui.printDeviceConfig();});
-                break;
+            }
 
-            case "2":
-                gui.setMenu(this::addDeviceLoop);
-                gui.printAddDevice(controller, devFactory.availableTypesToString());
-                break;
+            case "2" -> switchToAddDeviceLoop();
 
-            case "3":
+            case "3" -> {
                 gui.setMenu(this::removeDeviceLoop);
-                gui.printRemoveDevice(controller);
-                break;
+                gui.printRemoveDevice(controller.deviceListToString(""));
+            }
 
-            case "4":
+            case "4" -> {
                 gui.setMenu(this::addAFunctionalityLoop);
-                gui.printAddAFunctionality(controller);
-                break; 
+                gui.printAddAFunctionality(controller.deviceListToString(""), decFactory.availableDecsToString(" - "));
+            } 
         
-            case "5":
+            case "5" -> {
                 gui.setMenu(this::deviceMonitoringLoop);
-                gui.printDeviceMonitoring(controller);
-                break;
+                gui.printDeviceMonitoring(controller.deviceListToString(""));
+            }
 
-            case "":
+            default -> {
                 controller.setupDefaultEvents();
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;
-                
-            default:
-                break;
+                switchToMainLoop();
+            }
         }
     }
 
-    private void showDevicesLoop() {
-        gui.printShowDevice(controller);
-    }
     
     private void removeDeviceLoop(String devName) {
-        
-        switch(devName) {
-            case "":
-                gui.setMenu(this::deviceConfigLoop);
-                gui.printDeviceConfig();
-                break;
-            default:
-                controller.removeDevice(controller.getDeviceFromName(devName));
-                gui.printRemoveDevice(controller);
-                break;
+        if(devName.isEmpty()) {
+            switchToDeviceConfigLoop();
+            return;
         }
+        devName = devName.trim();
+        controller.removeDevice(controller.getDeviceFromName(devName));
+        gui.printRemoveDevice(controller.deviceListToString(""));
     }
 
     private void addDeviceLoop(String typeName) {
-        switch(typeName) {
-            case "":
-                gui.setMenu(this::deviceConfigLoop);
-                gui.printDeviceConfig();
-                break;
-            default:
-                if(!devFactory.lookFor(typeName)) {
-                    gui.printToWindow("This device type is not supported.");
-                    break;
-                }
-                gui.printToWindow("Type your new device name.");
-                gui.setMenu((input) -> {
-                    String devName = input.trim(); 
-                    controller.addDevice(devFactory.createDevice(typeName, devName)); 
-                    gui.setMenu(this::addDeviceLoop);
-                    gui.printAddDevice(controller, devFactory.availableTypesToString());
-                } );
-                break;
+        if(typeName.isEmpty()) {
+            switchToDeviceConfigLoop();
+            return;
         }
-        
-    }
+        if(!devFactory.lookFor(typeName)) {
+            gui.printToWindow("This device type is not supported.");
+            return;
+        }
+        gui.printToWindow("Type your new device name.");
+        gui.setMenu((input) -> {
+            if(input.isEmpty()) {
+                gui.printToWindow("Device name cannot be empty.");
+                return;
+            }
+            String devName = input.trim(); 
+            controller.addDevice(devFactory.createDevice(typeName.trim(), devName)); 
+            switchToAddDeviceLoop();
+        } );
+        }
 
     private void deviceMonitoringLoop(String devName) {
-        switch (devName) {
-            case "":
-                gui.setMenu(this::deviceConfigLoop);
-                gui.printDeviceConfig();
-                break;
-            default:
-                if (controller.getDeviceFromName(devName) instanceof ObservableDevice od) {
-                    controller.toggleDeviceMonitoring(od);
-                }
-                else {
-                    gui.printToWindow("Device not monitorable.");
-                }
-                gui.printDeviceMonitoring(controller);
-                break;
+        if(devName.isEmpty()) {
+            switchToDeviceConfigLoop();
+            return;
         }
+        if (controller.getDeviceFromName(devName) instanceof ObservableDevice od) {
+            controller.toggleDeviceMonitoring(od);
+        }
+        else {
+            gui.printToWindow("Device not monitorable.");
+        }
+        gui.printDeviceMonitoring(controller.deviceListToString(""));
     }
 
-    // boolean toSchedule is used to determine if the command should be INSTANLTY scheduled or not
-    // this is used only because the scenario needs also the records to schedule the command
-    // and i don't want to re-write all the code just for the scenario
-    private void scheduleACommandAskCommand(commandScheduleInfo info) {
+    private void scheduleACommandAskCommand(CommandScheduleInfo info) {
         cmdRegister.getAvailableCommands(controller.getDeviceFromName(info.devName).getBaseType()).stream().forEach(cmd -> gui.printToWindow("\t" + cmd));
         gui.printToWindow("what command do you want to schedule?");
         gui.setMenu((cmdName) -> {
@@ -228,8 +237,8 @@ public class UserFacade {
         });
     }
     
-    private void scheduleACommandCreateCommand(commandScheduleInfo info, String cmdName, int argc) {
-        gui.printToWindow("Command " + cmdName + " requires " + argc + " following arguments: " + cmdFactory.getArgumentDescription(cmdName));
+    private void scheduleACommandCreateCommand(CommandScheduleInfo info, String cmdName, int argc) {
+        gui.printToWindow("Command " + cmdName + " requires " + argc + " arguments: " + cmdFactory.getArgumentDescription(cmdName));
         gui.setMenu((args) -> {
             Command cmd = cmdFactory.createCommand(cmdName, args);
             if(cmd == null) {
@@ -242,7 +251,7 @@ public class UserFacade {
         });
 
     }
-    private void scheduleACommandAskDelay(commandScheduleInfo info) {
+    private void scheduleACommandAskDelay(CommandScheduleInfo info) {
         gui.printToWindow("how long until the command is executed? (in seconds)");
         gui.setMenu((delayInput) -> {
             long delaySecs;
@@ -257,7 +266,7 @@ public class UserFacade {
         });
     }
 
-    private void handleAskRepeat(commandScheduleInfo info, String repeatInput) {
+    private void handleAskRepeat(CommandScheduleInfo info, String repeatInput) {
         long repeatSecs;
             try {
                 repeatSecs = Long.parseLong(repeatInput.trim());
@@ -268,7 +277,7 @@ public class UserFacade {
             info.repeatSecs = repeatSecs;
     }
     
-    private void scheduleACommandAskRepeat(commandScheduleInfo info) {
+    private void scheduleACommandAskRepeat(CommandScheduleInfo info) {
         gui.printToWindow("How often shall the command be executed? (in seconds)");
         gui.setMenu((repeatInput) -> {
             handleAskRepeat(info, repeatInput);
@@ -276,122 +285,96 @@ public class UserFacade {
         });
     }
 
+    
     private void scheduleACommandLoop(String devName) {
-        switch (devName) {
-            case "":
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;
-            default:    
-                gui.printToWindow("available commands for " + devName + ":");
-                if(controller.getDeviceFromName(devName) == null) {
-                    gui.printToWindow("This device does not exist.");
-                    break;
-                }
-                commandScheduleInfo info = new commandScheduleInfo( 
-                    (rec) -> { controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); 
-                        gui.setMenu(this::scheduleACommandLoop);
-                        gui.printCommandScheduler(controller);
-                    }
-                );
-                info.devName = devName;
-                scheduleACommandAskCommand(info); 
-                break;
-            }
+        if(devName.isEmpty()) {
+            switchToMainLoop();
+            return;
+        }  
+        gui.printToWindow("available commands for " + devName + ":");
+        if(controller.getDeviceFromName(devName) == null) {
+            gui.printToWindow("This device does not exist.");
+            return;
+        }
+        CommandScheduleInfo info = new CommandScheduleInfo( 
+            (rec) -> { 
+                controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); 
+                switchToScheduleCommandLoop();
+            } );
+        info.devName = devName;
+        scheduleACommandAskCommand(info); 
     }
 
     private void killCommandLoop(String inputIndex) {
-        switch(inputIndex) {
-            case "":
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;
-            default:
-                int index;
-                try {
-                    index = Integer.parseInt(inputIndex.trim());
-                    controller.killCommand(index);
-                } catch (NumberFormatException e) {
-                    gui.printToWindow("Invalid input, please try again.");
-                }
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;
+        if(!inputIndex.isEmpty()) {
+            int index;
+            try {
+                index = Integer.parseInt(inputIndex.trim());
+                controller.killCommand(index);
+            } catch (NumberFormatException e) {
+                gui.printToWindow("Invalid input, please try again.");
+            }
         }
+        switchToMainLoop();
     }
-    private void addAFunctionalityLoop(String devName) {
-        switch(devName) {
-            case "":
-                gui.setMenu(this::deviceConfigLoop);
-                gui.printDeviceConfig();
-                break;
-            
-            default:
-                if(controller.getDeviceFromName(devName) == null) {
-                    gui.printToWindow("Device does not exist.");
-                    break;
-                }
-                gui.printToWindow("which function you want to add?");
-                gui.setMenu( (decName) -> {
-                    Device decoratedDev = decFactory.addFunctionality(controller.getDeviceFromName(devName), decName);
-                    if (decoratedDev == null) {
-                        gui.printToWindow("This functionality is not supported.");
-                    } 
-                    else {
-                        controller.updateFunctionality(devName, decoratedDev);
-                        gui.printAddAFunctionality(controller);
-                    }
-                    gui.setMenu(this::addAFunctionalityLoop);
-                } );
-                break;
-        }
 
+    private void addFunctionHelper(String devName) {
+        gui.printToWindow("which function you want to add?");
+        gui.setMenu( (decName) -> {
+            Device decoratedDev = decFactory.addFunctionality(controller.getDeviceFromName(devName), decName);
+            if (decoratedDev == null) {
+                gui.printToWindow("This functionality is not supported. Select another device.");
+            } 
+            else {
+                controller.updateFunctionality(devName, decoratedDev);
+                gui.printAddAFunctionality(controller.deviceListToString(""), decFactory.availableDecsToString(" - "));
+            }
+            gui.setMenu(this::addAFunctionalityLoop);
+        });
+    }
+
+    private void addAFunctionalityLoop(String devName) {
+        if(devName.isEmpty()) {
+            switchToDeviceConfigLoop();
+            return;
+        }
+        devName = devName.trim();
+        if(controller.getDeviceFromName(devName) == null) {
+            gui.printToWindow("Device does not exist.");
+            return;
+        }
+        addFunctionHelper(devName);
     }
     
     private void scenariosMenuLoop(String input) {
         switch (input) {
-            case "1":
-                showScenariosLoop();
-                gui.setMenu((_) -> { gui.setMenu(this::scenariosMenuLoop); gui.printScenariosMenu();});
-                break;
-            case "2":
+            case "1" -> {
+                gui.printShowScenarios(scenariosListToString());
+                gui.setMenu((_) -> { switchToScenariosMenuLoop();});
+            }
+            case "2" -> {
                 gui.setMenu(this::createScenarioLoop);
-                gui.printCreateScenario(userScenarios);
-                break;
-            case "3":
-                gui.setMenu(this::editScenarioLoop);
-                gui.printEditScenario(userScenarios);
-                break;
-            case "4":
+                gui.printCreateScenario(scenariosListToString());
+            }
+            case "3" -> switchToEditScenarioLoop();
+            case "4" -> {
                 gui.setMenu(this::scheduleScenarioLoop);
-                gui.printScenarioScheduler(userScenarios);
-                break;
-            case "5":
+                gui.printScenarioScheduler(scenariosListToString());
+            }
+            case "5" -> {
                 gui.setMenu(this::triggerAScenarioLoop);
-                gui.printTriggerScenario(userScenarios);
-                break;
-            case "6":
+                gui.printTriggerScenario(scenariosListToString());
+            }
+            case "6" -> {
                 gui.setMenu(this::removeScenarioLoop);
-                gui.printRemoveScenario(userScenarios);
-                break;  
-            case "7":
-                showScheduledScenariosLoop();
-                gui.setMenu((_) -> { gui.setMenu(this::scenariosMenuLoop); gui.printScenariosMenu();});
-                break;
-            case "":
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;       
-            default:
-                break;
+                gui.printRemoveScenario(scenariosListToString());
+            }
+            case "7" -> {
+                gui.printScheduledScenarios(controller.scheduledScenariosToString());
+                gui.setMenu((_) -> { switchToScenariosMenuLoop(); });
+            }
+            default -> switchToMainLoop();       
         }
-    }
-
-    private void showScheduledScenariosLoop() {
-        gui.printScheduledScenarios(controller);
-    }
-    private void showScenariosLoop() {
-        gui.printShowScenarios(userScenarios);
     }
 
     private Scenario getScenarioFromName(String scenarioName) {
@@ -399,21 +382,18 @@ public class UserFacade {
     }
 
     private void removeScenarioLoop(String scenarioName) {
-        switch(scenarioName) {
-            case "":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            default:
-                Scenario selected = getScenarioFromName(scenarioName);
-                if(selected == null) {
-                    gui.printToWindow("A scenario with that name does not exist.");
-                    break;
-                }
-                userScenarios.remove(selected);
-                gui.printRemoveScenario(userScenarios);        
-                break;
-        }    
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
+        }
+        scenarioName = scenarioName.trim();
+        Scenario selected = getScenarioFromName(scenarioName);
+            if(selected == null) {
+                gui.printToWindow("A scenario with that name does not exist.");
+                return;
+            }
+        userScenarios.remove(selected);
+        gui.printRemoveScenario(scenariosListToString());            
     }
 
     private long parseDelay(String time) throws DateTimeParseException {
@@ -438,55 +418,42 @@ public class UserFacade {
                 seconds = 86400;
             }
             controller.scheduleScenario(scenario.getName(), scenario, seconds);
-            gui.setMenu(this::scenariosMenuLoop);
-            gui.printScenariosMenu();
+            switchToScenariosMenuLoop();
         });
 
     }
-    
     private void scheduleScenarioLoop(String scenarioName) {
-        switch(scenarioName) {
-            case "":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            default:
-                Scenario selected = getScenarioFromName(scenarioName);
-                if(selected == null) {
-                    gui.printToWindow("A scenario with that name does not exist.");
-                    break;
-                }
-                scheduleAScenarioAskDelay(selected);
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
         }
-    }
-
-    private boolean scenarioNameCollision(String scenarioName) {
-        return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
+        Scenario selected = getScenarioFromName(scenarioName);
+            if(selected == null) {
+                gui.printToWindow("A scenario with that name does not exist.");
+                return;
+            }
+        scheduleAScenarioAskDelay(selected);
     }
 
     private void createScenarioLoop(String scenarioName) {
-        switch (scenarioName) {
-            case "":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            default:
-                if(scenarioNameCollision(scenarioName)) {
-                    gui.printToWindow("A scenario with the same name already exists.");
-                    break;
-                }
-                userScenarios.add(new Scenario(scenarioName));
-                gui.printCreateScenario(userScenarios);
-                break;
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
         }
+        scenarioName = scenarioName.trim();
+        if(scenarioNameCollision(scenarioName)) {
+            gui.printToWindow("A scenario with the same name already exists.");
+            return;
+        }
+        userScenarios.add(new Scenario(scenarioName));
+        gui.printCreateScenario(scenariosListToString());
     }
 
     private void setupScenarioNameHelper(Scenario scenario) {
         gui.printToWindow("Type the new name for the scenario (or nothing to cancel).");
         gui.setMenu((newName) -> {
             if(newName.isEmpty()) {
-                gui.setMenu(this::editScenarioLoop);
-                gui.printEditScenario(userScenarios);
+                switchToEditScenarioLoop();
                 return;
             }
             if(scenarioNameCollision(newName)){
@@ -495,8 +462,7 @@ public class UserFacade {
                 return;
             }
             scenario.changeName(newName);
-            gui.setMenu(this::editScenarioLoop);
-            gui.printEditScenario(userScenarios);
+            switchToEditScenarioLoop();
         });
     }
     
@@ -505,8 +471,7 @@ public class UserFacade {
         gui.printToWindow("Type the device name to which you want to add a command (or nothing to cancel).");
         gui.setMenu((devName) -> {
             if(devName.isEmpty()) {
-                gui.setMenu(this::editScenarioLoop);
-                gui.printEditScenario(userScenarios);
+                switchToEditScenarioLoop();
                 return;
             }
             Device dev = controller.getDeviceFromName(devName);
@@ -514,10 +479,9 @@ public class UserFacade {
                 gui.printToWindow("This device does not exist.");
                 return;
             }
-            commandScheduleInfo info = new commandScheduleInfo(
+            CommandScheduleInfo info = new CommandScheduleInfo(
                 (rec) -> { scenario.addCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd);
-                    gui.setMenu(this::editScenarioLoop);
-                    gui.printEditScenario(userScenarios);
+                    switchToEditScenarioLoop();
                 }
             );
             info.devName = devName;
@@ -529,22 +493,18 @@ public class UserFacade {
         gui.printToWindow(scenario.commandListToString());
         gui.printToWindow("Type the index of the command you want to remove (or nothing to cancel).");
         gui.setMenu((input) -> {
-            if(input.isEmpty()) {
-                gui.setMenu(this::editScenarioLoop);
-                gui.printEditScenario(userScenarios);
-                return;
+            if(!input.isEmpty()) {
+                 int index;
+                try {
+                    index = Integer.parseInt(input.trim());
+                } catch (NumberFormatException e) {
+                    gui.printToWindow("Invalid input, try again.");
+                    removeCommandFromScenarioHelper(scenario);
+                    return;
+                }
+                scenario.removeCommand(index);
             }
-            int index;
-            try {
-                index = Integer.parseInt(input.trim());
-            } catch (NumberFormatException e) {
-                gui.printToWindow("Invalid input, try again.");
-                removeCommandFromScenarioHelper(scenario);
-                return;
-            }
-            scenario.removeCommand(index);
-            gui.setMenu(this::editScenarioLoop);
-            gui.printEditScenario(userScenarios);
+            switchToEditScenarioLoop();
         });
     }
     
@@ -552,27 +512,19 @@ public class UserFacade {
         gui.printToWindow(controller.deviceListToString(""));
         gui.printToWindow("Type the monitorable device name on which you want set monitoring (or nothing to cancel).");
         gui.setMenu((devName) -> {
-            if(devName.isEmpty()) {
-                gui.setMenu(this::editScenarioLoop);
-                gui.printEditScenario(userScenarios);
-                return;
+            if(!devName.isEmpty()) {
+                Device dev = controller.getDeviceFromName(devName);
+                if(dev == null) {
+                    gui.printToWindow("This device does not exist.");
+                    return;
+                }
+                if(!(dev instanceof ObservableDevice)) {
+                    gui.printToWindow("This device is not monitorable.");
+                    return;
+                }
+                scenario.setDeviceMonitoring((ObservableDevice) dev, enable);
             }
-            Device dev = controller.getDeviceFromName(devName);
-            if(dev == null) {
-                gui.printToWindow("This device does not exist.");
-                return;
-            }
-            if(!(dev instanceof ObservableDevice)) {
-                gui.printToWindow("This device is not monitorable.");
-                return;
-            }
-            if(enable) {
-                scenario.enableDeviceMonitoring((ObservableDevice) dev);
-            } else {
-                scenario.disableDeviceMonitoring((ObservableDevice) dev);
-            }
-            gui.setMenu(this::editScenarioLoop);
-            gui.printEditScenario(userScenarios);
+            switchToEditScenarioLoop();
         });
     }
 
@@ -581,127 +533,80 @@ public class UserFacade {
         // menu must be defined like this, because we need the scenario object
         gui.setMenu((input) -> {
             switch(input) {
-                case "1":
-                    setupScenarioNameHelper(scenario);
-                    break;
-                case "2":
-                    addCommandToScenarioHelper(scenario);
-                    break;
-                case "3":
-                    removeCommandFromScenarioHelper(scenario);
-                    break;
-                case "4":
-                    deviceMonitoringHelper(scenario, true);
-                    break;
-                case "5":
-                    deviceMonitoringHelper(scenario, false);
-                    break;
-                case "":
-                    gui.setMenu(this::scenariosMenuLoop);
-                    gui.printScenariosMenu();
-                    break;
+                case "1" -> setupScenarioNameHelper(scenario);
+                case "2" -> addCommandToScenarioHelper(scenario);
+                case "3" -> removeCommandFromScenarioHelper(scenario);
+                case "4" -> deviceMonitoringHelper(scenario, true);
+                case "5" -> deviceMonitoringHelper(scenario, false);
+                default -> switchToScenariosMenuLoop();
             }
         });
     }
 
     private void editScenarioLoop(String scenarioName) {
-        switch(scenarioName) {
-            case "":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            default:
-                Scenario selected = getScenarioFromName(scenarioName);
-                if(selected == null) {
-                    gui.printToWindow("A scenario with that name does not exist.");
-                    break;
-                }
-                internalScenarioEditLoop(selected);
-                break;
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
         }
+        Scenario selected = getScenarioFromName(scenarioName);
+            if(selected == null) {
+                gui.printToWindow("A scenario with that name does not exist.");
+                return;
+            }
+        internalScenarioEditLoop(selected);
     }
 
     private void triggerAScenarioLoop(String scenarioName) {
-        switch (scenarioName) {
-            case "":
-                gui.setMenu(this::scenariosMenuLoop);
-                gui.printScenariosMenu();
-                break;
-            default:
-                Scenario selected = getScenarioFromName(scenarioName);
-                if(selected == null) {
-                    gui.printToWindow("A scenario with that name does not exist.");
-                    break;
-                }
-                selected.apply(controller);
-                gui.printTriggerScenario(userScenarios);
-                break;
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
         }
+        Scenario selected = getScenarioFromName(scenarioName);
+        if(selected == null) {
+            gui.printToWindow("A scenario with that name does not exist.");
+            return;
+        }
+        selected.apply(controller);
+        gui.printTriggerScenario(scenariosListToString());
     }
 
     private void environmentLoop(String input) {
         switch(input) {
-            case "1":
-                controller.measureTemperatures();
-                break;
-            case "2":
+            case "1" -> controller.measureTemperatures();
+            case "2" -> {
                 gui.setMenu(this::openDoorLoop);
-                gui.printOpenDoor(controller);
-                break;
-            case "3":
+                gui.printOpenDoor(controller.deviceListToString("Door"));
+            }
+            case "3" -> {
                 gui.setMenu(this::closeDoorLoop);
-                gui.printCloseDoor(controller);
-                break;
-            case "4":
+                gui.printCloseDoor(controller.deviceListToString("Door"));
+            }
+            case "4" -> {
                 gui.setMenu(this::cameraPresenceLoop);
-                gui.printCameraPresenceDetection(controller);
-                break;
-            default:
-                gui.setMenu(this::mainLoop);
-                gui.printMainMenu();
-                break;
+                gui.printCameraPresenceDetection(controller.deviceListToString("Camera"));
+            }
+            default -> switchToMainLoop();
         }
     }
 
     private void openDoorLoop(String doorName) {
-        switch(doorName) {
-            case "":
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
-            default:
-                controller.detectOpeningDoor(doorName);
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
+        if(!doorName.isEmpty()) {
+            controller.detectOpeningDoor(doorName);
         }
+        switchToEnvironmentLoop();
     }
 
     private void closeDoorLoop(String doorName) {
-        switch(doorName) {
-            case "":
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
-            default:
-                controller.detectClosingDoor(doorName);
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
+        if(!doorName.isEmpty()) {
+            controller.detectClosingDoor(doorName);
         }
+        switchToEnvironmentLoop();
     }
 
     private void cameraPresenceLoop(String cameraName) {
-        switch(cameraName) {
-            case "":
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
-            default:
-                controller.detectCameraPresence(cameraName);
-                gui.setMenu(this::environmentLoop);
-                gui.printEnvironmentSettings();
-                break;
+        if(!cameraName.isEmpty()) {
+            controller.detectCameraPresence(cameraName);
         }
+        switchToEnvironmentLoop();
     }
 }

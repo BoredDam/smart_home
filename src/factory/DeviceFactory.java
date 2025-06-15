@@ -41,7 +41,7 @@ public class DeviceFactory {
     }
 
     public String availableTypesToString() {
-        return classMap.keySet().stream().map(str -> str.toUpperCase()).collect(Collectors.joining(", "));
+        return classMap.keySet().stream().collect(Collectors.joining(", "));
     }
 
     // it's supposed that a certain evaluation is given for the string type in order to have insensitive case matching

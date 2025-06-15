@@ -34,6 +34,10 @@ public class Door extends ObservableDevice{
     public String getBaseType() {
         return "Door";
     }
-
+    
+    @Override
+    public void notifyObserver() {
+        if(isOn() && controllerObserving != null) controllerObserving.update(this, "Intrusion");
+    }
 
 }

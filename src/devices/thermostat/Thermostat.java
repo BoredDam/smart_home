@@ -21,6 +21,15 @@ public class Thermostat extends ObservableDevice {
         return measuredTemp;
     } 
 
+    @Override
+    public void notifyObserver() {
+        if(isOn() && controllerObserving != null) {
+            if(tooHot())
+                controllerObserving.update(this, "HighTemperature");
+            else if(tooCold())
+                controllerObserving.update(this, "LowTemperature");
+        }
+    }
     public void measureTemperature(float temperature) {
         this.measuredTemp = temperature;
         if((tooHot() || tooCold()) && !triggered) {
