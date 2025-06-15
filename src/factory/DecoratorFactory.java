@@ -50,7 +50,6 @@ public class DecoratorFactory {
 
     public Device addFunctionality(Device dev, String func) {
         String functionality = func.toLowerCase();
-        
         if (dev.getType().toLowerCase().contains(functionality)) {
             System.out.println("[DecoratorFactory] Device already has that functionality!");
             return dev;

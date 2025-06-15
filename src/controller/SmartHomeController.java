@@ -108,7 +108,6 @@ public class SmartHomeController implements Observer {
             printMessage("can't add two devices with the same name!");
             return;
         }
-
         device_list.add(device);
         printMessage(device.getName() + " just got registered to the SmartHomeController!");
 
@@ -125,6 +124,10 @@ public class SmartHomeController implements Observer {
             int idx = device_list.indexOf(oldDevice);
             if (idx != -1) {
                 device_list.set(idx, updatedDevice);
+                if(updatedDevice instanceof ObservableDevice od) {
+                    listenedDevices.put(od, true);
+                    listenedDevices.remove((ObservableDevice) oldDevice);
+                }
                 return true;
             }
         }
