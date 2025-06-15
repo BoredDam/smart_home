@@ -1,7 +1,6 @@
 package events;
 
 import commands.Command;
-import commands.NullCommand;
 import devices.Device;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class Event {  
     private final String type;
     private final Map<String, List<Command>> deviceActions = new HashMap<>();
-
+    private final ArrayList<Command> emptyInstance = new ArrayList<>(); // used to return an empty list when no commands are present
     public Event(String type) { 
         this.type = type;
     }
@@ -27,8 +26,7 @@ public class Event {
     public List<Command> getCommands(Device dev) {
         List<Command> commandList = deviceActions.get(dev.getName());
         if (commandList == null) { 
-            commandList = new ArrayList<>();
-            commandList.add(NullCommand.getInstance());
+            return emptyInstance; 
         }   
         return Collections.unmodifiableList(commandList);
     }
