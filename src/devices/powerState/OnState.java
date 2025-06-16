@@ -3,7 +3,7 @@ package devices.powerState;
 import commands.Command;
 
 public class OnState implements PowerState {
-    static OnState instance;
+    private static OnState instance;
     private OnState() {}
 
     /**
