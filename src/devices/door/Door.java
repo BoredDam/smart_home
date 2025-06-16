@@ -4,7 +4,7 @@ import devices.ObservableDevice;
 
 public class Door extends ObservableDevice {
 
-    LockState lockState;
+    private LockState lockState;
     public Door(String name) {
         super(name);
         lockState = OpenedState.getInstance();

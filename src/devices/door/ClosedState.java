@@ -1,7 +1,7 @@
 package devices.door;
 
 public class ClosedState implements LockState {
-    static ClosedState instance;
+    private static ClosedState instance;
 
     private ClosedState() {}
 
