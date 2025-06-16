@@ -283,6 +283,10 @@ public class SmartHomeController implements Observer {
         return device_list.stream().anyMatch(dev -> dev.getName().equals(deviceName));
     }
 
+    /**
+     * Triggers all of the commands of a given event.
+     * @param event to react to.3
+     */
     public void triggerEvent(Event event) {
         System.out.println("[SmartHomeController] Event " + event.getType() + " triggered!");
         device_list.forEach(dev -> event.getCommands(dev).forEach(cmd -> dev.performAction(cmd)));
@@ -344,12 +348,12 @@ public class SmartHomeController implements Observer {
             // the boolean is used to track if the task repeats or not
             // if a task is to be repeated, we can get the handler and we can kill it
     }
+
     /**
      * Returns a string with the time of command execution 
      * @param delaySecs is the delay expressed in seconds of the command execution
      * @return a string representing the time of command execution in the format "HH:mm"
      */
-
     private String elaborateDelay(long delaySecs) {
         LocalTime estimated = LocalTime.now();
         estimated = estimated.plus(delaySecs, ChronoUnit.SECONDS);
@@ -369,6 +373,7 @@ public class SmartHomeController implements Observer {
     public boolean isScenarioScheduled(String scenarioName) {
         return scheduledScenarios.stream().anyMatch(record -> record.scenarioName.equals(scenarioName));
     }
+
     /**
      * Schedules a scenario to be run after a certain delay.
      * @param scenarioName is the name of the scenario
@@ -412,8 +417,14 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /**
+     * Changes the name of a given scenario. The name won't be changed if a device with the same name as newName already exists.
+     * @param oldName
+     * @param newName
+     */
     public void changeScenarioName(String oldName, String newName) {
         Scenario scenario = getScenarioFromName(oldName);
+
         if(scenario == null) {
             printMessage("Scenario " + oldName + " not found, cannot change name!");
             return;
@@ -426,6 +437,12 @@ public class SmartHomeController implements Observer {
             .forEach(record -> record.scenarioName = newName);
     }
 
+    /**
+     * Sets the monitoring of a device for a certain scenario.
+     * @param device to change the monitoring state of.
+     * @param state the specified monitoring state.
+     * @param scenarioName
+     */
     public void setScenarioDeviceMonitoring(ObservableDevice device, boolean state, String scenarioName) {
         Scenario scenario = getScenarioFromName(scenarioName);
         if(scenario == null) {
@@ -438,7 +455,9 @@ public class SmartHomeController implements Observer {
 
     // returns infos of the commands, hiding the handle
     // this also respects the order of the insertion, since it's an arrayList
-
+    /**
+     * @return a String containing every scheduled commands, with the device that will execute it, their time delay and their repeat-time.
+     */
     public String scheduledCommandsToString() {
         int[] index = new int[1]; 
         return scheduledCommands.stream().filter(record -> (!record.handle.isDone())) // filters out completed tasks
@@ -470,6 +489,9 @@ public class SmartHomeController implements Observer {
         scheduledCommands.clear();
     }
 
+    /**
+     * Shuts down the controller, cleaning every scheduled commands.
+     */
     public void shutdown() {
         try (scheduler) {
             flushTasks();
@@ -477,14 +499,25 @@ public class SmartHomeController implements Observer {
         }
     }
     
+    /**
+     * Sets up the default events for the system.
+     */
     public void setupDefaultEvents() {
         eventManager.setUpDefaultEvents(device_list);
     }
 
+    /**
+     * Calculates the temperature of the environment and updates the devices about it.
+     */
     public void measureTemperatures() {
         environment.calculateTemperature();
     }
 
+    /**
+     * Makes a given door ru... 
+     * @param doorName
+     */
+    //TODO
     public void detectOpeningDoor(String doorName) {
         if(doorName.equalsIgnoreCase("random")) {
             environment.actionOnRandomDoor(true);
@@ -493,11 +526,11 @@ public class SmartHomeController implements Observer {
             environment.actionOnDoor(doorName, true);
         }
     }
+
     public void detectClosingDoor(String doorName) {
-        if(doorName.equalsIgnoreCase("random")) {
+        if (doorName.equalsIgnoreCase("random")) {
             environment.actionOnRandomDoor(false);
-        }
-        else {
+        } else {
             environment.actionOnDoor(doorName, false);
         }
     }
