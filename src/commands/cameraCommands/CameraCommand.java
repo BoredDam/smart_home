@@ -8,6 +8,9 @@ public abstract class CameraCommand implements Command {
     
     protected Camera camera;
 
+    /**
+     * Base class for commands that operate on a Camera device.
+     */
     public CameraCommand() {}
 
     @Override

@@ -2,6 +2,9 @@ package commands.speakerCommands;
 
 public class PlayCommand extends SpeakerCommand {
 
+    /**
+     * Command to play the speaker.
+     */
     public PlayCommand() {
         super();
     }

@@ -1,5 +1,8 @@
 package devices.camera;
 
+/*
+ * A class representing a normal camera device.
+ */
 public class BaseCamera extends Camera {
 
     public BaseCamera(String name) {

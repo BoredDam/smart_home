@@ -20,7 +20,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import scenario.Scenario;
 public class SmartHomeController implements Observer {
+    // informations related to the scheduled commands and scenarios are memorized:
+    // - inside ScheduledCommand, an immutable record which memorizes device name, command name, repetition and handle of task;
+    // - inside ScheduledScenario, which memorizes scenario name, time of execution and handle of task.
+
+    // scheduledScenarios records need to be mutable, therefore it's an inner class.
+    
     private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
+    
     private class ScheduledScenario {
         String scenarioName;
         String time;
@@ -36,18 +43,19 @@ public class SmartHomeController implements Observer {
     private static SmartHomeController instance;
     private final Environment environment;
     private final EventManager eventManager;
-    private final List<Device> device_list = new ArrayList<>();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final List<ScheduledCommand> scheduledCommands = new ArrayList<>();
-    private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>();
-    private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();  
-    private final List<Scenario> userScenarios = new ArrayList<>();  
+    private final List<Device> device_list = new ArrayList<>(); // used to keep track of devices
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // thread pool scheduler. Only one task at a time is runned
+    private final List<ScheduledCommand> scheduledCommands = new ArrayList<>(); // list of scheduled commands
+    private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>(); // map of observable devices and their monitoring state
+    private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();  // list of scheduled scenarios
+    private final List<Scenario> userScenarios = new ArrayList<>();  // list of user-defined scenarios
     private final ScheduledFuture<?> cleaningTask;
 
     private SmartHomeController() {
         eventManager = EventManager.getInstance();
         cleaningTask = scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
-        // this "daemon" cleans up the completed tasks. The frequency of 30 seconds should be perfect
+        // this "daemon" cleans up the completed tasks. The frequency of 30 seconds should be sufficient
+        // in order not to overload the system with task repetition
         environment = new Environment(this.device_list); // interacts with the environment
     }
     /**
@@ -63,18 +71,38 @@ public class SmartHomeController implements Observer {
         return instance;
     }
 
+    /**
+     * Returns a string containing the user-defined scenarios.
+     * @return a string with the names of all user-defined scenarios
+     */
     public String scenariosListToString() {
         return userScenarios.stream().map(scenario -> ("| " + scenario.getName())).collect(Collectors.joining("\n"));
     }
 
+    /**
+     *  Checks if a device with @param scenarioname is already in the device list.
+     *  @param scenarioName the name of the scenario to check
+     *  @return true if the scenario name is already in use, false otherwise
+     */
     public boolean scenarioNameCollision(String scenarioName) {
         return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
     }
+
+    /**
+     * Returns a new scenario with the given name.
+     * @param scenarioName the name of the scenario to return
+     * @return <code>Scenario</code> instance with the given name, or null if the scenario does not exist.
+     */
 
     private Scenario getScenarioFromName(String scenarioName) {
         return userScenarios.stream().filter(s -> s.getName().equals(scenarioName)).findFirst().orElse(null);
     }
 
+    /**
+     * Applies a scenario to the <code>SmartHomeController</code>.
+     * This method will execute the commands of the scenario and update the monitoring states of observable devices.
+     * @param scenarioName the name of the scenario to apply 
+     */
     public void applyScenario(String scenarioName) {
         Scenario scenario = getScenarioFromName(scenarioName);
         if(scenario == null) {
@@ -83,6 +111,10 @@ public class SmartHomeController implements Observer {
         }
         scenario.apply(this);
     }
+    /**
+     * Removes a scenario from the user-defined scenarios.
+     * @param scenarioName  the name of the scenario to remove
+     */
 
     public void removeScenario(String scenarioName) {
         Scenario scenario = getScenarioFromName(scenarioName);
@@ -94,6 +126,14 @@ public class SmartHomeController implements Observer {
         printMessage("Scenario " + scenarioName + " has been removed.");
     }
 
+    /**
+     * Adds a command to a scenario.
+     * @param devName the name of the device on which the command will be executed
+     * @param delaySecs the delay before the command is executed
+     * @param repeatSecs the interval at which the command is repeated
+     * @param cmd the command to execute
+     * @param scenarioName the name of the scenario to add the command to
+     */
     public void addCommandToScenario(String devName, long delaySecs, long repeatSecs, Command cmd, String scenarioName) {
         Scenario scenario = getScenarioFromName(scenarioName);
         if(scenario == null) {
@@ -103,6 +143,11 @@ public class SmartHomeController implements Observer {
         scenario.addCommand(devName, delaySecs, repeatSecs, cmd);
     }
 
+    /**
+     * Returns a string representation of the commands in a scenario.
+     * @param scenarioName the name of the scenario to get the commands from
+     * @return a string with all commands in the scenario, or an empty string if the scenario does not exist
+     */
     public String scenarioCommandsToString(String scenarioName) {
         Scenario scenario = getScenarioFromName(scenarioName);
         if(scenario == null) {
@@ -153,7 +198,7 @@ public class SmartHomeController implements Observer {
     }
 
     /**
-     * Returns a list of all scheduled scenarios
+     * Returns a string representing a list of all scheduled scenarios.
      * @param prepend is a string added before each line printed
      * @return a string with every scheduled scenario of the <code>SmartHomeController</code>.
      */
@@ -170,6 +215,10 @@ public class SmartHomeController implements Observer {
         System.out.println("[SmartHomeController] " + message);
     }
 
+    /**
+     *  Cleans up the scheduled commands related to a device that has been deleted.
+     * @param device the device that has been deleted
+     */
     private void deletedDeviceCommandCleanup(Device device) {
         int[] idx = new int[1];
         idx[0] = 0;
@@ -184,6 +233,11 @@ public class SmartHomeController implements Observer {
         System.out.println("[SmartHomeController] " + idx[0] + " command" + (idx[0] == 1  ? "" : "s") + " related to " + device.getName() + (idx[0] == 1 ? " has" : " have ") + " been cancelled.");
     }
 
+    /**
+     * Cleans up the scenarios related to a device that has been deleted.
+     * The method will remove all commands in scenarios that reference the deleted device.
+     * @param device the device that has been deleted
+     */
     private void deletedDeviceScenarioCleanup(Device device) {
         int[] count = new int[1];
         count[0] = 0;
@@ -219,6 +273,13 @@ public class SmartHomeController implements Observer {
     }
 
 
+    /**
+     * Updates the functionality of a device tracked by the <code>SmartHomeController</code>.
+     * The method replaces the entry inside the device list with the updated one, if it exists.
+     * @param devName the name of the device to update
+     * @param updatedDevice the new device to replace the old one
+     * @return true if the device was successfully updated, false if the device to update does not exist
+     */
     public boolean updateFunctionality(String devName, Device updatedDevice) {
         Device oldDevice = getDeviceFromName(devName);
         if(oldDevice != null) {
@@ -236,7 +297,7 @@ public class SmartHomeController implements Observer {
     }
 
     /**
-     * Removes a specific device from the <code>SmartHomeController</code> 
+     * Removes a specific device from the <code>SmartHomeController</code>
      * device list, if it exists.
      * @param device to remove
      */
@@ -258,7 +319,10 @@ public class SmartHomeController implements Observer {
     }
     
     /**
-     * Returns the string representing the device list of the <code>SmartHomeController</code>.
+     * Returns the string representing the device list of type <code>type</code> of the <code>SmartHomeController</code>
+     * if <code>type</code> is empty, it returns all devices.
+     * @param type the type of device to filter the list by. If empty, it returns all devices
+     * @return a string with the device list
      */
     public String deviceListToString(String type) {
         if(type.isEmpty())
@@ -292,6 +356,12 @@ public class SmartHomeController implements Observer {
         device_list.forEach(dev -> event.getCommands(dev).forEach(cmd -> dev.performAction(cmd)));
     }
 
+    /**
+     * Updates the <code>SmartHomeController</code> with the event type specified by <code>eventType</code>
+     * If the device is being monitored, it will trigger the event.
+     * @param dev the device that has sent the notification
+     * @param eventType the type of event that has been notified by the device
+     */
     @Override
     public void update(ObservableDevice dev, String eventType) {
         if(listenedDevices.get(dev)){ 
@@ -359,7 +429,11 @@ public class SmartHomeController implements Observer {
         estimated = estimated.plus(delaySecs, ChronoUnit.SECONDS);
         return estimated.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
-    
+
+    /**
+     * Adds a new scenario to the list of user scenarios.
+     * @param scenarioName the name of the scenario to add
+     */
     public void addScenario(String scenarioName) {
         userScenarios.add(new Scenario(scenarioName));
         printMessage("Scenario " + scenarioName + " added to the list of user scenarios!");
@@ -481,10 +555,12 @@ public class SmartHomeController implements Observer {
         return false;
     }
 
+    /**
+     * Flushes all the scheduled commands, cancelling them.
+     * This method is used to clean up the scheduled commands when the controller is shut down.
+     * Note that flushing the tasks is NOT a reversible process.
+     */
     public void flushTasks() {
-        // the function clears the map and deletes every scheduled command. Be advised because 
-        // the function DOES NOT INCLUDE ANY DOUBLE CHECK: ONCE CALLED, EVERY HANDLER IS CLEARED 
-        // AND THERE IS NO WAY TO RECOVER THE COMMANDS
         scheduledCommands.forEach( record -> { record.handle.cancel(true); } );
         scheduledCommands.clear();
     }
@@ -514,10 +590,11 @@ public class SmartHomeController implements Observer {
     }
 
     /**
-     * Makes a given door ru... 
-     * @param doorName
+     * "Detects" the opening of a door by stimulating the environment.
+     *  
+     * @param doorName the name of the door to be opened.
+     *                 If the name is "random", a random door will be opened.
      */
-    //TODO
     public void detectOpeningDoor(String doorName) {
         if(doorName.equalsIgnoreCase("random")) {
             environment.actionOnRandomDoor(true);
@@ -527,6 +604,12 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /**
+     * "Detects" the opening of a door by stimulating the environment.
+     *  
+     * @param doorName the name of the door to be closed.
+     *                 If the name is "random", a random door will be closed.
+     */
     public void detectClosingDoor(String doorName) {
         if (doorName.equalsIgnoreCase("random")) {
             environment.actionOnRandomDoor(false);
@@ -535,6 +618,11 @@ public class SmartHomeController implements Observer {
         }
     }
 
+    /**
+     * Stimulates the presence detection of a camera in the environment.
+     * @param cameraName the name of the camera to be stimulated.
+     *                   If the name is "random", a random camera will be stimulated.
+     */
     public void detectCameraPresence(String cameraName) {
         if(cameraName.equalsIgnoreCase("random")) {
             environment.randomCameraPresenceDetection();

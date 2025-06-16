@@ -7,6 +7,10 @@ public abstract class DeviceCommand implements Command {
     
     protected Device device;
     
+    /**
+     * Base class for commands that operate on a generic Device.
+     * Every Device will support commands that extends this class.
+     */
     public DeviceCommand() {
     }
 

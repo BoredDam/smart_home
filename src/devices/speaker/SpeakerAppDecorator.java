@@ -1,5 +1,10 @@
 package devices.speaker;
 import devices.Device;
+/**
+ * Decorator for speaker devices.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public abstract class SpeakerAppDecorator extends Speaker {
 
     private final Speaker wrapped;

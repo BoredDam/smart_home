@@ -7,6 +7,9 @@ public abstract class LightCommand implements Command {
 
     protected Light light;
 
+    /**
+     * Base class for commands that operate on a Light device.
+     */
     public LightCommand() {
     }
 

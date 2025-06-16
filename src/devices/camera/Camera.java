@@ -2,6 +2,10 @@ package devices.camera;
 
 import devices.ObservableDevice;
 
+/**
+ * Abstract class representing a camera device.
+ * Every camera can capture images and record videos.
+ */
 public abstract class Camera extends ObservableDevice {
     public Camera(String name) {
         super(name);

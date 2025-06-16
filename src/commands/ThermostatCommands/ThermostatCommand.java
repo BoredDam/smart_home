@@ -8,6 +8,9 @@ public abstract class ThermostatCommand implements Command {
 
     protected Thermostat thermostat;
 
+    /**
+     * Base class for commands that operate on a Thermostat device.
+     */
     public ThermostatCommand() {}
     
     @Override

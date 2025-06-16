@@ -2,6 +2,10 @@ package devices.door;
 
 import devices.ObservableDevice;
 
+/**
+ * Represents a door device that can be opened, closed, locked, and unlocked.
+ * If the door goes from a locked state to an opened state, it notifies the controller of an intrusion.
+ */
 public class Door extends ObservableDevice {
 
     private LockState lockState;

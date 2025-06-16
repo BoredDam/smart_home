@@ -1,5 +1,11 @@
 package devices.speaker;
 
+/**
+ * Represents the Amazon Music app for the smart speaker.
+ * Affects output of printInfos method by adding information about Amazon Music.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class AmazonMusicApp extends SpeakerAppDecorator {
 
     public AmazonMusicApp(Speaker wrapped) {

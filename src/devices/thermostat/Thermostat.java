@@ -2,13 +2,18 @@ package devices.thermostat;
 
 import devices.ObservableDevice;
 
+/**
+ * Represents a thermostat device that measures temperature and notifies observer (i.e. controller)
+ * when the temperature goes beyond set bounds.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class Thermostat extends ObservableDevice {
-    private float measuredTemp; // just in case... i don't know how to manage the temps rn so we keep this in case of godmode
+    private float measuredTemp; 
     private float lowerBound;
     private float upperBound;
     private boolean triggered; // the flag indicates if the thermostat has triggered an event
     // if the event is triggered, thermostat has already notified the observers
-    //
 
     public Thermostat(String name) {
         super(name);
@@ -30,6 +35,11 @@ public class Thermostat extends ObservableDevice {
                 controllerObserving.update(this, "LowTemperature");
         }
     }
+    /**
+     *  Measures the temperature and checks if it is within the bounds.
+     *  If the temperature is too high or too low, a notification is sent to the observer (i.e. controller).
+     * @param temperature the temperature measured
+     */
 
     public void measureTemperature(float temperature) {
         this.measuredTemp = temperature;
@@ -52,6 +62,11 @@ public class Thermostat extends ObservableDevice {
         return measuredTemp < lowerBound;
     }
 
+    /**
+     * Sets the upper bound for the thermostat.
+     * @param upperBound The upper bound temperature to set (10-50).
+     */
+
     public void setUpperBound(float upperBound) {
         printHeader();
         if (upperBound < 10 || upperBound > 50) {
@@ -67,6 +82,10 @@ public class Thermostat extends ObservableDevice {
 
     }
     
+    /**
+     * Sets the lower bound for the thermostat.
+     * @param lowerBound The lower bound temperature to set (10-50).
+     */
     public void setLowerBound(float lowerBound) {
         printHeader();
         if (lowerBound < 10 || lowerBound > 50) {

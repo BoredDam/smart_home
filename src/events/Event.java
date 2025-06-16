@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Instances of the Event class describes a sequence of commands that are executed under certain conditions 
- * of the system. They are thrown by 
+ * of the system. They are used to trigger the execution of commands on devices by the controller.
  * 
  * @author Paolo Volpini
  * @author Damiano Trovato

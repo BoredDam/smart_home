@@ -2,6 +2,9 @@ package devices.adapter;
 
 import devices.Device;
 
+/**
+ * Adapter class for the OldHeater device.
+ */
 public class OldHeaterAdapter extends Device {
     
     private final OldHeater adaptee;

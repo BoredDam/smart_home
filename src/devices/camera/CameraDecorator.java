@@ -2,6 +2,10 @@ package devices.camera;
 
 import devices.Device;
 
+/**
+ * Abstract class representing a camera decorator.
+ * A camera decorator adds additional functionality to an already existing camera.
+ */
 public abstract class CameraDecorator extends Camera {
 
     private final Camera wrapped;

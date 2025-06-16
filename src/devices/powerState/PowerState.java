@@ -37,5 +37,11 @@ public interface PowerState {
      */
     boolean isOff();
 
+    /**
+     * This method runs a command on the device.
+     * If the device is off, it will not execute the command if it's not a TurnOn command.
+     * If the device is on, it will execute the command normally.
+     * @param cmd the command to run
+     */
     void runCommand(Command cmd);
 }

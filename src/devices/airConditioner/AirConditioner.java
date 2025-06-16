@@ -2,6 +2,11 @@ package devices.airConditioner;
 
 import devices.Device;
 
+/**
+ * Represents an air conditioner device.
+ * An air conditioner can be set to a target temperature.
+ * When turned on, it will affect the environment temperature.
+ */
 public class AirConditioner extends Device {
     
     private float targetTemp = 23;
@@ -10,6 +15,10 @@ public class AirConditioner extends Device {
         super(name);
     }
 
+    /**
+     * Sets the target temperature of the air conditioner.
+     * @param targetTemp the new target temperature to set
+     */
     public void setTargetTemp(float temp) {
         printHeader();
         if (temp < 10 || temp > 50) {
@@ -22,6 +31,10 @@ public class AirConditioner extends Device {
         System.out.println("Target temperature set to: " + targetTemp + " °C");
     }
 
+    /**
+     * Gets the target temperature of the air conditioner.
+     * @return the current target temperature
+     */
     public float getTargetTemp() {
         return targetTemp;
     }

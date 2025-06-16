@@ -7,9 +7,10 @@ public abstract class DoorCommand implements Command {
     
     protected Door device;
 
+    /**
+     * Base class for commands that operate on a Door device.
+     */
     public DoorCommand() {}
-    @Override
-    abstract public void run();
 
     @Override
     public void setDevice(Device dev) {

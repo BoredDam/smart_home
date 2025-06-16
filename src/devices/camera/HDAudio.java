@@ -1,5 +1,9 @@
 package devices.camera;
 
+/**
+ * A class representing a high-definition audio enhancement for a camera.
+ * It affects the output of the recordVideo method.
+ */
 public class HDAudio extends CameraDecorator {
     
     public HDAudio(Camera wrapped) {

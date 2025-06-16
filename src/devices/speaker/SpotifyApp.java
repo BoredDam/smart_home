@@ -1,5 +1,11 @@
 package devices.speaker;
 
+/**
+ * Represents the Spotify app for the smart speaker.
+ * Affects output of printInfos method by adding information about Spotify.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class SpotifyApp extends SpeakerAppDecorator {
 
     public SpotifyApp(Speaker wrapped) {

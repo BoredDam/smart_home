@@ -8,6 +8,9 @@ public abstract class SpeakerCommand implements Command {
     
     protected Speaker speaker;
 
+    /**
+     * Base class for commands that operate on a Speaker device.
+     */
     public SpeakerCommand() {
     }
     

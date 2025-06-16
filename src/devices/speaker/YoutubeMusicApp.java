@@ -1,5 +1,11 @@
 package devices.speaker;
 
+/**
+ * Represents the YouTube Music app for the smart speaker.
+ * Affects output of printInfos method by adding information about YouTube Music.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class YoutubeMusicApp extends SpeakerAppDecorator {
 
     public YoutubeMusicApp(Speaker wrapped) {

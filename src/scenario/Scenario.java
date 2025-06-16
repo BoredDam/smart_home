@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 /**
  * Scenario is a class that offers a way to encapsulate a list of commands
  * that the system can execute (all together or in different scheduled times) in any given moment.  
+ * It also allows the user to set a monitoring state for each observable device.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
  */
 public class Scenario {
     public record ScheduledCommand(String devName, long delaySecs, long repeatSecs, Command cmd) {}

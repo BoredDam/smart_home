@@ -28,7 +28,7 @@ public class Environment {
      */
     public Environment(List<Device> device_list) {
         // Note: the device_list that is passed in the class is supposed
-        // to be an UNMODIFIABLE list of the controller's list of devices.
+        // to be an UNMODIFIABLE list of the controller's list of devices for safety issues.
         // If the device_list is different than the one on the controller, the class makes ABSOLUTELY NO SENSE.
         this.device_list = device_list;
         temp = 20.0f;

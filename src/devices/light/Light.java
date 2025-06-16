@@ -4,6 +4,11 @@ import commands.Command;
 import commands.lightCommands.SwitchLightCommand;
 import devices.Device;
 
+/**
+ * Represents a light device that can be turned on and off.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class Light extends Device {
 
     public Light(String name) {
@@ -31,8 +36,5 @@ public class Light extends Device {
         } else {
             pstate.runCommand(cmd);
         }
-            
-        
     }
-
 }

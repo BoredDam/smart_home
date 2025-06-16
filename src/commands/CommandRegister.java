@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * CommandRegister class is used to list available commands for each device.
- * It's a Singleton. We love our Singleton classes.
+ * It's a Singleton. 
  * @author Paolo Volpini
  * @author Damiano Trovato
  * 

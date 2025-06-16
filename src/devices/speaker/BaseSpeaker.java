@@ -1,5 +1,11 @@
 package devices.speaker;
 
+/**
+ * Represents a base speaker device that can be controlled to play, pause, stop,
+ * and adjust the volume. State is managed using the State design pattern.
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
 public class BaseSpeaker extends Speaker {
 
     SpeakerState spstate;
@@ -34,8 +40,13 @@ public class BaseSpeaker extends Speaker {
 
     @Override
     public void setVolume(int volume) {
-        this.volume = volume;
         printHeader();
+        if(volume < 0 || volume > 100) {
+            System.out.println("Value must be between 0 and 100. Setting to default value 5.");
+            this.volume = 5;
+        } else {
+            this.volume = volume;
+        }
         System.out.println("Setting volume to " + volume);
         printInfos();
     }
