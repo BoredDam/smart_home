@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Instances of the Event class describe commands that are executed under certain conditions 
- * of the system. Event
+ * Instances of the Event class describes a sequence of commands that are executed under certain conditions 
+ * of the system. They are thrown by 
  * 
  * @author Paolo Volpini
  * @author Damiano Trovato
