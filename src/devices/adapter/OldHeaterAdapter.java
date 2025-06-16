@@ -13,11 +13,13 @@ public class OldHeaterAdapter extends Device {
 
     @Override
     public void turnOn() {
+        printHeader();
         adaptee.boot();
     }
 
     @Override
     public void turnOff() {
+        printHeader();
         adaptee.shutdown();
     }
 
