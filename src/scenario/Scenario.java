@@ -73,6 +73,18 @@ public class Scenario {
         }
     }
 
+    public int removeCommandByDevice(String devName) {
+        int[] ret = new int[1];
+        commandList.removeIf(rec -> {
+            if (rec.devName.equals(devName)) {
+                ret[0]++;
+                return true;
+            }
+            return false;
+        });
+        return ret[0];
+    }
+
     /**
      * @return a String containing a list of every command scheduled for the scenario.
      */

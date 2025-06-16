@@ -17,6 +17,7 @@ import java.util.Map;
 public class CommandRegister {
     private final Map<String, List<String>> deviceCommands = new HashMap<>();
     private static CommandRegister instance;
+    private static final List<String> emptyList = new ArrayList<>(); // used to return an empty list
 
     private CommandRegister() {
         deviceCommands.put("Light", new ArrayList<>(List.of("SwitchLight")));
@@ -46,7 +47,7 @@ public class CommandRegister {
      * @return a List with every available command with that device.
      */
     public List<String> getAvailableCommands(String deviceType) {
-        return Collections.unmodifiableList(deviceCommands.get(deviceType) == null ? new ArrayList<>() : deviceCommands.get(deviceType));
+        return Collections.unmodifiableList(deviceCommands.get(deviceType) == null ? emptyList : deviceCommands.get(deviceType));
     }
     
 }

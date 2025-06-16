@@ -188,6 +188,7 @@ public class GUIPrinter {
         guiWindow.print("|                          5)    trigger a scenario                            |");
         guiWindow.print("|                          6)     remove a scenario                            |");
         guiWindow.print("|                          7) show scheduled scenarios                         |");
+        guiWindow.print("|                          8)  kill scheduled scenario                         |");
         guiWindow.print("|                           )  back to the config menu                         |");
         guiWindow.print("|                                                                              |");
         guiWindow.print("+------------------------------------------------------------------------------+");
@@ -321,6 +322,21 @@ public class GUIPrinter {
         guiWindow.print("+------------------------------------------------------------------------------+");
     }
 
+    public void printKillScheduledScenario(String scheduledScenarios) {
+        guiWindow.clear();
+        guiWindow.print("\n");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                          KILL SCHEDULED SCENARIO                             |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print(scheduledScenarios);
+        guiWindow.print("+------------------------------------------------------------------------------+");
+        guiWindow.print("|                write the name of the scheduled scenario you want to kill     |");
+        guiWindow.print("|                                                                              |");
+        guiWindow.print("|                        to go back, don't write anything                      |");
+        guiWindow.print("+------------------------------------------------------------------------------+");
+    }
     public void printEnvironmentSettings() {
         guiWindow.clear();
         guiWindow.print("\n");

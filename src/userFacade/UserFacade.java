@@ -12,11 +12,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import scenario.Scenario;
 
 /**
  * UserFacade is a class based on the Facade Design Patterns.
@@ -48,7 +44,7 @@ public class UserFacade {
     private CommandFactory cmdFactory;
     private CommandRegister cmdRegister;
     private final GUIPrinter gui;
-    private final List<Scenario> userScenarios = new ArrayList<>();
+
     public UserFacade(GUIWindow guiWindow) {
         gui = new GUIPrinter(guiWindow);
     }
@@ -95,16 +91,9 @@ public class UserFacade {
 
     private void switchToEditScenarioLoop() {
         gui.setMenu(this::editScenarioLoop);
-        gui.printEditScenario(scenariosListToString());
+        gui.printEditScenario(controller.scenariosListToString());
     }
 
-    private String scenariosListToString() {
-        return userScenarios.stream().map(scenario -> ("| " + scenario.getName())).collect(Collectors.joining("\n"));
-    }
-
-    private boolean scenarioNameCollision(String scenarioName) {
-        return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
-    }
     // !< - End of utility methods - >
 
 
@@ -356,36 +345,36 @@ public class UserFacade {
     private void scenariosMenuLoop(String input) {
         switch (input) {
             case "1" -> {
-                gui.printShowScenarios(scenariosListToString());
+                gui.printShowScenarios(controller.scenariosListToString());
                 gui.setMenu((_) -> { switchToScenariosMenuLoop();});
             }
             case "2" -> {
                 gui.setMenu(this::createScenarioLoop);
-                gui.printCreateScenario(scenariosListToString());
+                gui.printCreateScenario(controller.scenariosListToString());
             }
             case "3" -> switchToEditScenarioLoop();
             case "4" -> {
                 gui.setMenu(this::scheduleScenarioLoop);
-                gui.printScenarioScheduler(scenariosListToString());
+                gui.printScenarioScheduler(controller.scenariosListToString());
             }
             case "5" -> {
                 gui.setMenu(this::triggerAScenarioLoop);
-                gui.printTriggerScenario(scenariosListToString());
+                gui.printTriggerScenario(controller.scenariosListToString());
             }
             case "6" -> {
                 gui.setMenu(this::removeScenarioLoop);
-                gui.printRemoveScenario(scenariosListToString());
+                gui.printRemoveScenario(controller.scenariosListToString());
             }
             case "7" -> {
                 gui.printScheduledScenarios(controller.scheduledScenariosToString());
                 gui.setMenu((_) -> { switchToScenariosMenuLoop(); });
             }
+            case "8" -> {
+                gui.setMenu(this::killScenarioLoop);
+                gui.printKillScheduledScenario(controller.scheduledScenariosToString());
+            }
             default -> switchToMainLoop();       
         }
-    }
-
-    private Scenario getScenarioFromName(String scenarioName) {
-        return userScenarios.stream().filter(s -> s.getName().equals(scenarioName)).findFirst().orElse(null);
     }
 
     private void removeScenarioLoop(String scenarioName) {
@@ -394,13 +383,12 @@ public class UserFacade {
             return;
         }
         scenarioName = scenarioName.trim();
-        Scenario selected = getScenarioFromName(scenarioName);
-            if(selected == null) {
-                gui.printToWindow("A scenario with that name does not exist.");
-                return;
-            }
-        userScenarios.remove(selected);
-        gui.printRemoveScenario(scenariosListToString());            
+        if(!controller.scenarioNameCollision(scenarioName)) {
+            gui.printToWindow("A scenario with that name does not exist.");
+            return;
+        }
+        controller.removeScenario(scenarioName);
+        gui.printRemoveScenario(controller.scenariosListToString());            
     }
 
     private long parseDelay(String time) throws DateTimeParseException {
@@ -410,11 +398,11 @@ public class UserFacade {
         return elapsedTime <= 0 ? 86400 + elapsedTime : elapsedTime;
     }
     
-    private void scheduleAScenarioAskDelay(Scenario scenario) {
+    private void scheduleAScenarioAskDelay(String scenarioName) {
         gui.printToWindow("When do you want to schedule it? Specify time with format HH:mm (like 8:30, or 21:00)");
         gui.setMenu((time) -> {
             if(time.isEmpty()) {
-                scheduleAScenarioAskDelay(scenario);
+                scheduleAScenarioAskDelay(scenarioName);
                 return;
             }
             long seconds;
@@ -424,7 +412,7 @@ public class UserFacade {
                 System.out.println("Format provided is broken or not supported, using this current hour...");
                 seconds = 86400;
             }
-            controller.scheduleScenario(scenario.getName(), scenario, seconds);
+            controller.scheduleScenario(scenarioName, seconds);
             switchToScenariosMenuLoop();
         });
 
@@ -434,12 +422,15 @@ public class UserFacade {
             switchToScenariosMenuLoop();
             return;
         }
-        Scenario selected = getScenarioFromName(scenarioName);
-            if(selected == null) {
-                gui.printToWindow("A scenario with that name does not exist.");
-                return;
-            }
-        scheduleAScenarioAskDelay(selected);
+        if(!controller.scenarioNameCollision(scenarioName)) {
+            gui.printToWindow("A scenario with that name does not exist.");
+            return;   
+        }
+        if(controller.isScenarioScheduled(scenarioName)) {
+            gui.printToWindow("This scenario is already scheduled. Remove its scheduling first.");
+            return;
+        }
+        scheduleAScenarioAskDelay(scenarioName);
     }
 
     private void createScenarioLoop(String scenarioName) {
@@ -448,32 +439,32 @@ public class UserFacade {
             return;
         }
         scenarioName = scenarioName.trim();
-        if(scenarioNameCollision(scenarioName)) {
+        if(controller.scenarioNameCollision(scenarioName)) {
             gui.printToWindow("A scenario with the same name already exists.");
             return;
         }
-        userScenarios.add(new Scenario(scenarioName));
-        gui.printCreateScenario(scenariosListToString());
+        controller.addScenario(scenarioName);
+        gui.printCreateScenario(controller.scenariosListToString());
     }
 
-    private void setupScenarioNameHelper(Scenario scenario) {
+    private void setupScenarioNameHelper(String scenarioName) {
         gui.printToWindow("Type the new name for the scenario (or nothing to cancel).");
         gui.setMenu((newName) -> {
             if(newName.isEmpty()) {
                 switchToEditScenarioLoop();
                 return;
             }
-            if(scenarioNameCollision(newName)){
+            if(controller.scenarioNameCollision(newName)){
                 gui.printToWindow("A scenario with that name already exists.");
-                setupScenarioNameHelper(scenario);
+                setupScenarioNameHelper(scenarioName);
                 return;
             }
-            scenario.changeName(newName);
+            controller.changeScenarioName(scenarioName, newName);
             switchToEditScenarioLoop();
         });
     }
     
-    private void addCommandToScenarioHelper(Scenario scenario) {
+    private void addCommandToScenarioHelper(String scenarioName) {
         gui.printToWindow(controller.deviceListToString(""));
         gui.printToWindow("Type the device name to which you want to add a command (or nothing to cancel).");
         gui.setMenu((devName) -> {
@@ -487,7 +478,7 @@ public class UserFacade {
                 return;
             }
             CommandScheduleInfo info = new CommandScheduleInfo(
-                (rec) -> { scenario.addCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd);
+                (rec) -> { controller.addCommandToScenario(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd, scenarioName);
                     switchToEditScenarioLoop();
                 }
             );
@@ -496,8 +487,8 @@ public class UserFacade {
         });
     }
     
-    private void removeCommandFromScenarioHelper(Scenario scenario) {
-        gui.printToWindow(scenario.commandListToString());
+    private void removeCommandFromScenarioHelper(String scenarioName) {
+        gui.printToWindow(controller.scenarioCommandsToString(scenarioName));
         gui.printToWindow("Type the index of the command you want to remove (or nothing to cancel).");
         gui.setMenu((input) -> {
             if(!input.isEmpty()) {
@@ -506,16 +497,30 @@ public class UserFacade {
                     index = Integer.parseInt(input.trim());
                 } catch (NumberFormatException e) {
                     gui.printToWindow("Invalid input, try again.");
-                    removeCommandFromScenarioHelper(scenario);
+                    removeCommandFromScenarioHelper(scenarioName);
                     return;
                 }
-                scenario.removeCommand(index);
+                controller.removeCommandToScenario(scenarioName, index);
             }
             switchToEditScenarioLoop();
         });
     }
+
+    private void killScenarioLoop(String scenarioName) {
+        if(scenarioName.isEmpty()) {
+            switchToScenariosMenuLoop();
+            return;
+        }
+        scenarioName = scenarioName.trim();
+        if(!controller.scenarioNameCollision(scenarioName)) {
+            gui.printToWindow("A scenario with that name does not exist.");
+            return;
+        }
+        controller.killScenario(scenarioName);
+        gui.printKillScheduledScenario(controller.scheduledScenariosToString());
+    }
     
-    private void deviceMonitoringHelper(Scenario scenario, boolean enable) {
+    private void deviceMonitoringHelper(String scenarioName, boolean enable) {
         gui.printToWindow(controller.deviceListToString(""));
         gui.printToWindow("Type the monitorable device name on which you want set monitoring (or nothing to cancel).");
         gui.setMenu((devName) -> {
@@ -529,22 +534,22 @@ public class UserFacade {
                     gui.printToWindow("This device is not monitorable.");
                     return;
                 }
-                scenario.setDeviceMonitoring((ObservableDevice) dev, enable);
+                controller.setScenarioDeviceMonitoring((ObservableDevice) dev, enable, scenarioName);
             }
             switchToEditScenarioLoop();
         });
     }
 
-    private void internalScenarioEditLoop(Scenario scenario) {
-        gui.printInternalScenarioEdit(scenario.getName());
+    private void internalScenarioEditLoop(String scenarioName) {
+        gui.printInternalScenarioEdit(scenarioName);
         // menu must be defined like this, because we need the scenario object
         gui.setMenu((input) -> {
             switch(input) {
-                case "1" -> setupScenarioNameHelper(scenario);
-                case "2" -> addCommandToScenarioHelper(scenario);
-                case "3" -> removeCommandFromScenarioHelper(scenario);
-                case "4" -> deviceMonitoringHelper(scenario, true);
-                case "5" -> deviceMonitoringHelper(scenario, false);
+                case "1" -> setupScenarioNameHelper(scenarioName);
+                case "2" -> addCommandToScenarioHelper(scenarioName);
+                case "3" -> removeCommandFromScenarioHelper(scenarioName);
+                case "4" -> deviceMonitoringHelper(scenarioName, true);
+                case "5" -> deviceMonitoringHelper(scenarioName, false);
                 default -> switchToScenariosMenuLoop();
             }
         });
@@ -555,12 +560,11 @@ public class UserFacade {
             switchToScenariosMenuLoop();
             return;
         }
-        Scenario selected = getScenarioFromName(scenarioName);
-            if(selected == null) {
-                gui.printToWindow("A scenario with that name does not exist.");
-                return;
-            }
-        internalScenarioEditLoop(selected);
+        if(!controller.scenarioNameCollision(scenarioName)) {
+            gui.printToWindow("A scenario with that name does not exist.");
+            return;
+        }
+        internalScenarioEditLoop(scenarioName);
     }
 
     private void triggerAScenarioLoop(String scenarioName) {
@@ -568,13 +572,12 @@ public class UserFacade {
             switchToScenariosMenuLoop();
             return;
         }
-        Scenario selected = getScenarioFromName(scenarioName);
-        if(selected == null) {
+        if(!controller.scenarioNameCollision(scenarioName)) {
             gui.printToWindow("A scenario with that name does not exist.");
             return;
         }
-        selected.apply(controller);
-        gui.printTriggerScenario(scenariosListToString());
+        controller.applyScenario(scenarioName);
+        gui.printTriggerScenario(controller.scenariosListToString());
     }
 
     private void environmentLoop(String input) {

@@ -16,7 +16,7 @@ public interface Command {
      */
     public void run();
     /**
-     * @param dev is the devices that has to run the command.
+     * @param dev is the device that has to run the command.
      */
     public void setDevice(Device dev);
 }

@@ -21,7 +21,17 @@ import java.util.stream.Collectors;
 import scenario.Scenario;
 public class SmartHomeController implements Observer {
     private record ScheduledCommand(String devName, String commandName, boolean repeats, ScheduledFuture<?> handle) {}
-    private record ScheduledScenario(String scenarioName, Scenario scenario, String time, ScheduledFuture<?> handle) {}
+    private class ScheduledScenario {
+        String scenarioName;
+        String time;
+        ScheduledFuture<?> handle;
+
+        ScheduledScenario(String scenarioName, Scenario scenario, String time, ScheduledFuture<?> handle) {
+            this.scenarioName = scenarioName;
+            this.time = time;
+            this.handle = handle;
+        }
+    }
 
     private static SmartHomeController instance;
     private final Environment environment;
@@ -30,9 +40,10 @@ public class SmartHomeController implements Observer {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<ScheduledCommand> scheduledCommands = new ArrayList<>();
     private final Map<ObservableDevice, Boolean> listenedDevices = new HashMap<>();
-    private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();    
-
+    private final List<ScheduledScenario> scheduledScenarios = new ArrayList<>();  
+    private final List<Scenario> userScenarios = new ArrayList<>();  
     private final ScheduledFuture<?> cleaningTask;
+
     private SmartHomeController() {
         eventManager = EventManager.getInstance();
         cleaningTask = scheduler.scheduleAtFixedRate( () -> { scheduledCommands.removeIf((record) -> (record.handle.isDone())); }, 0, 30, TimeUnit.SECONDS);
@@ -50,6 +61,64 @@ public class SmartHomeController implements Observer {
             instance = new SmartHomeController();
         }
         return instance;
+    }
+
+    public String scenariosListToString() {
+        return userScenarios.stream().map(scenario -> ("| " + scenario.getName())).collect(Collectors.joining("\n"));
+    }
+
+    public boolean scenarioNameCollision(String scenarioName) {
+        return userScenarios.stream().anyMatch(scenario -> (scenario.getName().equals(scenarioName)));
+    }
+
+    private Scenario getScenarioFromName(String scenarioName) {
+        return userScenarios.stream().filter(s -> s.getName().equals(scenarioName)).findFirst().orElse(null);
+    }
+
+    public void applyScenario(String scenarioName) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found!");
+            return;
+        }
+        scenario.apply(this);
+    }
+
+    public void removeScenario(String scenarioName) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found!");
+            return;
+        }
+        userScenarios.remove(scenario);
+        printMessage("Scenario " + scenarioName + " has been removed.");
+    }
+
+    public void addCommandToScenario(String devName, long delaySecs, long repeatSecs, Command cmd, String scenarioName) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found, cannot add command!");
+            return;
+        }
+        scenario.addCommand(devName, delaySecs, repeatSecs, cmd);
+    }
+
+    public String scenarioCommandsToString(String scenarioName) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found!");
+            return "";
+        }
+        return scenario.commandListToString();
+    }
+
+    public void removeCommandToScenario(String scenarioName, int index) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found, cannot remove command!");
+            return;
+        }
+        scenario.removeCommand(index);
     }
 
     /**
@@ -84,11 +153,14 @@ public class SmartHomeController implements Observer {
     }
 
     /**
+     * Returns a list of all scheduled scenarios
+     * @param prepend is a string added before each line printed
      * @return a string with every scheduled scenario of the <code>SmartHomeController</code>.
      */
     public String scheduledScenariosToString() {
         return scheduledScenarios.stream().map(rec -> rec.scenarioName + " scheduled at " + rec.time).collect(Collectors.joining("\n"));
     }
+
 
     /**
      * Prints out a message by the <code>SmartHomeController</code>.
@@ -111,6 +183,16 @@ public class SmartHomeController implements Observer {
         });
         System.out.println("[SmartHomeController] " + idx[0] + " command" + (idx[0] == 1  ? "" : "s") + " related to " + device.getName() + (idx[0] == 1 ? " has" : " have ") + " been cancelled.");
     }
+
+    private void deletedDeviceScenarioCleanup(Device device) {
+        int[] count = new int[1];
+        count[0] = 0;
+        userScenarios.forEach(scenario -> {
+            count[0] += scenario.removeCommandByDevice(device.getName());
+        });
+        System.out.println("[SmartHomeController] Cleaned " + count[0] + " commands from scenarios.");
+    }
+
 
     /**
      * Adds a device to the <code>SmartHomeController</code> device list.
@@ -168,8 +250,10 @@ public class SmartHomeController implements Observer {
             listenedDevices.remove(d);
         }
         deletedDeviceCommandCleanup(device);
+        deletedDeviceScenarioCleanup(device);
         device_list.removeIf(dev -> (dev.getName().equals(device.getName())));
         printMessage(device.getName() + " just got removed from the SmartHome Controller...");
+        // it's necessary also to cleanup the scenarios commands that are related to the device
         return true;   
     }
     
@@ -260,18 +344,96 @@ public class SmartHomeController implements Observer {
             // the boolean is used to track if the task repeats or not
             // if a task is to be repeated, we can get the handler and we can kill it
     }
+    /**
+     * Returns a string with the time of command execution 
+     * @param delaySecs is the delay expressed in seconds of the command execution
+     * @return a string representing the time of command execution in the format "HH:mm"
+     */
 
-    public void scheduleScenario(String scenarioName, Scenario scenario, long delaySecs) {
+    private String elaborateDelay(long delaySecs) {
+        LocalTime estimated = LocalTime.now();
+        estimated = estimated.plus(delaySecs, ChronoUnit.SECONDS);
+        return estimated.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+    
+    public void addScenario(String scenarioName) {
+        userScenarios.add(new Scenario(scenarioName));
+        printMessage("Scenario " + scenarioName + " added to the list of user scenarios!");
+    }
+
+    /** 
+     * Check if a scenario is scheduled
+     * @param scenarioName is the name of the scenario to check
+     *  @return true if the scenario is scheduled, false otherwise
+    */
+    public boolean isScenarioScheduled(String scenarioName) {
+        return scheduledScenarios.stream().anyMatch(record -> record.scenarioName.equals(scenarioName));
+    }
+    /**
+     * Schedules a scenario to be run after a certain delay.
+     * @param scenarioName is the name of the scenario
+     * @param scenario is the scenario to be run
+     * @param delaySecs is the delay in seconds before the scenario is run
+     */
+    public void scheduleScenario(String scenarioName, long delaySecs) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found, cannot schedule it!");
+            return;
+        }
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( () -> { scenario.apply(this); }, delaySecs, 86400, TimeUnit.SECONDS);
         if (handle == null) { // handle creation error
             printMessage("Error in scheduling of scenario. Try again");
             return;
         }
-        LocalTime estimated = LocalTime.now();
-        estimated = estimated.plus(delaySecs, ChronoUnit.SECONDS);
-        String time = estimated.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        
+        String time = elaborateDelay(delaySecs);
         scheduledScenarios.add(new ScheduledScenario(scenarioName, scenario, time, handle));
-        // don't think we should repeat scenarios...
+    }
+
+    /** 
+     * Kills a scheduled scenario. The scenario is not removed from the list of available scenarios,
+     * but will not be executed anymore unless scheduled again.
+     * @param index is the index of the scenario to be killed
+     */
+    public void killScenario(String scenarioName) {
+        ScheduledScenario rec = scheduledScenarios.stream()
+            .filter(record -> record.scenarioName.equals(scenarioName))
+            .findFirst()
+            .orElse(null);
+        if (rec == null) {
+            System.err.println("Error in killing of scenario: scenario not found");
+            return;
+        }
+        ScheduledFuture<?> handle = rec.handle;
+        handle.cancel(true);
+        if(handle.isCancelled()) {
+            scheduledScenarios.removeIf(record -> record.scenarioName.equals(scenarioName));
+        }
+    }
+
+    public void changeScenarioName(String oldName, String newName) {
+        Scenario scenario = getScenarioFromName(oldName);
+        if(scenario == null) {
+            printMessage("Scenario " + oldName + " not found, cannot change name!");
+            return;
+        }
+        // note: the check on the duplicate name is done in the User Interface
+        scenario.changeName(newName);
+        printMessage("Scenario " + oldName + " renamed to " + newName);
+        scheduledScenarios.stream()
+            .filter(record -> record.scenarioName.equals(oldName))
+            .forEach(record -> record.scenarioName = newName);
+    }
+
+    public void setScenarioDeviceMonitoring(ObservableDevice device, boolean state, String scenarioName) {
+        Scenario scenario = getScenarioFromName(scenarioName);
+        if(scenario == null) {
+            printMessage("Scenario " + scenarioName + " not found, cannot set device monitoring!");
+            return;
+        }
+        scenario.setDeviceMonitoring(device, state);
+        printMessage("Monitoring state for device " + device.getName() + " set to " + (state ? "monitored" : "non-monitored"));
     }
 
     // returns infos of the commands, hiding the handle
