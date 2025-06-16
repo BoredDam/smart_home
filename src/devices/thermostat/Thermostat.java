@@ -6,7 +6,7 @@ public class Thermostat extends ObservableDevice {
     private float measuredTemp; // just in case... i don't know how to manage the temps rn so we keep this in case of godmode
     private float lowerBound;
     private float upperBound;
-    boolean triggered; // the flag indicates if the thermostat has triggered an event
+    private boolean triggered; // the flag indicates if the thermostat has triggered an event
     // if the event is triggered, thermostat has already notified the observers
     //
 
