@@ -17,6 +17,7 @@ public class GUIWindow {
     private final JTextArea outputArea;
     private final JTextField inputField;
     private Consumer<String> inputHandler;
+    private final JFrame frame;
 
     /**
      * Constructor of the GUIWindow class.
@@ -24,8 +25,8 @@ public class GUIWindow {
      * the layout, the output area and the input field.
      */
     public GUIWindow () {
-        JFrame frame = new JFrame("Smart Home Menu Interface");
-        frame.setSize(750, 450);
+        frame = new JFrame("Smart Home Menu Interface");
+        frame.setSize(1000, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
@@ -48,6 +49,10 @@ public class GUIWindow {
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.add(inputField, BorderLayout.SOUTH);
         frame.setVisible(true);
+    }
+
+    public int getWidth() {
+        return frame.getWidth();
     }
 
     /**

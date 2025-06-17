@@ -93,10 +93,11 @@ public class Scenario {
      */
     public String commandListToString() {
         int[] index = new int[1];
-        return commandList.stream().map(
-            (rec) -> (index[0]++ +" \t" + rec.devName + "\t" + rec.cmd.getClass().getSimpleName() + 
-                      "\tActivation after: " + rec.delaySecs + "s\tRepeats every:" + rec.repeatSecs + "s")
-        ).collect(Collectors.joining("\n"));
+        return commandList.stream()
+            .map(rec -> String.format("%2d | Device: %-20s | Command: %-20s | Delay: %4ds | %-30s",
+            index[0]++, rec.devName, rec.cmd.getClass().getSimpleName(), rec.delaySecs, (rec.repeatSecs > 0 ? "Repeats every " + rec.repeatSecs + "s" : "Does not repeat")
+            ))
+            .collect(Collectors.joining("\n"));
     }
 
     /**

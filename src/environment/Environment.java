@@ -45,7 +45,7 @@ public class Environment {
 
         for(Device dev: device_list) {
             if(dev instanceof AirConditioner ac && ac.isOn()) {
-                avgTarget = ac.getTargetTemp();
+                avgTarget += ac.getTargetTemp();
                 count++;
             }
         }
@@ -56,7 +56,7 @@ public class Environment {
         }
 
         for(Device dev: device_list) {
-            if(dev instanceof OldHeaterAdapter) { // if an OldHeater is present, it will just raise the temperature by 0.5 degrees
+            if(dev instanceof OldHeaterAdapter od && od.isOn()) { // if an OldHeater is present, it will just raise the temperature by 0.5 degrees
                 this.temp += 0.5f;
             }
         }
@@ -90,10 +90,15 @@ public class Environment {
             return;
         }
 
-        if (open) {
-            door.open();
-        } else {
-            door.close();
+        if(door.isOn()) {
+            if (open) {
+              door.open();
+            } else {
+                door.close();
+            }
+        }
+        else {
+            System.out.println("[Environment] Door " + devName + " is currently off, so no action can be performed.");
         }
     } 
     
@@ -113,11 +118,18 @@ public class Environment {
         Random rand = new Random();
         int randomIndex = rand.nextInt(tempList.size());
         Door randomDoor = tempList.get(randomIndex);
-        if(open)
-            randomDoor.open();
-        else
-            randomDoor.close();
-    }
+        if(randomDoor.isOn()) {
+            if(open) {
+                randomDoor.open();
+            }
+            else {
+                randomDoor.close();
+            }
+        }
+        else {
+            System.out.println("[Environment] Door " + randomDoor.getName() + " is currently off, so no action can be performed.");
+        }
+    }   
 
     /**
      * Makes a random camera in the system detect a presence.

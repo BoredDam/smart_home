@@ -49,7 +49,7 @@ public class UserFacade {
         gui = new GUIPrinter(guiWindow);
     }
 
-    private void initializeUserSpace() {
+    public void initializeUserSpace() {
 
         gui.printToWindow("Setting up user space...");
         controller = SmartHomeController.getInstance();
@@ -100,13 +100,12 @@ public class UserFacade {
     public void mainDialog() {
         // if we have more than one type of controller, we can further modify this. But this is not the case 
         // and we just leave the possibility to extend the software
-        gui.printToWindow("Welcome! This is a Smart Home simulator. We will now setup the basic environment for your simulation...");
+        gui.printToWindow("Welcome! This is a Smart Home simulator.\nWe will now setup the basic environment for your simulation...");
         initializeUserSpace();
         gui.printSeparator();
-        gui.printToWindow("Everything should be in place!");
+        gui.printToWindow("Everything should be in place! Press any command to continue...");
         gui.printSeparator();
-        gui.setMenu(this::mainLoop);
-        gui.printMainMenu();
+        gui.setMenu((_) -> {switchToMainLoop();});
     }
 
     private void mainLoop(String input) {
