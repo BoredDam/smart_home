@@ -158,7 +158,11 @@ public class Environment {
             .orElse(null);
 
         if(camera != null) {
-            camera.notifyObserver();
+            if(camera.isOn()) {
+                camera.notifyObserver();
+            } else {
+                System.out.println("[Environment] Camera " + devName + " is currently off, so no action can be performed.");
+            }
         } else {
             System.out.println("[Environment] Camera " + devName + "not found. Maybe the name is wrong?");
         }

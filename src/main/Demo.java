@@ -1,6 +1,7 @@
 package main;
 
 import commands.doorCommands.LockCommand;
+import commands.generalPurposeCommands.TurnOffCommand;
 import commands.lightCommands.SwitchLightCommand;
 import controller.SmartHomeController;
 import devices.adapter.OldHeaterAdapter;
@@ -60,9 +61,12 @@ public class Demo {
         controller.addDevice(oha);
         controller.setupDefaultEvents();
         controller.addScenario("Modalità notte");
-        controller.addCommandToScenario("l1", 1, 0, new SwitchLightCommand(), "Modalità notte");
-        controller.addCommandToScenario("d1", 1, 0, new LockCommand(), "Modalità notte");
-        controller.addCommandToScenario("d2", 1, 0, new LockCommand(), "Modalità notte");
+        controller.addCommandToScenario("l1", 1, 0, new TurnOffCommand(), "Modalità notte");
+        controller.addCommandToScenario("door1", 1, 0, new LockCommand(), "Modalità notte");
+        controller.addCommandToScenario("door2", 1, 0, new LockCommand(), "Modalità notte");
+
+        controller.addScenario("Modalità vacanza");
+        controller.addCommandToScenario("l1", 0, 239, new SwitchLightCommand(), "Modalità vacanza");
 
     }
     
