@@ -1,5 +1,16 @@
 package devices.speaker;
 
+/**
+ * SpeakerState is the base interface for all the play-states subclasses, which are used inside the "speaker" device.
+ * They are used to clarify about the (music?) playing state of the speaker, and also to encapsulate the behaviour
+ * of the speaker, which changes in relationship to the playing-state.
+ * 
+ * It follows the logic behind the "State" design pattern by the GoF.
+ * 
+ * @author Paolo Volpini
+ * @author Damiano Trovato
+ */
+
 public class PlayState implements SpeakerState {
 
     static PlayState instance;

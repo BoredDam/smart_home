@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"commands"},{"l":"controller"},{"l":"devices"},{"l":"devices.airConditioner"},{"l":"devices.camera"},{"l":"devices.door"},{"l":"devices.light"},{"l":"devices.powerState"},{"l":"devices.speaker"},{"l":"devices.thermostat"},{"l":"events"}];updateSearchResults();
