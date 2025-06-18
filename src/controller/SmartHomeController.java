@@ -327,20 +327,20 @@ public class SmartHomeController implements Observer {
     public String deviceListToString(String type) {
         if (type.isEmpty()) {
             return device_list.stream()
-            .map(dev -> String.format("| %-20s %-60s %-4s %-15s",
+            .map(dev -> String.format("| %-20s %-60s %-15s %-15s",
                 dev.getName(),
                 dev.getType(),
-                dev.isOn() ? "ON" : "OFF",
+                dev.getState(),
                 printDevMonitoringState(dev)))
             .collect(Collectors.joining("\n"));
         }
 
         return device_list.stream()
             .filter(dev -> dev.getType().toLowerCase().contains(type.toLowerCase()))
-            .map(dev -> String.format("| %-20s %-60s %-4s %-15s",
+            .map(dev -> String.format("| %-20s %-60s %-15s %-15s",
                 dev.getName(),
                 dev.getType(),
-                dev.isOn() ? "ON" : "OFF",
+                dev.getState(),
                 printDevMonitoringState(dev)))
             .collect(Collectors.joining("\n"));
     }

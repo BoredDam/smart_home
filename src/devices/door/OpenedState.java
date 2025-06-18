@@ -38,4 +38,8 @@ public class OpenedState implements LockState {
         System.out.println("Door closed!");
         return ClosedState.getInstance();
     }
+    @Override
+    public String getState() {
+        return "Opened";
+    }
 }

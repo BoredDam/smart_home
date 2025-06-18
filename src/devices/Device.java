@@ -88,9 +88,8 @@ public abstract class Device {
     /**
      * Prints out the powerstate of the device.
      */
-    public void printState() {
-        printHeader();
-        System.out.println("State: " + (isOn() ? "on" : "off"));
+    public String getState() {
+        return (isOn() ? "ON" : "OFF");
     }
 
     /**

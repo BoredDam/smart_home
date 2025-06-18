@@ -39,4 +39,8 @@ public class ClosedState implements LockState {
         System.out.println("Door is already closed!");
         return instance;
     }
+    @Override
+    public String getState() {
+        return "Closed";
+    }
 }

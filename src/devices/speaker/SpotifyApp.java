@@ -14,8 +14,8 @@ public class SpotifyApp extends SpeakerAppDecorator {
     }
 
     @Override
-    public void printInfos() {
-        super.printInfos();
+    public void printAddInfos() {
+        printHeader();
         System.out.println("\t \t - Spotify. - - - - - Have a good listen!");  
     }
 

@@ -10,6 +10,10 @@ public abstract class Speaker extends Device {
     public Speaker(String name) {
         super(name);
     }
+    @Override
+    public void turnOff() {
+        super.turnOff();
+    }
     /**
      * Pauses the speaker.
      */
@@ -28,4 +32,10 @@ public abstract class Speaker extends Device {
      */
     abstract public void setVolume(int volume);
     abstract public void printInfos();
+    abstract public String getSpeakerState();
+
+    @Override
+    public String getBaseType() {
+        return "Speaker";
+    }
 }

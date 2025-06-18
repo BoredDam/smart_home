@@ -39,4 +39,8 @@ public class PauseState implements SpeakerState {
     public void getInfo() {
         System.out.println("Currently paused.");
     }
+    @Override
+    public String getState() {
+        return "Paused";
+    }
 }

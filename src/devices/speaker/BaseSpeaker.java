@@ -8,13 +8,19 @@ package devices.speaker;
  */
 public class BaseSpeaker extends Speaker {
 
-    SpeakerState spstate;
-    int volume;
+    private SpeakerState spstate;
+    private int volume;
 
     public BaseSpeaker(String name) {
         super(name);
         spstate = StopState.getInstance();
         volume = 5;
+    }
+
+    @Override
+    public void turnOff() {
+        super.turnOff();
+        stop();
     }
 
     @Override
@@ -39,6 +45,16 @@ public class BaseSpeaker extends Speaker {
     }
 
     @Override
+    public String getState() {
+        return super.getState() + ", " + spstate.getState();
+    }
+
+    @Override
+    public String getSpeakerState() {
+        return spstate.getState();
+    }
+    
+    @Override
     public void setVolume(int volume) {
         printHeader();
         if(volume < 0 || volume > 100) {
@@ -58,9 +74,4 @@ public class BaseSpeaker extends Speaker {
         spstate.getInfo();
     }
 
-    @Override
-    public String getBaseType() {
-        return "Speaker";
-    } 
-    
 }

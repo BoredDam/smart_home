@@ -14,8 +14,8 @@ public class YoutubeMusicApp extends SpeakerAppDecorator {
     }
 
     @Override
-    public void printInfos() {
-        super.printInfos();
+    public void printAddInfos() {
+        printHeader();
         System.out.println("\t \t - YouTube Music - - - - - Enjoy your music!");
     }
 

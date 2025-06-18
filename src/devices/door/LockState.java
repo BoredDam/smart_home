@@ -20,4 +20,5 @@ public interface LockState {
     LockState unlock();
     LockState open(Door door);
     LockState close();
+    String getState();
 }

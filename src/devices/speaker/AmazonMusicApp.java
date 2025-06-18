@@ -14,8 +14,8 @@ public class AmazonMusicApp extends SpeakerAppDecorator {
     }
 
     @Override
-    public void printInfos() {
-        super.printInfos();
+    public void printAddInfos() {
+        printHeader();
         System.out.println("\t \t - Amazon Music. - - - - - Enjoy your music without any ad.");
     }
 

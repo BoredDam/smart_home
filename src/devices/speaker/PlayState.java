@@ -49,4 +49,8 @@ public class PlayState implements SpeakerState {
     public void getInfo() {
         System.out.println("Currently playing.");
     }
+    @Override
+    public String getState() {  
+        return "Playing";
+    }
 }

@@ -26,12 +26,27 @@ public abstract class SpeakerAppDecorator extends Speaker {
     }
 
     @Override
+    public void turnOff() {
+        super.turnOff();
+        stop();
+    }
+    @Override
     public void pause() {
         wrapped.pause();
     }
-
+    @Override
+    public String getSpeakerState() {
+        return wrapped.getSpeakerState();
+    }
+    
+    @Override
+    public String getState() {
+        return (isOn() ? "ON" : "OFF") + ", " + getSpeakerState();
+    }
+    
     @Override
     public void play() {
+        printAddInfos();
         wrapped.play();
     }
 
@@ -49,6 +64,8 @@ public abstract class SpeakerAppDecorator extends Speaker {
     public void printInfos() {
         wrapped.printInfos();
     }
+
+    public abstract void printAddInfos();
 
     @Override
     public String getBaseType() {

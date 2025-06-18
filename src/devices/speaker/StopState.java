@@ -38,4 +38,8 @@ public class StopState implements SpeakerState {
     public void getInfo() {
         System.out.println("Currently stopped.");
     }
+    @Override
+    public String getState() {
+        return "Stopped";
+    }
 }

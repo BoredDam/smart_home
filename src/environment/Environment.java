@@ -89,16 +89,10 @@ public class Environment {
             System.out.println("[Environment] Door not found. Maybe the name is wrong?");
             return;
         }
-
-        if(door.isOn()) {
-            if (open) {
-              door.open();
-            } else {
-                door.close();
-            }
-        }
-        else {
-            System.out.println("[Environment] Door " + devName + " is currently off, so no action can be performed.");
+        if (open) {
+          door.open();
+        } else {
+          door.close();
         }
     } 
     
@@ -118,16 +112,11 @@ public class Environment {
         Random rand = new Random();
         int randomIndex = rand.nextInt(tempList.size());
         Door randomDoor = tempList.get(randomIndex);
-        if(randomDoor.isOn()) {
-            if(open) {
-                randomDoor.open();
-            }
-            else {
-                randomDoor.close();
-            }
+        if(open) {
+            randomDoor.open();
         }
         else {
-            System.out.println("[Environment] Door " + randomDoor.getName() + " is currently off, so no action can be performed.");
+            randomDoor.close();
         }
     }   
 
@@ -158,13 +147,9 @@ public class Environment {
             .orElse(null);
 
         if(camera != null) {
-            if(camera.isOn()) {
-                camera.notifyObserver();
-            } else {
-                System.out.println("[Environment] Camera " + devName + " is currently off, so no action can be performed.");
-            }
+            camera.notifyObserver();
         } else {
-            System.out.println("[Environment] Camera " + devName + "not found. Maybe the name is wrong?");
+            System.out.println("[Environment] Camera " + devName + " not found. Maybe the name is wrong?");
         }
     }
 }

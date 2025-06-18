@@ -12,4 +12,5 @@ public interface SpeakerState {
     public SpeakerState pause();
     public SpeakerState stop();
     public void getInfo();
+    public String getState();
 }

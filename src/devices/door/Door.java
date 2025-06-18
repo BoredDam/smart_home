@@ -43,5 +43,9 @@ public class Door extends ObservableDevice {
     public void notifyObserver() {
         if(isOn() && controllerObserving != null) controllerObserving.update(this, "Intrusion");
     }
+    @Override
+    public String getState() {
+        return super.getState() + ", " + lockState.getState();
+    }
 
 }
