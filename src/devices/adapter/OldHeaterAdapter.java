@@ -17,12 +17,14 @@ public class OldHeaterAdapter extends Device {
     @Override
     public void turnOn() {
         printHeader();
+        System.out.print("Turned On!\n");
         adaptee.boot();
     }
 
     @Override
     public void turnOff() {
         printHeader();
+        System.out.print("Turned Off!\n");
         adaptee.shutdown();
     }
 
@@ -40,4 +42,5 @@ public class OldHeaterAdapter extends Device {
     public String getBaseType() {
         return "OldHeater";
     }
+    
 }
