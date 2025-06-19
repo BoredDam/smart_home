@@ -213,12 +213,17 @@ public class UserFacade {
 
     private void scheduleACommandAskCommand(CommandScheduleInfo info) {
         cmdRegister.getAvailableCommands(controller.getDeviceFromName(info.devName).getBaseType()).stream().forEach(cmd -> gui.printToWindow("\t" + cmd));
-        gui.printToWindow("what command do you want to schedule?");
+        gui.printToWindow("what command do you want to schedule? (empty to cancel)");
         gui.setMenu((cmdName) -> {
+            if(cmdName.isEmpty()) {
+                switchToScheduleCommandLoop();
+                return;
+            }
             int argc = cmdFactory.getArgumentCount(cmdName);
             // since now we have requested the argc, we know if the command exists in the factory
-            if(argc < 0) {
-                gui.printToWindow("Invalid command.");
+            if(cmdRegister.getAvailableCommands(controller.getDeviceFromName(info.devName).getBaseType()).stream().noneMatch(cmd -> cmd.compareToIgnoreCase(cmdName) == 0)
+                || argc < 0) {
+                gui.printToWindow("Command not found, try again.");
                 scheduleACommandAskCommand(info);
                 return;
             }

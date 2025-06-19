@@ -1,5 +1,8 @@
 package devices.adapter;
 
+import commands.Command;
+import commands.generalPurposeCommands.TurnOffCommand;
+import commands.generalPurposeCommands.TurnOnCommand;
 import devices.Device;
 
 /**
@@ -17,6 +20,10 @@ public class OldHeaterAdapter extends Device {
     @Override
     public void turnOn() {
         printHeader();
+        if(isOn()) {
+            System.out.print("Already on!\n");
+            return;
+        }
         System.out.print("Turned On!\n");
         adaptee.boot();
     }
@@ -24,6 +31,10 @@ public class OldHeaterAdapter extends Device {
     @Override
     public void turnOff() {
         printHeader();
+        if(isOff()) {
+            System.out.print("Already off!\n");
+            return;
+        }
         System.out.print("Turned Off!\n");
         adaptee.shutdown();
     }
@@ -41,6 +52,17 @@ public class OldHeaterAdapter extends Device {
     @Override
     public String getBaseType() {
         return "OldHeater";
+    }
+
+    @Override
+    public void performAction(Command cmd) {
+        if (cmd instanceof TurnOnCommand) {
+            turnOn();
+        } else if (cmd instanceof TurnOffCommand) {
+            turnOff();
+        } else {
+            System.out.println("Unsupported command.");
+        }
     }
     
 }
