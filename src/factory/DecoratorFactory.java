@@ -75,6 +75,10 @@ public class DecoratorFactory {
      */
     public Device addFunctionality(Device dev, String func) {
 
+        if(func.isEmpty()) {
+            System.out.println("[DecoratorFactory] Functionality given is... empty?");
+            return null;
+        }
         String functionality = func.toLowerCase();
         
         if (dev.getType().toLowerCase().contains(functionality)) {
@@ -91,13 +95,13 @@ public class DecoratorFactory {
         Class<? extends Device> decorator = record.decoratorType;
         Device ret = null;
         if (decorator == null) {
-            System.out.println("Device given does not support that functionality!");
+            System.out.println("[DecoratorFactory] Device given does not support that functionality!");
         } else {
             try {
                 ret = decorator.getConstructor(record.expectedType).newInstance(dev);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | NoSuchMethodException | InvocationTargetException e) {
-                System.out.println("Selected functionality cannot be added to the device");
+                System.out.println("[DecoratorFactory] Selected functionality cannot be added to the device");
             }
         }
         return ret;

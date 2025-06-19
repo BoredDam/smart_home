@@ -123,6 +123,7 @@ public class SmartHomeController implements Observer {
             return;
         }
         userScenarios.remove(scenario);
+        scheduledScenarios.removeIf(record -> record.scenarioName.equals(scenarioName));
         printMessage("Scenario " + scenarioName + " has been removed.");
     }
 
@@ -327,7 +328,7 @@ public class SmartHomeController implements Observer {
     public String deviceListToString(String type) {
         if (type.isEmpty()) {
             return device_list.stream()
-            .map(dev -> String.format("| %-20s %-60s %-15s %-15s",
+            .map(dev -> String.format("| %-20s %-60s %-30s %-15s",
                 dev.getName(),
                 dev.getType(),
                 dev.getState(),
@@ -337,7 +338,7 @@ public class SmartHomeController implements Observer {
 
         return device_list.stream()
             .filter(dev -> dev.getType().toLowerCase().contains(type.toLowerCase()))
-            .map(dev -> String.format("| %-20s %-60s %-15s %-15s",
+            .map(dev -> String.format("| %-20s %-60s %-30s %-15s",
                 dev.getName(),
                 dev.getType(),
                 dev.getState(),

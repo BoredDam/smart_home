@@ -26,7 +26,7 @@ public class GUIWindow {
      */
     public GUIWindow () {
         frame = new JFrame("Smart Home Menu Interface");
-        frame.setSize(1000, 500);
+        frame.setSize(1200, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 

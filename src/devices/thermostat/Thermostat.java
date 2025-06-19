@@ -106,5 +106,9 @@ public class Thermostat extends ObservableDevice {
         return "Thermostat";
     }
 
+    @Override
+    public String getState() {
+        return super.getState() + ", LB: " + lowerBound + " °C, UB: " + upperBound + " °C";
+    }
     
 }

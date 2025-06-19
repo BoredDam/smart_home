@@ -43,5 +43,9 @@ public class AirConditioner extends Device {
     public String getBaseType() {
         return "AirConditioner";
     }
-    
+
+    @Override 
+    public String getState() {
+        return super.getState() + ", Target: " + targetTemp + " °C";
+    }
 }
