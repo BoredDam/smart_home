@@ -592,8 +592,8 @@ Un'ulteriore fase di analisi ci ha permesso di identificare meglio i ruoli delle
 ### Fasi intermedie
 La fase intermedia dello sviluppo è stata svolta in maniera asincrona, sfruttando **GitHub** come principale strumento di collaborazione. Tramite aggiornamenti periodici, è stato possibile coordinare il lavoro in maniera opportuna, seguendo una logica *build-and-test*.
 
-### Fase conclusiva
-Nella fase conclusiva (ultima settimana di lavoro) è stata effettuata la stesura del codice dell'interfaccia grafica, della classe `Environment` per simulare l'ambiente della *smart home*, ed è stata valutata una soluzione per suddividere la stampa degli output dei dispositivi dalla stampa della user interface, con l'ausilio di `javax.swing`.
+### Fase conclusiva - ultima settimana
+Nella fase conclusiva è stata effettuata la stesura del codice dell'interfaccia grafica, della classe `Environment` per simulare l'ambiente della *smart home*, ed è stata valutata una soluzione per suddividere la stampa degli output dei dispositivi dalla stampa della user interface, con l'ausilio di `javax.swing`.
 
 È stato quindi fatto un collaudo generale dell'intero sistema, realizzando anche una demo contenente dispositivi e scenari preimpostati, oltre alla ristesura degli UML e la stesura della relazione.
 
