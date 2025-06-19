@@ -288,8 +288,8 @@ public class SmartHomeController implements Observer {
             if (idx != -1) {
                 device_list.set(idx, updatedDevice);
                 if(updatedDevice instanceof ObservableDevice od) {
-                    listenedDevices.put(od, true);
                     listenedDevices.remove((ObservableDevice) oldDevice);
+                    listenedDevices.put(od, true);
                 }
                 return true;
             }
@@ -358,7 +358,7 @@ public class SmartHomeController implements Observer {
 
     /**
      * Triggers all of the commands of a given event.
-     * @param event to react to.3
+     * @param event to react to.
      */
     public void triggerEvent(Event event) {
         System.out.println("[SmartHomeController] Event " + event.getType() + " triggered!");

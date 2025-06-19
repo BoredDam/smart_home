@@ -26,5 +26,4 @@ public class BaseCamera extends Camera {
         return "Camera";
     }
 
-    
 }

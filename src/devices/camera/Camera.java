@@ -12,8 +12,11 @@ public abstract class Camera extends ObservableDevice {
     }
     @Override
     public void notifyObserver() {
-        if(isOn() && controllerObserving != null) controllerObserving.update(this, "Intrusion");
+        if(isOn() && controllerObserving != null) { 
+            controllerObserving.update(this, "Intrusion");
+            }
     }
+    
     public abstract void captureImage();
     public abstract void recordVideo();
 

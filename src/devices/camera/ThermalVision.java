@@ -8,6 +8,7 @@ public class ThermalVision extends CameraDecorator {
 
     public ThermalVision(Camera wrapped) {
         super(wrapped);
+        System.out.println("Installing Thermal Vision into your camera device...");
     }
 
     @Override

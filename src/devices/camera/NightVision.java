@@ -8,6 +8,7 @@ public class NightVision extends CameraDecorator {
 
     public NightVision(Camera wrapped) {
         super(wrapped);
+        System.out.println("Installing Night Vision into your camera device...");
     }
 
     @Override

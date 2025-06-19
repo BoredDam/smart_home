@@ -21,7 +21,7 @@ public class GUIWindow {
 
     /**
      * Constructor of the GUIWindow class.
-     * The constructor first creates the frame, of size 750x450, then sets 
+     * The constructor first creates the frame, of size 1200x600, then sets 
      * the layout, the output area and the input field.
      */
     public GUIWindow () {

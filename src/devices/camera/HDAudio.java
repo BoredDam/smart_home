@@ -8,6 +8,7 @@ public class HDAudio extends CameraDecorator {
     
     public HDAudio(Camera wrapped) {
         super(wrapped);
+        System.out.println("Installing High Definition Audio into your camera device...");
     }
 
     @Override
