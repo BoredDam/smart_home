@@ -287,6 +287,7 @@ public class SmartHomeController implements Observer {
             int idx = device_list.indexOf(oldDevice);
             if (idx != -1) {
                 device_list.set(idx, updatedDevice);
+                deletedDeviceCommandCleanup(oldDevice);
                 if(updatedDevice instanceof ObservableDevice od) {
                     listenedDevices.remove((ObservableDevice) oldDevice);
                     listenedDevices.put(od, true);
@@ -304,6 +305,7 @@ public class SmartHomeController implements Observer {
      */
     public boolean removeDevice(Device device) {
         if(device == null || !device_list.contains(device)) {
+            printMessage("Device does not exist!");
             return false;
         }
             
@@ -363,6 +365,7 @@ public class SmartHomeController implements Observer {
     public void triggerEvent(Event event) {
         System.out.println("[SmartHomeController] Event " + event.getType() + " triggered!");
         device_list.forEach(dev -> event.getCommands(dev).forEach(cmd -> dev.performAction(cmd)));
+        
     }
 
     /**
@@ -547,8 +550,8 @@ public class SmartHomeController implements Observer {
             .map(record -> (index[0]++ + ") " + record.commandName + "\t" + record.devName + "\tNext execution: " + record.handle.getDelay(TimeUnit.SECONDS) + "s" +(record.repeats ? ("\trepeats") : ""))).collect(Collectors.joining("\n"));
     }
 
-    // when printing the list, assure that the element are indexed starting from, and call 
-    // the method with a decreased index. Index checking can be done, but exception is always caught
+    // When printing the list, assure that the element are indexed.
+    // Index checking can be done, but exception is always caught
     public boolean killCommand(int index) {
         try {
             ScheduledFuture<?> handle = scheduledCommands.get(index).handle;

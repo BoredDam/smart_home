@@ -22,7 +22,6 @@ public class AirConditioner extends Device {
     public void setTargetTemp(float temp) {
         printHeader();
         if (temp < 10 || temp > 50) {
-            printHeader();
             System.out.println("Target temperature must be between 10 and 50. Setting to default value 23.");
             targetTemp = 23; // yea, 23 is ok in an air conditioner. Or is it...
         }
