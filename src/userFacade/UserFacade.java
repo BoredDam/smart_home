@@ -290,12 +290,12 @@ public class UserFacade {
         if(devName.isEmpty()) {
             switchToMainLoop();
             return;
-        }  
-        gui.printToWindow("available commands for " + devName + ":");
+        }
         if(controller.getDeviceFromName(devName) == null) {
             gui.printToWindow("This device does not exist.");
             return;
-        }
+        }  
+        gui.printToWindow("available commands for " + devName + ":");
         CommandScheduleInfo info = new CommandScheduleInfo( 
             (rec) -> { 
                 controller.scheduleCommand(rec.devName, rec.delaySecs, rec.repeatSecs, rec.cmd); 
