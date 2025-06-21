@@ -595,5 +595,5 @@ La fase intermedia dello sviluppo è stata svolta in maniera asincrona, sfruttan
 ### Fase conclusiva - ultima settimana
 Nella fase conclusiva è stata effettuata la stesura del codice dell'interfaccia grafica, della classe `Environment` per simulare l'ambiente della *smart home*, ed è stata valutata una soluzione per suddividere la stampa degli output dei dispositivi dalla stampa della user interface, con l'ausilio di `javax.swing`.
 
-È stato quindi fatto un collaudo generale dell'intero sistema, realizzando anche una demo contenente dispositivi e scenari preimpostati, oltre alla ristesura degli UML e la stesura della relazione.
+È stato quindi fatto un collaudo generale dell'intero sistema, realizzando anche una demo contenente dispositivi e scenari preimpostati, oltre alla ristesura degli UML (diagramma delle classi, diagrammi di stato e delle attività, nella directory ./uml) e la stesura della relazione.
 
