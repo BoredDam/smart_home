@@ -4,8 +4,6 @@
     ],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "c:\\Users\\damia\\OneDrive - Università degli Studi di Catania\\Desktop\\VSCodeWorkspace\\smart_house\\smart_home\\lib\\hamcrest-core-1.3.jar",
-        "c:\\Users\\damia\\OneDrive - Università degli Studi di Catania\\Desktop\\VSCodeWorkspace\\smart_house\\smart_home\\lib\\junit-4.13.2.jar",
         "lib/**/*.jar"
     ]
 }
