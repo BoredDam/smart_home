@@ -1,6 +1,9 @@
 # Progetto "Smart Home Simulator"
 Il seguente documento analizza il funzionamento e le scelte intraprese durante lo sviluppo del progetto "Smart Home Simulator", realizzato da Paolo Volpini e Damiano Trovato.
 
+#### Prima dell'uso - Versione di Java
+Per il progetto è stata utilizzata la versione 24 di JavaSE. Per garantire il corretto funzionamento del software, è consigliabile utilizzare quest'ultima.
+
 ## Funzionamento del sistema
 "Smart Home Simulator" è un simulatore gestionale di un sistema smart home. All'interno del sistema è possibile individuare:
 - **un controller principale**, controllato dall'utente tramite interfaccia apposita;
@@ -595,5 +598,6 @@ La fase intermedia dello sviluppo è stata svolta in maniera asincrona, sfruttan
 ### Fase conclusiva - ultima settimana
 Nella fase conclusiva è stata effettuata la stesura del codice dell'interfaccia grafica, della classe `Environment` per simulare l'ambiente della *smart home*, ed è stata valutata una soluzione per suddividere la stampa degli output dei dispositivi dalla stampa della user interface, con l'ausilio di `javax.swing`.
 
-È stato quindi fatto un collaudo generale dell'intero sistema, realizzando anche una demo contenente dispositivi e scenari preimpostati, oltre alla ristesura degli UML (diagramma delle classi, diagrammi di stato e delle attività, nella directory ./uml) e la stesura della relazione.
+È stato quindi fatto un collaudo generale dell'intero sistema, realizzando anche una demo contenente dispositivi e scenari preimpostati, oltre alla ristesura degli UML (diagramma delle classi, diagrammi di stato e delle attività, nella directory ./uml), la stesura della relazione, e la realizzazione della documentazione (tramite commenti) seguendo gli standard javadoc. La documentazione è disponibile tramite il link presente nella descrizione della repository.
+
 
